@@ -1,0 +1,148 @@
+service: FediseerGUI
+
+custom:
+  CloudfrontHostedZone: Z2FDTNDATAQYW2
+  Domain: ${env:DOMAIN_NAME}
+  DomainZone: ${env:DOMAIN_ZONE}
+  ServiceToken: !Join [':', ['arn:aws:lambda', !Ref AWS::Region, !Ref AWS::AccountId, 'function:AcmCustomResources-prod-customResources']]
+
+provider:
+  name: aws
+  stage: ${opt:stage, 'prod'}
+  region: ${opt:region, 'eu-central-1'}
+  runtime: provided
+  lambdaHashingVersion: '20201221'
+  stackTags:
+    BillingProject: FediseerGUI
+
+package:
+  exclude:
+    - ./**
+
+resources:
+  Resources:
+    # Certificates
+    Certificate:
+      Type: Custom::Certificate
+      Properties:
+        DomainName: ${self:custom.Domain}
+        ValidationMethod: DNS
+        Region: us-east-1
+        ServiceToken: ${self:custom.ServiceToken}
+    CertificateBlocker:
+      Type: Custom::IssuedCertificate
+      DependsOn:
+        - DnsRecordsCertificateValidation
+      Properties:
+        CertificateArn: !Ref Certificate
+        ServiceToken: ${self:custom.ServiceToken}
+    CertificateDnsRecord:
+      Type: Custom::CertificateDNSRecord
+      Properties:
+        CertificateArn: !Ref Certificate
+        DomainName: ${self:custom.Domain}
+        ServiceToken: ${self:custom.ServiceToken}
+    DnsRecordsCertificateValidation:
+      Type: AWS::Route53::RecordSetGroup
+      Properties:
+        HostedZoneId: ${self:custom.DomainZone}
+        RecordSets:
+          - Name: !GetAtt CertificateDnsRecord.Name
+            Type: !GetAtt CertificateDnsRecord.Type
+            TTL: 60
+            Weight: 1
+            SetIdentifier: !Ref Certificate
+            ResourceRecords:
+              - !GetAtt CertificateDnsRecord.Value
+
+    # DNS
+    DnsRecords:
+      Type: AWS::Route53::RecordSetGroup
+      Properties:
+        HostedZoneId: ${self:custom.DomainZone}
+        RecordSets:
+          - AliasTarget:
+              DNSName: !GetAtt WebsiteCDN.DomainName
+              HostedZoneId: ${self:custom.CloudfrontHostedZone}
+            Name: ${self:custom.Domain}
+            Type: A
+
+    # Hosting
+    Website:
+      Type: AWS::S3::Bucket
+      Properties:
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders: ["*"]
+              AllowedMethods: [GET]
+              AllowedOrigins: ["*"]
+        PublicAccessBlockConfiguration:
+          BlockPublicAcls: false
+          BlockPublicPolicy: false
+          IgnorePublicAcls: false
+          RestrictPublicBuckets: false
+    WebsiteBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket: !Ref Website
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal: '*' # everyone
+              Action: 's3:GetObject' # to read
+              Resource: !Join ['/', [!GetAtt Website.Arn, '*']] # things in the bucket
+
+    # Webserver
+    WebsiteCDN:
+      Type: AWS::CloudFront::Distribution
+      DependsOn:
+        - CertificateBlocker
+      Properties:
+        DistributionConfig:
+          Aliases:
+            - ${self:custom.Domain}
+          Enabled: true
+          PriceClass: PriceClass_100
+          HttpVersion: http2
+          DefaultRootObject: index.html
+          Origins:
+            - Id: Website
+              DomainName: !GetAtt Website.RegionalDomainName
+              S3OriginConfig: {} # this key is required to tell CloudFront that this is an S3 origin, even though nothing is configured
+          DefaultCacheBehavior:
+            TargetOriginId: Website
+            AllowedMethods: [GET, HEAD]
+            ForwardedValues:
+              QueryString: 'false'
+              Cookies:
+                Forward: none
+            ViewerProtocolPolicy: redirect-to-https
+            Compress: true
+          CustomErrorResponses:
+            - ErrorCode: 500
+              ErrorCachingMinTTL: 0
+            - ErrorCode: 504
+              ErrorCachingMinTTL: 0
+            - ErrorCode: 404
+              ResponsePagePath: /index.html
+              ErrorCachingMinTTL: 0
+              ResponseCode: 200
+            - ErrorCode: 403
+              ResponsePagePath: /index.html
+              ErrorCachingMinTTL: 0
+              ResponseCode: 200
+          ViewerCertificate:
+            AcmCertificateArn: !Ref Certificate
+            MinimumProtocolVersion: TLSv1.2_2019
+            SslSupportMethod: sni-only
+
+  Outputs:
+    Bucket:
+      Description: The name of the website bucket
+      Value: !Ref Website
+    Cdn:
+      Description: The id of the CDN for website
+      Value: !Ref WebsiteCDN
+    Url:
+      Description: The url of the deployed app
+      Value: https://${self:custom.Domain}

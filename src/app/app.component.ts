@@ -9,6 +9,7 @@ import {NotificationType} from "./components/notification/notification.component
 import {NavigationEnd, Router} from "@angular/router";
 import {FediseerApiService} from "./services/fediseer-api.service";
 import {DOCUMENT} from "@angular/common";
+import {environment} from "../environments/environment";
 
 @Component({
   selector: 'app-root',
@@ -17,11 +18,11 @@ import {DOCUMENT} from "@angular/common";
 })
 export class AppComponent implements OnInit {
   protected readonly NotificationType = NotificationType;
+  protected readonly maintainer: string = environment.maintainer!;
 
   @ViewChild('sideMenu') private sideMenu: ElementRef<HTMLElement> | null = null;
   @ViewChild('sideMenuToggle') private sideMenuToggle: ElementRef<HTMLAnchorElement> | null = null;
 
-  private sideMenuOpen = true;
   private autoCollapse = 992;
 
   public title: string = 'Fediseer';
@@ -32,7 +33,6 @@ export class AppComponent implements OnInit {
 
   public endorsementsBadgeUrl: string | null = null;
   public guaranteesBadgeUrl: string | null = null;
-
 
   constructor(
     private readonly titleService: TitleService,

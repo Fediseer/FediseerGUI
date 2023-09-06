@@ -172,9 +172,14 @@
       Design: <strong><a href="https://adminlte.io" target="_blank">AdminLTE.io (3.2.0)</a></strong>
     </div>
     <strong>
-      Created by <a href="https://lemmings.world/u/rikudou">@rikudou@lemmings.world</a>.
-      Visit the <a href="https://lemmyverse.link/c/fediseer@lemmy.dbzer0.com"
-                   target="_blank">!fediseer@lemmy.dbzer0.com</a> community.
+      <ng-container *ngIf="maintainer === '@rikudou@lemmings.world' else splitMaintainerAuthor">
+        Created and maintained by <a href="https://lemmings.world/u/rikudou">@rikudou@lemmings.world</a>.
+      </ng-container>
+      <ng-template #splitMaintainerAuthor>
+        Created by <a href="https://lemmings.world/u/rikudou">@rikudou@lemmings.world</a>.
+        Maintained by {{maintainer}}. <!-- todo link -->
+      </ng-template>
+      Visit the <a href="https://lemmyverse.link/c/fediseer@lemmy.dbzer0.com" target="_blank">!fediseer@lemmy.dbzer0.com</a> community.
     </strong>
   </footer>
 </div>
