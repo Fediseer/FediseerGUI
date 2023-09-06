@@ -1,0 +1,19 @@
+<div class="col-md-12">
+  <div class="card">
+    <div class="card-body">
+      <p>Censoring means that you strongly disapprove of an instance. For more information visit the <a routerLink="/glossary">Glossary</a>.</p>
+      <p><strong>You can do this only if your instance is guaranteed by some other instance.</strong></p>
+      <form [formGroup]="form" (submit)="doCensor()">
+        <div class="form-group">
+          <label for="inputInstance">Instance to censor</label>
+          <input class="form-control" type="text" id="inputInstance" formControlName="instance" />
+        </div>
+        <div class="form-group">
+          <label for="inputReason">Reason</label>
+          <input class="form-control" type="text" id="inputReason" formControlName="reason" />
+        </div>
+        <button type="submit" class="btn btn-primary">Censor</button>
+      </form>
+    </div>
+  </div>
+</div>

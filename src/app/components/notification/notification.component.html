@@ -1,0 +1,14 @@
+<div
+  class="alert alert-dismissible"
+  [class.alert-success]="kind === NotificationType.Success"
+  [class.alert-danger]="kind === NotificationType.Error"
+  *ngIf="!isDeleted"
+>
+  <button type="button" class="close" data-dismiss="alert" aria-hidden="true" (click)="remove()">×</button>
+  <h5><i
+    class="icon fas fa-check"
+    [class.fa-check]="kind === NotificationType.Success"
+    [class.fa-ban]="kind === NotificationType.Error"
+  ></i> {{ title | async }}</h5>
+  {{ message }}
+</div>

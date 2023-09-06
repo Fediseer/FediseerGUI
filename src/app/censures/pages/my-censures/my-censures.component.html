@@ -1,0 +1,42 @@
+<ng-container *ngIf="(instance | async)! as instance">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Endorsements that {{instance.name}} <strong>has given</strong></h3>
+      </div>
+      <div class="card-body">
+        <table class="table table-bordered">
+          <thead>
+          <tr>
+            <th>{{ "Instance" }}</th>
+            <th>{{"Reasons"}}</th>
+            <th>{{"Cancel"}}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngIf="guaranteed">
+            <td colspan="3">
+              <a routerLink="/censures/censor" class="btn btn-primary">Censor an instance</a>
+            </td>
+          </tr>
+          <tr *ngIf="!instances.length">
+            <td colspan="3" *ngIf="guaranteed">You haven't put a censure on any instance yet.</td>
+            <td colspan="3" *ngIf="!guaranteed">No one guaranteed for this instance, you cannot put a censure on others.</td>
+          </tr>
+          <tr *ngFor="let instance of instances">
+            <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
+            <td>
+              <ul>
+                <li *ngFor="let reason of instance.censure_reasons">{{reason}}</li>
+              </ul>
+            </td>
+            <td>
+              <button type="button" class="btn btn-danger" (click)="cancelCensure(instance.domain)">Cancel</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-container>

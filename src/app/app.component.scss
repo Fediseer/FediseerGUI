@@ -1,0 +1,14 @@
+.user-panel .fediseer-badge {
+  $margin: 0.5vh;
+
+  width: auto;
+  display: block;
+  margin-bottom: $margin;
+
+  &:first-of-type {
+    margin-top: $margin * 2;
+  }
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+}

@@ -1,0 +1,61 @@
+<ng-container *ngIf="(instance | async)! as instance">
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Endorsements that {{instance.name}} <strong>received</strong></h3>
+      </div>
+      <div class="card-body">
+        <table class="table table-bordered">
+          <thead>
+          <tr>
+            <th>{{ "Instance" }}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngIf="!endorsementsForMyInstance.length">
+            <td>This instance didn't receive any endorsements yet.</td>
+          </tr>
+          <tr *ngFor="let endorsed of endorsementsForMyInstance">
+            <td><a routerLink="/instances/detail/{{endorsed.domain}}">{{endorsed.domain}}</a></td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Endorsements that {{instance.name}} <strong>has given</strong></h3>
+      </div>
+      <div class="card-body">
+        <table class="table table-bordered">
+          <thead>
+          <tr>
+            <th>Instance</th>
+            <th>Endorsements</th>
+            <th>Cancel</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngIf="guaranteed">
+            <td colspan="3">
+              <a routerLink="/endorsements/endorse" class="btn btn-primary">Endorse an instance</a>
+            </td>
+          </tr>
+          <tr *ngIf="!endorsementsByMyInstance.length">
+            <td colspan="3" *ngIf="guaranteed">This instance didn't endorse anyone yet. Go on and endorse!</td>
+            <td colspan="3" *ngIf="!guaranteed">No one guaranteed for this instance, you cannot endorse others.</td>
+          </tr>
+          <tr *ngFor="let endorsed of endorsementsByMyInstance">
+            <td><a routerLink="/instances/detail/{{endorsed.domain}}">{{endorsed.domain}}</a></td>
+            <td>{{endorsed.endorsements}}</td>
+            <td>
+              <button class="btn btn-danger" (click)="cancelEndorsement(endorsed.domain)">Cancel</button>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-container>

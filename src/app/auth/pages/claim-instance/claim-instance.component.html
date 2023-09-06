@@ -1,0 +1,27 @@
+<div class="col-md-12">
+  <div class="card">
+    <div class="card-body">
+      <form [formGroup]="form" (submit)="doClaimInstance()">
+        <div class="form-group">
+          <label for="inputInstance">{{ "Your instance" }}</label>
+          <input type="text" id="inputInstance" formControlName="instance" class="form-control" required aria-describedby="inputInstanceHelp" />
+          <small id="inputInstanceHelp" class="form-text text-muted">
+            Add your instance without the <code>https://</code> protocol.
+          </small>
+        </div>
+        <div class="form-group">
+          <label for="inputAdmin">{{ "Admin username" }}</label>
+          <input type="text" id="inputAdmin" formControlName="admin" class="form-control" required aria-describedby="inputAdminHelp" />
+          <small id="inputAdminHelp" class="form-text text-muted">
+            {{"Provide the username of the admin who will receive a private message with the api key. The user should exist on the instance you specified."}}
+          </small>
+        </div>
+
+        <button class="btn btn-primary" type="submit">
+          {{"Claim instance" }}
+        </button>
+      </form>
+
+    </div>
+  </div>
+</div>

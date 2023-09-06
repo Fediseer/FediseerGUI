@@ -1,0 +1,22 @@
+<div class="col-md-12">
+  <div class="card">
+    <div class="card-body">
+      <p>To manage your account, please log in. Otherwise you may just browse the public data in the sidebar.</p>
+      <form [formGroup]="form" (submit)="doLogin()">
+        <div class="form-group">
+          <label for="inputApiKey">{{ "API Key" }}</label>
+          <input type="text" id="inputApiKey" formControlName="apiKey" class="form-control" required autocomplete="off"/>
+        </div>
+
+        <small>
+          <p>{{"Don't have an api key yet?"}} <a routerLink="/auth/claim-instance">{{"Claim an instance here."}}</a></p>
+        </small>
+
+        <button class="btn btn-primary" type="submit">
+          Sign in
+        </button>
+      </form>
+
+    </div>
+  </div>
+</div>
