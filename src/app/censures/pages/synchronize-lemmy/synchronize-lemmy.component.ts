@@ -11,7 +11,6 @@ import {FediseerApiService} from "../../../services/fediseer-api.service";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {MessageService} from "../../../services/message.service";
 import {HttpErrorResponse} from "@angular/common/http";
-import {LemmyApiErrorResponse} from "../../../response/lemmy-api-error.response";
 
 @Component({
   selector: 'app-synchronize',
@@ -132,18 +131,6 @@ export class SynchronizeLemmyComponent implements OnInit {
     ));
   }
 
-  private async getCompleteCensureChain(): Promise<string[]> {
-    return await toPromise(this.fediseerApi.getWhitelistedInstances().pipe(
-      map(response => {
-        if (this.apiResponseHelper.handleErrors([response])) {
-          return [];
-        }
-
-        return response.successResponse!.instances.map(instance => instance.domain);
-      }),
-    ));
-  }
-
   private async getCensuresByInstances(instances: string[]): Promise<string[] | null> {
     const instancesResponse = await toPromise(this.fediseerApi.getCensuresByInstances(instances));
     if (this.apiResponseHelper.handleErrors([instancesResponse])) {
@@ -189,9 +176,6 @@ export class SynchronizeLemmyComponent implements OnInit {
           break;
         case SynchronizationMode.Endorsed:
           sourceFrom = await this.getEndorsedCensureChain(myInstance);
-          break;
-        case SynchronizationMode.All:
-          sourceFrom = await this.getCompleteCensureChain();
           break;
         default:
           throw new Error(`Unsupported mode: ${mode}`);

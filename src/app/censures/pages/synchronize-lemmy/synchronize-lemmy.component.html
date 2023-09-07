@@ -59,14 +59,6 @@
             <small *ngIf="form.controls.mode.value === SynchronizationMode.Endorsed">
               In addition to instances you have censured, all instances censured by instances you have endorsed will be blocked as well.
             </small>
-            <small *ngIf="form.controls.mode.value === SynchronizationMode.All">
-              All instances censured by any instance will be blocked. Note that only instances guaranteed by other
-              instances can censure others, so no malicious spammy instance can block others.
-              <strong>
-                Warning: Instances can still censure other instances based on ideology or other arbitrary criteria.
-                Make sure that this option is <em>really</em> what you want.
-              </strong>
-            </small>
           </div>
           <button type="submit" [disabled]="!form.valid" class="btn btn-primary">Synchronize</button>
         </form>

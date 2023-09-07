@@ -1,7 +1,6 @@
 export enum SynchronizationMode {
   Own = 'own',
   Endorsed = 'endorsed',
-  All = 'all',
 }
 
 export interface SynchronizeSettings {
