@@ -4,7 +4,7 @@
   <div class="col-md-12">
     <div class="card" *ngIf="detail">
       <div class="card-header">
-        <h3 class="card-title">Instance details</h3>
+        <h3 class="card-title" id="instance-details">Instance details</h3>
       </div>
       <div class="card-body">
         <table class="table table-bordered">
@@ -70,7 +70,7 @@
 
     <div class="card" *ngIf="detail">
       <div class="card-header">
-        <h3 class="card-title">Censures received ({{censuresReceived.length}})</h3>
+        <h3 class="card-title" id="censures-received">Censures received ({{censuresReceived.length}})</h3>
       </div>
       <div class="card-body">
         <ng-container *ngIf="censuresReceived.length">
@@ -105,7 +105,7 @@
 
     <div class="card" *ngIf="detail">
       <div class="card-header">
-        <h3 class="card-title">Censures given ({{censuresGiven.length}})</h3>
+        <h3 class="card-title" id="censures-given">Censures given ({{censuresGiven.length}})</h3>
       </div>
       <div class="card-body">
         <ng-container *ngIf="censuresGiven.length">
@@ -131,7 +131,7 @@
 
     <div class="card" *ngIf="detail">
       <div class="card-header">
-        <h3 class="card-title">Endorsements received ({{endorsementsReceived.length}})</h3>
+        <h3 class="card-title" id="endorsements-received">Endorsements received ({{endorsementsReceived.length}})</h3>
       </div>
       <div class="card-body">
         <ng-container *ngIf="endorsementsReceived.length">
@@ -157,7 +157,7 @@
 
     <div class="card" *ngIf="detail">
       <div class="card-header">
-        <h3 class="card-title">Endorsements given ({{endorsementsGiven.length}})</h3>
+        <h3 class="card-title" id="endorsements-given">Endorsements given ({{endorsementsGiven.length}})</h3>
       </div>
       <div class="card-body">
         <ng-container *ngIf="endorsementsGiven.length">
@@ -183,7 +183,7 @@
 
     <div class="card" *ngIf="detail">
       <div class="card-header">
-        <h3 class="card-title">Guarantees ({{guaranteesGiven.length}})</h3>
+        <h3 class="card-title" id="guarantees">Guarantees ({{guaranteesGiven.length}})</h3>
       </div>
       <div class="card-body">
         <ng-container *ngIf="guaranteesGiven.length">
