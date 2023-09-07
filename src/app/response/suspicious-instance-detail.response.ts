@@ -1,6 +1,6 @@
 import {float, int} from "../types/number";
 
-export interface BlacklistedInstanceDetailResponse {
+export interface SuspiciousInstanceDetailResponse {
   domain: string;
   uptime_alltime: float;
   local_posts: int;

@@ -2,12 +2,12 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {InstanceDetailResponse} from "../response/instance-detail.response";
 import {environment} from "../../environments/environment";
-import {catchError, map, Observable, of} from "rxjs";
+import {catchError, map, Observable, of, switchMap} from "rxjs";
 import {AuthenticationManagerService} from "./authentication-manager.service";
 import {ErrorResponse} from "../response/error.response";
 import {InstanceListResponse} from "../response/instance-list.response";
 import {SuccessResponse} from "../response/success.response";
-import {BlacklistedInstanceDetailResponse} from "../response/blacklisted-instance-detail.response";
+import {SuspiciousInstanceDetailResponse} from "../response/suspicious-instance-detail.response";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -108,8 +108,25 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Get, `whitelist`);
   }
 
-  public getBlacklistedInstances(): Observable<ApiResponse<InstanceListResponse<BlacklistedInstanceDetailResponse>>> {
+  public getSuspiciousInstances(): Observable<ApiResponse<InstanceListResponse<SuspiciousInstanceDetailResponse>>> {
     return this.sendRequest(HttpMethod.Get, `instances`);
+  }
+
+  public getBlacklistedInstances(): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    return this.getWhitelistedInstances().pipe(
+      switchMap(response => {
+        if (!response.success) {
+          return of({
+            success: response.success,
+            errorResponse: response.errorResponse,
+            successResponse: response.successResponse,
+          });
+        }
+
+        const instances = response.successResponse!.instances.map(instance => instance.domain);
+        return this.getCensuresByInstances(instances);
+      }),
+    );
   }
 
   private sendRequest<T>(

@@ -1,27 +1,27 @@
 import {Component, OnInit} from '@angular/core';
-import {InstanceDetailResponse} from "../../../response/instance-detail.response";
-import {Instance} from "../../../user/instance";
 import {TitleService} from "../../../services/title.service";
+import {SuspiciousInstanceDetailResponse} from "../../../response/suspicious-instance-detail.response";
+import {Instance} from "../../../user/instance";
 import {ApiResponse, FediseerApiService} from "../../../services/fediseer-api.service";
 import {MessageService} from "../../../services/message.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
+import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {toPromise} from "../../../types/resolvable";
 import {SuccessResponse} from "../../../response/success.response";
-import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
-import {SuspiciousInstanceDetailResponse} from "../../../response/suspicious-instance-detail.response";
+import {InstanceDetailResponse} from "../../../response/instance-detail.response";
 
 @Component({
   selector: 'app-blacklisted-instances',
-  templateUrl: './suspicious-instances.component.html',
-  styleUrls: ['./suspicious-instances.component.scss']
+  templateUrl: './blacklisted-instances.component.html',
+  styleUrls: ['./blacklisted-instances.component.scss']
 })
-export class SuspiciousInstancesComponent implements OnInit {
+export class BlacklistedInstancesComponent implements OnInit {
   private readonly perPage = 30;
 
-  private allInstances: SuspiciousInstanceDetailResponse[] = [];
+  private allInstances: InstanceDetailResponse[] = [];
 
-  public instances: SuspiciousInstanceDetailResponse[] = [];
+  public instances: InstanceDetailResponse[] = [];
   public currentInstance: Instance = this.authManager.currentInstanceSnapshot;
   public censoredByMe: string[] = [];
   public maxPage = 1;
@@ -41,7 +41,7 @@ export class SuspiciousInstancesComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.titleService.title = 'Suspicious instances';
+    this.titleService.title = 'Blacklisted instances';
 
     if (!this.currentInstance.anonymous) {
       const response = await toPromise(this.api.getCensuresByInstances([this.currentInstance.name]));
@@ -52,7 +52,7 @@ export class SuspiciousInstancesComponent implements OnInit {
       this.censoredByMe = response.successResponse!.instances.map(instance => instance.domain);
     }
 
-    const response = await toPromise(this.api.getSuspiciousInstances());
+    const response = await toPromise(this.api.getBlacklistedInstances());
     if (this.apiResponseHelper.handleErrors([response])) {
       this.loading = false;
       return;
