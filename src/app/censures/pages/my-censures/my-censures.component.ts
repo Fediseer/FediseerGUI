@@ -20,6 +20,7 @@ export class MyCensuresComponent implements OnInit {
   public instance: Observable<Instance> = this.authManager.currentInstance;
   public guaranteed: boolean = false;
   public loading: boolean = true;
+  public software: string | null = null;
 
   constructor(
     private readonly titleService: TitleService,
@@ -46,6 +47,7 @@ export class MyCensuresComponent implements OnInit {
     this.instances = responses[0].successResponse!.instances
       .map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance));
     this.guaranteed = responses[1].successResponse!.guarantor !== undefined;
+    this.software = responses[1].successResponse!.software.toLowerCase();
 
     this.loading = false;
   }

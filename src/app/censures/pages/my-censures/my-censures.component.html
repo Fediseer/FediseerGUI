@@ -8,7 +8,7 @@
           <h3 class="card-title">Censures that {{instance.name}} <strong>has given</strong></h3>
         </div>
         <div class="card-body">
-          <p>
+          <p *ngIf="software === 'lemmy'">
             You can easily synchronize your blacklist to your Lemmy instance defederations from the
             <a routerLink="/censures/synchronize/lemmy">Synchronize page</a>.
           </p>
