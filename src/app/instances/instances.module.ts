@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import {RouterModule, Routes} from "@angular/router";
 import { WhitelistedInstancesComponent } from './pages/whitelisted-instances/whitelisted-instances.component';
 import { InstanceDetailComponent } from './pages/instance-detail/instance-detail.component';
-import { BlacklistedInstancesComponent } from './pages/blacklisted-instances/blacklisted-instances.component';
+import { SuspiciousInstancesComponent } from './pages/suspicious-instances/suspicious-instances.component';
 import {SharedModule} from "../shared/shared.module";
 
 const routes: Routes = [
@@ -12,8 +12,8 @@ const routes: Routes = [
     component: WhitelistedInstancesComponent,
   },
   {
-    path: 'blacklisted',
-    component: BlacklistedInstancesComponent,
+    path: 'suspicious',
+    component: SuspiciousInstancesComponent,
   },
   {
     path: 'detail/:instance',
@@ -25,7 +25,7 @@ const routes: Routes = [
   declarations: [
     WhitelistedInstancesComponent,
     InstanceDetailComponent,
-    BlacklistedInstancesComponent
+    SuspiciousInstancesComponent
   ],
     imports: [
         CommonModule,

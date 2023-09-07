@@ -13,10 +13,10 @@ import {BlacklistedInstanceDetailResponse} from "../../../response/blacklisted-i
 
 @Component({
   selector: 'app-blacklisted-instances',
-  templateUrl: './blacklisted-instances.component.html',
-  styleUrls: ['./blacklisted-instances.component.scss']
+  templateUrl: './suspicious-instances.component.html',
+  styleUrls: ['./suspicious-instances.component.scss']
 })
-export class BlacklistedInstancesComponent implements OnInit {
+export class SuspiciousInstancesComponent implements OnInit {
   private readonly perPage = 30;
 
   private allInstances: BlacklistedInstanceDetailResponse[] = [];
@@ -41,7 +41,7 @@ export class BlacklistedInstancesComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.titleService.title = 'Blacklisted instances';
+    this.titleService.title = 'Suspicious instances';
 
     if (!this.currentInstance.anonymous) {
       const response = await toPromise(this.api.getCensuresByInstances([this.currentInstance.name]));
