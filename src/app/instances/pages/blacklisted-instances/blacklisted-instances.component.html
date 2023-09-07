@@ -14,12 +14,21 @@
           <thead>
           <tr>
             <th>Instance</th>
+            <th>Reasons</th>
             <th *ngIf="!currentInstance.anonymous">Censored by me?</th>
           </tr>
           </thead>
           <tbody>
           <tr *ngFor="let instance of instances">
             <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
+            <td>
+              <code *ngIf="!instance.censure_reasons || !instance.censure_reasons.length; else listReasons">N/A</code>
+              <ng-template #listReasons>
+                <ul>
+                  <li *ngFor="let reason of instance.censure_reasons">{{reason}}</li>
+                </ul>
+              </ng-template>
+            </td>
             <td *ngIf="!currentInstance.anonymous">
               <a href="javascript:void(0)" (click)="toggleCensure(instance.domain)">
                 <app-yes-no [yes]="censoredByMe.indexOf(instance.domain) > -1"></app-yes-no>

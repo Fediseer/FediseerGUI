@@ -57,7 +57,16 @@ export class BlacklistedInstancesComponent implements OnInit {
       this.loading = false;
       return;
     }
-    this.allInstances = response.successResponse!.instances;
+    this.allInstances = response.successResponse!.instances.sort((a, b) => {
+      const countA = a.censure_reasons?.length ?? 0;
+      const countB = b.censure_reasons?.length ?? 0;
+
+      if (countA === countB) {
+        return 0;
+      }
+
+      return countA > countB ? -1 : 1;
+    });
     this.maxPage = Math.ceil(this.allInstances.length / this.perPage);
     for (let i = 1; i <= this.maxPage; ++i) {
       this.pages.push(i);
