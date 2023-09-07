@@ -63,6 +63,7 @@ export class WhitelistedInstancesComponent implements OnInit {
 
       return a.endorsements > b.endorsements ? -1 : 1;
     });
+    this.titleService.title = `Whitelisted instances (${this.allInstances.length})`;
     this.maxPage = Math.ceil(this.allInstances.length / this.perPage);
     for (let i = 1; i <= this.maxPage; ++i) {
       this.pages.push(i);

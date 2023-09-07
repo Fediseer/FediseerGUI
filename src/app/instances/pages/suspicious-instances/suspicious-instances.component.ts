@@ -58,6 +58,7 @@ export class SuspiciousInstancesComponent implements OnInit {
       return;
     }
     this.allInstances = response.successResponse!.instances;
+    this.titleService.title = `Suspicious instances (${this.allInstances.length})`;
     this.maxPage = Math.ceil(this.allInstances.length / this.perPage);
     for (let i = 1; i <= this.maxPage; ++i) {
       this.pages.push(i);

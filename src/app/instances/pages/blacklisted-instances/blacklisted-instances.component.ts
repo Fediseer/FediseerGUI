@@ -67,6 +67,7 @@ export class BlacklistedInstancesComponent implements OnInit {
 
       return countA > countB ? -1 : 1;
     });
+    this.titleService.title = `Blacklisted instances (${this.allInstances.length})`;
     this.maxPage = Math.ceil(this.allInstances.length / this.perPage);
     for (let i = 1; i <= this.maxPage; ++i) {
       this.pages.push(i);
