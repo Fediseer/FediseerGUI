@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import {ToObservablePipe} from "./pipes/to-observable.pipe";
 import { LoaderComponent } from './components/loader/loader.component';
 import { YesNoComponent } from './components/yes-no/yes-no.component';
+import { IterableEnumPipe } from './pipes/iterable-enum.pipe';
 
 
 
@@ -11,11 +12,13 @@ import { YesNoComponent } from './components/yes-no/yes-no.component';
     ToObservablePipe,
     LoaderComponent,
     YesNoComponent,
+    IterableEnumPipe,
   ],
   exports: [
     ToObservablePipe,
     LoaderComponent,
-    YesNoComponent
+    YesNoComponent,
+    IterableEnumPipe
   ],
   imports: [
     CommonModule

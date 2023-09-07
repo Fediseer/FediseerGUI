@@ -4,6 +4,7 @@ import {Instance} from "../user/instance";
 import {AnonymousInstance} from "../user/anonymous-instance";
 import {FediseerApiService} from "./fediseer-api.service";
 import {AuthenticatedInstance} from "../user/authenticated-instance";
+import {DatabaseService} from "./database.service";
 
 @Injectable({
   providedIn: 'root'
@@ -11,17 +12,11 @@ import {AuthenticatedInstance} from "../user/authenticated-instance";
 export class AuthenticationManagerService {
   private readonly _currentInstance: BehaviorSubject<Instance>;
 
-  constructor() {
-    const stored = localStorage.getItem('instance');
-
-    let instance: Instance;
-    if (stored !== null) {
-      instance = JSON.parse(stored);
-    } else {
-      instance = new AnonymousInstance();
-    }
-
-    this._currentInstance = new BehaviorSubject<Instance>(instance);
+  constructor(
+    private readonly database: DatabaseService,
+  ) {
+    const stored = database.getStoredInstance() ?? new AnonymousInstance();
+    this._currentInstance = new BehaviorSubject<Instance>(stored);
   }
 
   public get currentInstance(): Observable<Instance> {
@@ -34,9 +29,9 @@ export class AuthenticationManagerService {
 
   public set currentInstance(instance: Instance) {
     if (instance.anonymous) {
-      localStorage.removeItem('instance');
+      this.database.removeStoredInstance();
     } else {
-      localStorage.setItem('instance', JSON.stringify(instance));
+      this.database.setStoredInstance(instance);
     }
     this._currentInstance.next(instance);
   }

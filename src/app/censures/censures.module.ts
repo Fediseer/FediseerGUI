@@ -5,22 +5,32 @@ import { MyCensuresComponent } from './pages/my-censures/my-censures.component';
 import { CensureInstanceComponent } from './pages/censure-instance/censure-instance.component';
 import {ReactiveFormsModule} from "@angular/forms";
 import {SharedModule} from "../shared/shared.module";
+import { SynchronizeLemmyComponent } from './pages/synchronize-lemmy/synchronize-lemmy.component';
+import {Guards} from "../guards/guards";
 
 const routes: Routes = [
   {
     path: 'my',
     component: MyCensuresComponent,
+    canActivate: [Guards.isLoggedIn()]
   },
   {
-    path: 'censurer',
+    path: 'censure',
     component: CensureInstanceComponent,
+    canActivate: [Guards.isLoggedIn()]
+  },
+  {
+    path: 'synchronize/lemmy',
+    component: SynchronizeLemmyComponent,
+    canActivate: [Guards.isLoggedIn()]
   }
 ];
 
 @NgModule({
   declarations: [
     MyCensuresComponent,
-    CensureInstanceComponent
+    CensureInstanceComponent,
+    SynchronizeLemmyComponent
   ],
     imports: [
         CommonModule,

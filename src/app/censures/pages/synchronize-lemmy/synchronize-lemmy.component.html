@@ -1,0 +1,93 @@
+<app-loader *ngIf="loading else content"></app-loader>
+
+<ng-template #content>
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Info</h3>
+      </div>
+      <div class="card-body">
+        <p>
+          You can synchronize your settings with your instance, if you provide your Lemmy credentials.
+        </p>
+        <p>
+          <strong>
+            The password will only be stored in your browser and only in this tab - when you close it, you have to
+            provide the password again.
+          </strong>
+        </p>
+        <p>
+          It's strongly advised to backup the list of your currently blocked instances in case something goes wrong:
+        </p>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Synchronization</h3>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="form" (submit)="synchronize()">
+          <div class="form-group">
+            <label for="inputUsername">Username</label>
+            <input type="text" id="inputUsername" formControlName="username" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label for="inputPassword">Password</label>
+            <input type="password" id="inputPassword" formControlName="password" class="form-control" />
+          </div>
+          <div class="form-group">
+            <label for="inputTotp">TOTP</label>
+            <input type="text" id="inputTotp" formControlName="totp" class="form-control" aria-describedby="inputTotpDescription" />
+            <small id="inputTotpDescription">Only if your account is 2FA protected.</small>
+          </div>
+          <div class="form-group">
+            <div class="custom-control custom-switch custom-switch-on-danger">
+              <input class="custom-control-input" type="checkbox" id="inputPurge" formControlName="purgeBlacklist" aria-describedby="inputPurgeDescription" />
+              <label for="inputPurge" class="custom-control-label">Purge blacklist</label>
+            </div>
+            <small id="inputPurgeDescription">If enabled, your blacklist will be purged before synchronizing the new one. Make sure you've backed up the original one.</small>
+          </div>
+          <div class="form-group">
+            <label for="inputMode">Mode</label>
+            <select formControlName="mode" id="inputMode" aria-describedby="inputModeDescription" class="form-control">
+              <option *ngFor="let enumCase of SynchronizationMode | iterableEnum" [value]="enumCase.value">{{enumCase.key}}</option>
+            </select>
+            <small *ngIf="form.controls.mode.value === SynchronizationMode.Own">
+              Only instances you have censured will be synchronized.
+            </small>
+            <small *ngIf="form.controls.mode.value === SynchronizationMode.Endorsed">
+              In addition to instances you have censured, all instances censured by instances you have endorsed will be blocked as well.
+            </small>
+            <small *ngIf="form.controls.mode.value === SynchronizationMode.All">
+              All instances censured by any instance will be blocked. Note that only instances guaranteed by other
+              instances can censure others, so no malicious actor can block legitimate instances.
+            </small>
+          </div>
+          <button type="submit" [disabled]="!form.valid" class="btn btn-primary">Synchronize</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Original blacklist</h3>
+      </div>
+      <div class="card-body">
+        <p>
+          Please back up this list before attempting any synchronization.
+          <strong>
+            If you move away from this page after a failed operation, there's no way to retrieve the original blacklist.
+          </strong>
+        </p>
+        <p>
+          <code>
+            <ng-container *ngFor="let instance of originallyBlockedInstances">
+              {{instance}}<br>
+            </ng-container>
+          </code>
+        </p>
+      </div>
+    </div>
+  </div>
+</ng-template>

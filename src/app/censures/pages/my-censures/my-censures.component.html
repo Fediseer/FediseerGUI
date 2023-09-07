@@ -5,9 +5,13 @@
     <div class="col-md-12">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Endorsements that {{instance.name}} <strong>has given</strong></h3>
+          <h3 class="card-title">Censures that {{instance.name}} <strong>has given</strong></h3>
         </div>
         <div class="card-body">
+          <p>
+            You can easily synchronize your blacklist to your instance from the
+            <a routerLink="/censures/synchronize/lemmy">Synchronize page</a>.
+          </p>
           <table class="table table-bordered">
             <thead>
             <tr>
@@ -24,7 +28,9 @@
             </tr>
             <tr *ngIf="!instances.length">
               <td colspan="3" *ngIf="guaranteed">You haven't put a censure on any instance yet.</td>
-              <td colspan="3" *ngIf="!guaranteed">No one guaranteed for this instance, you cannot put a censure on others.</td>
+              <td colspan="3" *ngIf="!guaranteed">No one guaranteed for this instance, you cannot put a censure on
+                others.
+              </td>
             </tr>
             <tr *ngFor="let instance of instances">
               <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
