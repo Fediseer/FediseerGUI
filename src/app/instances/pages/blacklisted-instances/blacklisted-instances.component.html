@@ -5,7 +5,7 @@
     <div class="card">
       <div class="card-body">
         <p>
-          Blocked instances are instances that are censored by other instances.
+          Blocked instances are instances that are censured by other instances.
         </p>
         <p *ngIf="!currentInstance.anonymous">
           If you're looking for managing of your own blacklist, go to <a routerLink="/censures/my">your censures</a>.
@@ -15,7 +15,7 @@
           <tr>
             <th>Instance</th>
             <th>Reasons</th>
-            <th *ngIf="!currentInstance.anonymous">Censored by me?</th>
+            <th *ngIf="!currentInstance.anonymous">Censured by me?</th>
           </tr>
           </thead>
           <tbody>
@@ -31,7 +31,7 @@
             </td>
             <td *ngIf="!currentInstance.anonymous">
               <a href="javascript:void(0)" (click)="toggleCensure(instance.domain)">
-                <app-yes-no [yes]="censoredByMe.indexOf(instance.domain) > -1"></app-yes-no>
+                <app-yes-no [yes]="censuredByMe.indexOf(instance.domain) > -1"></app-yes-no>
               </a>
             </td>
           </tr>

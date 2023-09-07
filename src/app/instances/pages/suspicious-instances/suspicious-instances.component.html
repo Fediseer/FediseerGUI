@@ -11,7 +11,7 @@
           <thead>
           <tr>
             <th>Instance</th>
-            <th *ngIf="!currentInstance.anonymous">Censored by me?</th>
+            <th *ngIf="!currentInstance.anonymous">Censured by me?</th>
           </tr>
           </thead>
           <tbody>
@@ -19,7 +19,7 @@
             <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
             <td *ngIf="!currentInstance.anonymous">
               <a href="javascript:void(0)" (click)="toggleCensure(instance.domain)">
-                <app-yes-no [yes]="censoredByMe.indexOf(instance.domain) > -1"></app-yes-no>
+                <app-yes-no [yes]="censuredByMe.indexOf(instance.domain) > -1"></app-yes-no>
               </a>
             </td>
           </tr>

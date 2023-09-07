@@ -58,7 +58,7 @@ export class MyCensuresComponent implements OnInit {
       }
 
       this.instances = this.instances.filter(
-        censoredInstance => censoredInstance.domain !== instance,
+        censuredInstance => censuredInstance.domain !== instance,
       );
       this.loading = false;
     });

@@ -23,7 +23,7 @@ export class BlacklistedInstancesComponent implements OnInit {
 
   public instances: InstanceDetailResponse[] = [];
   public currentInstance: Instance = this.authManager.currentInstanceSnapshot;
-  public censoredByMe: string[] = [];
+  public censuredByMe: string[] = [];
   public maxPage = 1;
   public currentPage = 1;
   public pages: number[] = [];
@@ -49,7 +49,7 @@ export class BlacklistedInstancesComponent implements OnInit {
         this.loading = false;
         return;
       }
-      this.censoredByMe = response.successResponse!.instances.map(instance => instance.domain);
+      this.censuredByMe = response.successResponse!.instances.map(instance => instance.domain);
     }
 
     const response = await toPromise(this.api.getBlacklistedInstances());
@@ -82,8 +82,8 @@ export class BlacklistedInstancesComponent implements OnInit {
   }
 
   public async toggleCensure(instance: string): Promise<void> {
-    const censored: boolean = this.censoredByMe.indexOf(instance) > -1;
-    if (censored) {
+    const censured: boolean = this.censuredByMe.indexOf(instance) > -1;
+    if (censured) {
       this.loading = true;
       const response: ApiResponse<SuccessResponse> = await toPromise(this.api.cancelCensure(instance));
       if (!response.success) {
@@ -91,12 +91,12 @@ export class BlacklistedInstancesComponent implements OnInit {
         return;
       }
     } else {
-      await this.router.navigateByUrl(`/censures/censor?instance=${instance}`);
+      await this.router.navigateByUrl(`/censures/censure?instance=${instance}`);
       return;
     }
 
-    if (censored) {
-      this.censoredByMe = this.censoredByMe.filter(endorsedInstance => endorsedInstance !== instance);
+    if (censured) {
+      this.censuredByMe = this.censuredByMe.filter(endorsedInstance => endorsedInstance !== instance);
       this.loading = false;
     }
   }

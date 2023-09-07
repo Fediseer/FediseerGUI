@@ -98,7 +98,7 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Delete, `censures/${instance}`);
   }
 
-  public censorInstance(instance: string, reason: string | null): Observable<ApiResponse<SuccessResponse>> {
+  public censureInstance(instance: string, reason: string | null): Observable<ApiResponse<SuccessResponse>> {
     const body: {[key: string]: string} = {};
     if (reason) {
       body['reason'] = reason;
