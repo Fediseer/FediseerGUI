@@ -19,15 +19,21 @@
           </tr>
           <tr>
             <td><strong>Is claimed?</strong></td>
-            <td>{{detail.claimed ? 'Yes' : 'No'}}</td>
+            <td>
+              <app-yes-no [yes]="detail.claimed > 0"></app-yes-no>
+            </td>
           </tr>
           <tr>
             <td><strong>Open registrations?</strong></td>
-            <td>{{detail.open_registrations ? 'Yes' : 'No'}}</td>
+            <td>
+              <app-yes-no [yes]="detail.open_registrations"></app-yes-no>
+            </td>
           </tr>
           <tr>
             <td><strong>Email verification?</strong></td>
-            <td>{{detail.email_verify ? 'Yes' : 'No'}}</td>
+            <td>
+              <app-yes-no [yes]="detail.email_verify"></app-yes-no>
+            </td>
           </tr>
           <tr>
             <td><strong>Endorsements given</strong></td>

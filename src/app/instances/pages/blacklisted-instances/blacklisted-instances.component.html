@@ -19,7 +19,7 @@
             <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
             <td *ngIf="!currentInstance.anonymous">
               <a href="javascript:void(0)" (click)="toggleCensure(instance.domain)">
-                {{censoredByMe.indexOf(instance.domain) > -1 ? 'Yes' : 'No'}}
+                <app-yes-no [yes]="censoredByMe.indexOf(instance.domain) > -1"></app-yes-no>
               </a>
             </td>
           </tr>

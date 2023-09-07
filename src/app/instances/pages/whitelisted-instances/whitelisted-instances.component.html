@@ -25,14 +25,14 @@
               <code *ngIf="!instance.guarantor">N/A</code>
             </td>
             <td>
-              {{instance.claimed ? 'Yes' : 'No'}}
+              <app-yes-no [yes]="instance.claimed > 0"></app-yes-no>
             </td>
             <td>
               {{instance.endorsements}}
             </td>
             <td *ngIf="!currentInstance.anonymous">
               <a href="javascript:void(0)" (click)="toggleEndorse(instance.domain)">
-                {{endorsedByMe.indexOf(instance.domain) > -1 ? 'Yes' : 'No'}}
+                <app-yes-no [yes]="endorsedByMe.indexOf(instance.domain) > -1"></app-yes-no>
               </a>
             </td>
           </tr>
