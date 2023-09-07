@@ -12,7 +12,7 @@
         routerLink="/auth/claim-instance">register your instance</a>) to manage your own endorsements, censures and
         guarantees.
       </p>
-      <p>
+      <p *ngIf="!currentInstance.anonymous">
         You can view <a routerLink="/instances/whitelisted">whitelisted</a> and <a routerLink="/instances/blacklisted">blacklisted</a>
         instances or manage your <a routerLink="/endorsements/my">endorsements</a>, <a routerLink="/guarantees/my">guarantees</a>
         and <a routerLink="/censures/my">censures</a>.
