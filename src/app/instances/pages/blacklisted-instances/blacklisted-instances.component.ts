@@ -9,6 +9,7 @@ import {AuthenticationManagerService} from "../../../services/authentication-man
 import {toPromise} from "../../../types/resolvable";
 import {SuccessResponse} from "../../../response/success.response";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
+import {BlacklistedInstanceDetailResponse} from "../../../response/blacklisted-instance-detail.response";
 
 @Component({
   selector: 'app-blacklisted-instances',
@@ -18,9 +19,9 @@ import {ApiResponseHelperService} from "../../../services/api-response-helper.se
 export class BlacklistedInstancesComponent implements OnInit {
   private readonly perPage = 30;
 
-  private allInstances: InstanceDetailResponse[] = [];
+  private allInstances: BlacklistedInstanceDetailResponse[] = [];
 
-  public instances: InstanceDetailResponse[] = [];
+  public instances: BlacklistedInstanceDetailResponse[] = [];
   public currentInstance: Instance = this.authManager.currentInstanceSnapshot;
   public censoredByMe: string[] = [];
   public maxPage = 1;

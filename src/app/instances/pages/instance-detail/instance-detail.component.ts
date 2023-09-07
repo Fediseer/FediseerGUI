@@ -71,11 +71,11 @@ export class InstanceDetailComponent implements OnInit {
         return;
       }
 
-      this.censuresReceived = (<InstanceListResponse>responses[map.censuresReceived].successResponse).instances;
-      this.censuresGiven = (<InstanceListResponse>responses[map.censuresGiven].successResponse).instances;
-      this.endorsementsReceived = (<InstanceListResponse>responses[map.endorsementsReceived].successResponse).instances;
-      this.endorsementsGiven = (<InstanceListResponse>responses[map.endorsementsGiven].successResponse).instances;
-      this.guaranteesGiven = (<InstanceListResponse>responses[map.guaranteesGiven].successResponse).instances;
+      this.censuresReceived = (<InstanceListResponse<InstanceDetailResponse>>responses[map.censuresReceived].successResponse).instances;
+      this.censuresGiven = (<InstanceListResponse<InstanceDetailResponse>>responses[map.censuresGiven].successResponse).instances;
+      this.endorsementsReceived = (<InstanceListResponse<InstanceDetailResponse>>responses[map.endorsementsReceived].successResponse).instances;
+      this.endorsementsGiven = (<InstanceListResponse<InstanceDetailResponse>>responses[map.endorsementsGiven].successResponse).instances;
+      this.guaranteesGiven = (<InstanceListResponse<InstanceDetailResponse>>responses[map.guaranteesGiven].successResponse).instances;
       this.detail = <InstanceDetailResponse>responses[map.detail].successResponse;
 
       this.loading = false;

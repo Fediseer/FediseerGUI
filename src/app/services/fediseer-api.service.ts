@@ -7,6 +7,7 @@ import {AuthenticationManagerService} from "./authentication-manager.service";
 import {ErrorResponse} from "../response/error.response";
 import {InstanceListResponse} from "../response/instance-list.response";
 import {SuccessResponse} from "../response/success.response";
+import {BlacklistedInstanceDetailResponse} from "../response/blacklisted-instance-detail.response";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -56,11 +57,11 @@ export class FediseerApiService {
     });
   }
 
-  public getEndorsementsForInstance(instance: string): Observable<ApiResponse<InstanceListResponse>> {
+  public getEndorsementsForInstance(instance: string): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     return this.sendRequest(HttpMethod.Get, `endorsements/${instance}`);
   }
 
-  public getEndorsementsByInstance(instances: string[]): Observable<ApiResponse<InstanceListResponse>> {
+  public getEndorsementsByInstance(instances: string[]): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     const instanceString = instances.join(',');
     return this.sendRequest(HttpMethod.Get, `approvals/${instanceString}`);
   }
@@ -73,7 +74,7 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Delete, `endorsements/${instance}`);
   }
 
-  public getGuaranteesByInstance(instance: string): Observable<ApiResponse<InstanceListResponse>> {
+  public getGuaranteesByInstance(instance: string): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     return this.sendRequest(HttpMethod.Get, `guarantors/${instance}`);
   }
 
@@ -85,11 +86,11 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Delete, `guarantees/${instance}`);
   }
 
-  public getCensuresByInstances(instances: string[]): Observable<ApiResponse<InstanceListResponse>> {
+  public getCensuresByInstances(instances: string[]): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     return this.sendRequest(HttpMethod.Get, `censures_given/${instances.join(',')}`);
   }
 
-  public getCensuresForInstance(instance: string): Observable<ApiResponse<InstanceListResponse>> {
+  public getCensuresForInstance(instance: string): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     return this.sendRequest(HttpMethod.Get, `censures/${instance}`);
   }
 
@@ -103,11 +104,11 @@ export class FediseerApiService {
     });
   }
 
-  public getWhitelistedInstances(): Observable<ApiResponse<InstanceListResponse>> {
+  public getWhitelistedInstances(): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     return this.sendRequest(HttpMethod.Get, `whitelist`);
   }
 
-  public getBlacklistedInstances(): Observable<ApiResponse<InstanceListResponse>> {
+  public getBlacklistedInstances(): Observable<ApiResponse<InstanceListResponse<BlacklistedInstanceDetailResponse>>> {
     return this.sendRequest(HttpMethod.Get, `instances`);
   }
 
