@@ -12,6 +12,7 @@
           <tr>
             <th>Instance</th>
             <th>Guarantor</th>
+            <th>Claimed?</th>
             <th>Endorsements</th>
             <th *ngIf="!currentInstance.anonymous">Endorsed by me?</th>
           </tr>
@@ -22,6 +23,9 @@
             <td>
               <a *ngIf="instance.guarantor" routerLink="/instances/detail/{{instance.guarantor}}">{{instance.guarantor}}</a>
               <code *ngIf="!instance.guarantor">N/A</code>
+            </td>
+            <td>
+              {{instance.claimed ? 'Yes' : 'No'}}
             </td>
             <td>
               {{instance.endorsements}}
