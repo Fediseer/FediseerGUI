@@ -9,6 +9,6 @@ export interface InstanceDetailResponse {
   email_verify: boolean;
   approvals: int;
   endorsements: int;
-  guarantor?: string;
+  guarantor?: string | null;
   censure_reasons?: string[];
 }
