@@ -13,7 +13,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 export class CensorInstanceComponent implements OnInit {
   public form = new FormGroup({
     instance: new FormControl<string>('', [Validators.required]),
-    reason: new FormControl<string>('', [Validators.required]),
+    reason: new FormControl<string>(''),
   });
   public loading: boolean = false;
 
@@ -46,7 +46,7 @@ export class CensorInstanceComponent implements OnInit {
     this.loading = true;
     this.api.censorInstance(
       this.form.controls.instance.value!,
-      this.form.controls.reason.value!,
+      this.form.controls.reason.value ?? null,
     ).subscribe(response => {
       if (!response.success) {
         this.loading = false;
