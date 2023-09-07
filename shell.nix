@@ -8,4 +8,7 @@ pkgs.mkShell {
       nodePackages."@angular/cli"
       yarn
     ];
+    shellHook = ''
+      source <(ng completion script)
+    '';
 }
