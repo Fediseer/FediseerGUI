@@ -8,6 +8,7 @@ import {Observable} from "rxjs";
 import {Instance} from "../../../user/instance";
 import {toPromise} from "../../../types/resolvable";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
+import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 
 @Component({
   selector: 'app-my-censures',
@@ -15,7 +16,7 @@ import {ApiResponseHelperService} from "../../../services/api-response-helper.se
   styleUrls: ['./my-censures.component.scss']
 })
 export class MyCensuresComponent implements OnInit {
-  public instances: InstanceDetailResponse[] = [];
+  public instances: NormalizedInstanceDetailResponse[] = [];
   public instance: Observable<Instance> = this.authManager.currentInstance;
   public guaranteed: boolean = false;
   public loading: boolean = true;
@@ -42,7 +43,8 @@ export class MyCensuresComponent implements OnInit {
       return;
     }
 
-    this.instances = responses[0].successResponse!.instances;
+    this.instances = responses[0].successResponse!.instances
+      .map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance));
     this.guaranteed = responses[1].successResponse!.guarantor !== undefined;
 
     this.loading = false;

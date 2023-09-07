@@ -8,6 +8,7 @@ import {MessageService} from "../../../services/message.service";
 import {InstanceDetailResponse} from "../../../response/instance-detail.response";
 import {InstanceListResponse} from "../../../response/instance-list.response";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
+import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 
 @Component({
   selector: 'app-instance-detail',
@@ -15,7 +16,7 @@ import {ApiResponseHelperService} from "../../../services/api-response-helper.se
   styleUrls: ['./instance-detail.component.scss']
 })
 export class InstanceDetailComponent implements OnInit {
-  public censuresReceived: InstanceDetailResponse[] = [];
+  public censuresReceived: NormalizedInstanceDetailResponse[] = [];
   public censuresGiven: InstanceDetailResponse[] = [];
   public endorsementsReceived: InstanceDetailResponse[] = [];
   public endorsementsGiven: InstanceDetailResponse[] = [];
@@ -71,7 +72,8 @@ export class InstanceDetailComponent implements OnInit {
         return;
       }
 
-      this.censuresReceived = (<InstanceListResponse<InstanceDetailResponse>>responses[map.censuresReceived].successResponse).instances;
+      this.censuresReceived = (<InstanceListResponse<InstanceDetailResponse>>responses[map.censuresReceived].successResponse).instances
+        .map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance));
       this.censuresGiven = (<InstanceListResponse<InstanceDetailResponse>>responses[map.censuresGiven].successResponse).instances;
       this.endorsementsReceived = (<InstanceListResponse<InstanceDetailResponse>>responses[map.endorsementsReceived].successResponse).instances;
       this.endorsementsGiven = (<InstanceListResponse<InstanceDetailResponse>>responses[map.endorsementsGiven].successResponse).instances;

@@ -10,6 +10,7 @@ import {ApiResponseHelperService} from "../../../services/api-response-helper.se
 import {toPromise} from "../../../types/resolvable";
 import {SuccessResponse} from "../../../response/success.response";
 import {InstanceDetailResponse} from "../../../response/instance-detail.response";
+import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 
 @Component({
   selector: 'app-censured-instances',
@@ -19,9 +20,9 @@ import {InstanceDetailResponse} from "../../../response/instance-detail.response
 export class CensuredInstancesComponent implements OnInit {
   private readonly perPage = 30;
 
-  private allInstances: InstanceDetailResponse[] = [];
+  private allInstances: NormalizedInstanceDetailResponse[] = [];
 
-  public instances: InstanceDetailResponse[] = [];
+  public instances: NormalizedInstanceDetailResponse[] = [];
   public currentInstance: Instance = this.authManager.currentInstanceSnapshot;
   public censuredByMe: string[] = [];
   public maxPage = 1;
@@ -57,16 +58,17 @@ export class CensuredInstancesComponent implements OnInit {
       this.loading = false;
       return;
     }
-    this.allInstances = response.successResponse!.instances.sort((a, b) => {
-      const countA = a.censure_reasons?.length ?? 0;
-      const countB = b.censure_reasons?.length ?? 0;
+    this.allInstances = response.successResponse!.instances.map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance))
+      .sort((a, b) => {
+        const countA = a.unmergedCensureReasons.length;
+        const countB = b.unmergedCensureReasons.length;
 
-      if (countA === countB) {
-        return 0;
-      }
+        if (countA === countB) {
+          return 0;
+        }
 
-      return countA > countB ? -1 : 1;
-    });
+        return countA > countB ? -1 : 1;
+      });
     this.titleService.title = `Censured instances (${this.allInstances.length})`;
     this.maxPage = Math.ceil(this.allInstances.length / this.perPage);
     for (let i = 1; i <= this.maxPage; ++i) {

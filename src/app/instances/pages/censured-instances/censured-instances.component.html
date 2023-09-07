@@ -19,10 +19,10 @@
           <tr *ngFor="let instance of instances">
             <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
             <td>
-              <code *ngIf="!instance.censure_reasons || !instance.censure_reasons.length; else listReasons">N/A</code>
+              <code *ngIf="!instance.censureReasons.length; else listReasons">N/A</code>
               <ng-template #listReasons>
                 <ul>
-                  <li *ngFor="let reason of instance.censure_reasons">{{reason}}</li>
+                  <li *ngFor="let reason of instance.censureReasons">{{reason}}</li>
                 </ul>
               </ng-template>
             </td>
