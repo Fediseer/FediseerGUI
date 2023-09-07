@@ -114,7 +114,7 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Get, `instances`);
   }
 
-  public getBlacklistedInstances(): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+  public getCensuredInstances(): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     return this.getWhitelistedInstances().pipe(
       switchMap(response => {
         if (!response.success) {

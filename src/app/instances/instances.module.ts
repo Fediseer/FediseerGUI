@@ -5,7 +5,7 @@ import { WhitelistedInstancesComponent } from './pages/whitelisted-instances/whi
 import { InstanceDetailComponent } from './pages/instance-detail/instance-detail.component';
 import { SuspiciousInstancesComponent } from './pages/suspicious-instances/suspicious-instances.component';
 import {SharedModule} from "../shared/shared.module";
-import { BlacklistedInstancesComponent } from './pages/blacklisted-instances/blacklisted-instances.component';
+import { CensuredInstancesComponent } from './pages/censured-instances/censured-instances.component';
 
 const routes: Routes = [
   {
@@ -17,8 +17,8 @@ const routes: Routes = [
     component: SuspiciousInstancesComponent,
   },
   {
-    path: 'blacklisted',
-    component: BlacklistedInstancesComponent,
+    path: 'censured',
+    component: CensuredInstancesComponent,
   },
   {
     path: 'detail/:instance',
@@ -31,7 +31,7 @@ const routes: Routes = [
     WhitelistedInstancesComponent,
     InstanceDetailComponent,
     SuspiciousInstancesComponent,
-    BlacklistedInstancesComponent
+    CensuredInstancesComponent
   ],
     imports: [
         CommonModule,

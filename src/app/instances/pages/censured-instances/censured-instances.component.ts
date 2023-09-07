@@ -12,11 +12,11 @@ import {SuccessResponse} from "../../../response/success.response";
 import {InstanceDetailResponse} from "../../../response/instance-detail.response";
 
 @Component({
-  selector: 'app-blacklisted-instances',
-  templateUrl: './blacklisted-instances.component.html',
-  styleUrls: ['./blacklisted-instances.component.scss']
+  selector: 'app-censured-instances',
+  templateUrl: './censured-instances.component.html',
+  styleUrls: ['./censured-instances.component.scss']
 })
-export class BlacklistedInstancesComponent implements OnInit {
+export class CensuredInstancesComponent implements OnInit {
   private readonly perPage = 30;
 
   private allInstances: InstanceDetailResponse[] = [];
@@ -41,7 +41,7 @@ export class BlacklistedInstancesComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.titleService.title = 'Blacklisted instances';
+    this.titleService.title = 'Censured instances';
 
     if (!this.currentInstance.anonymous) {
       const response = await toPromise(this.api.getCensuresByInstances([this.currentInstance.name]));
@@ -52,7 +52,7 @@ export class BlacklistedInstancesComponent implements OnInit {
       this.censuredByMe = response.successResponse!.instances.map(instance => instance.domain);
     }
 
-    const response = await toPromise(this.api.getBlacklistedInstances());
+    const response = await toPromise(this.api.getCensuredInstances());
     if (this.apiResponseHelper.handleErrors([response])) {
       this.loading = false;
       return;
@@ -67,7 +67,7 @@ export class BlacklistedInstancesComponent implements OnInit {
 
       return countA > countB ? -1 : 1;
     });
-    this.titleService.title = `Blacklisted instances (${this.allInstances.length})`;
+    this.titleService.title = `Censured instances (${this.allInstances.length})`;
     this.maxPage = Math.ceil(this.allInstances.length / this.perPage);
     for (let i = 1; i <= this.maxPage; ++i) {
       this.pages.push(i);

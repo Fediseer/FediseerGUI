@@ -12,7 +12,7 @@ import {ApiResponseHelperService} from "../../../services/api-response-helper.se
 import {SuspiciousInstanceDetailResponse} from "../../../response/suspicious-instance-detail.response";
 
 @Component({
-  selector: 'app-blacklisted-instances',
+  selector: 'app-suspicious-instances',
   templateUrl: './suspicious-instances.component.html',
   styleUrls: ['./suspicious-instances.component.scss']
 })
