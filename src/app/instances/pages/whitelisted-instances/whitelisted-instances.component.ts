@@ -8,6 +8,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
 import {Instance} from "../../../user/instance";
 import {SuccessResponse} from "../../../response/success.response";
+import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 
 @Component({
   selector: 'app-whitelisted-instances',
@@ -25,6 +26,7 @@ export class WhitelistedInstancesComponent implements OnInit {
   public maxPage = 1;
   public currentPage = 1;
   public pages: number[] = [];
+  public loading: boolean = true;
 
   constructor(
     private readonly titleService: TitleService,
@@ -33,6 +35,7 @@ export class WhitelistedInstancesComponent implements OnInit {
     private readonly activatedRoute: ActivatedRoute,
     private readonly authManager: AuthenticationManagerService,
     private readonly router: Router,
+    private readonly apiResponseHelper: ApiResponseHelperService,
   ) {
   }
 
@@ -41,16 +44,16 @@ export class WhitelistedInstancesComponent implements OnInit {
 
     if (!this.currentInstance.anonymous) {
       const response = await toPromise(this.api.getEndorsementsByInstance([this.currentInstance.name]));
-      if (!response.success) {
-        this.messageService.createError(`There was an api error: ${response.errorResponse!.message}`);
+      if (this.apiResponseHelper.handleErrors([response])) {
+        this.loading = false;
         return;
       }
       this.endorsedByMe = response.successResponse!.instances.map(instance => instance.domain);
     }
 
     const response = await toPromise(this.api.getWhitelistedInstances());
-    if (!response.success) {
-      this.messageService.createError(`There was an api error: ${response.errorResponse!.message}`);
+    if (this.apiResponseHelper.handleErrors([response])) {
+      this.loading = false;
       return;
     }
     this.allInstances = response.successResponse!.instances.sort((a, b) => {
@@ -65,6 +68,8 @@ export class WhitelistedInstancesComponent implements OnInit {
       this.pages.push(i);
     }
 
+    this.loading = false;
+
     this.activatedRoute.queryParams.subscribe(query => {
       this.currentPage = query['page'] ? Number(query['page']) : 1;
       this.instances = this.allInstances.slice((this.currentPage - 1) * this.perPage, this.currentPage * this.perPage);
@@ -72,6 +77,8 @@ export class WhitelistedInstancesComponent implements OnInit {
   }
 
   public async toggleEndorse(instance: string): Promise<void> {
+    this.loading = true;
+
     const endorsed: boolean = this.endorsedByMe.indexOf(instance) > -1;
     let response: ApiResponse<SuccessResponse>;
     if (endorsed) {
@@ -80,8 +87,8 @@ export class WhitelistedInstancesComponent implements OnInit {
       response = await toPromise(this.api.endorseInstance(instance));
     }
 
-    if (!response.success) {
-      this.messageService.createError(`There was an api error: ${response.errorResponse!.message}`);
+    this.loading = false;
+    if (this.apiResponseHelper.handleErrors([response])) {
       return;
     }
 

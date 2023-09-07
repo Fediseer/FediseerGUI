@@ -14,6 +14,7 @@ export class GuaranteeInstanceComponent implements OnInit {
   public form = new FormGroup({
     instance: new FormControl<string>('', [Validators.required]),
   });
+  public loading: boolean = false;
 
   constructor(
     private readonly titleService: TitleService,
@@ -33,7 +34,9 @@ export class GuaranteeInstanceComponent implements OnInit {
       return;
     }
 
+    this.loading = true;
     this.api.guaranteeInstance(this.form.controls.instance.value!).subscribe(response => {
+      this.loading = false;
       if (!response.success) {
         this.messageService.createError(`There was an api error: ${response.errorResponse!.message}`);
         return;

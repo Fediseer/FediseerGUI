@@ -4,6 +4,7 @@ import {RouterModule, Routes} from "@angular/router";
 import { MyCensuresComponent } from './pages/my-censures/my-censures.component';
 import { CensorInstanceComponent } from './pages/censor-instance/censor-instance.component';
 import {ReactiveFormsModule} from "@angular/forms";
+import {SharedModule} from "../shared/shared.module";
 
 const routes: Routes = [
   {
@@ -21,10 +22,11 @@ const routes: Routes = [
     MyCensuresComponent,
     CensorInstanceComponent
   ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    ReactiveFormsModule,
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        ReactiveFormsModule,
+        SharedModule,
+    ]
 })
 export class CensuresModule { }

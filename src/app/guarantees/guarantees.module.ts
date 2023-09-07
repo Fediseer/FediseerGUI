@@ -5,6 +5,7 @@ import { MyGuaranteesComponent } from './pages/my-guarantees/my-guarantees.compo
 import {Guards} from "../guards/guards";
 import { GuaranteeInstanceComponent } from './pages/guarantee-instance/guarantee-instance.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {SharedModule} from "../shared/shared.module";
 
 const routes: Routes = [
   {
@@ -24,11 +25,12 @@ const routes: Routes = [
     MyGuaranteesComponent,
     GuaranteeInstanceComponent
   ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-    FormsModule,
-    ReactiveFormsModule,
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        FormsModule,
+        ReactiveFormsModule,
+        SharedModule,
+    ]
 })
 export class GuaranteesModule { }

@@ -1,39 +1,43 @@
-<div class="col-md-12">
-  <div class="card">
-    <div class="card-body">
-      <p *ngIf="!currentInstance.anonymous">
-        If you're looking for managing of your own blacklist, go to <a routerLink="/censures/my">your censures</a>.
-      </p>
-      <table class="table table-bordered">
-        <thead>
-        <tr>
-          <th>Instance</th>
-          <th *ngIf="!currentInstance.anonymous">Censored by me?</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr *ngFor="let instance of instances">
-          <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
-          <td *ngIf="!currentInstance.anonymous">
-            <a href="javascript:void(0)" (click)="toggleCensure(instance.domain)">
-              {{censoredByMe.indexOf(instance.domain) > -1 ? 'Yes' : 'No'}}
+<app-loader *ngIf="loading else content"></app-loader>
+
+<ng-template #content>
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-body">
+        <p *ngIf="!currentInstance.anonymous">
+          If you're looking for managing of your own blacklist, go to <a routerLink="/censures/my">your censures</a>.
+        </p>
+        <table class="table table-bordered">
+          <thead>
+          <tr>
+            <th>Instance</th>
+            <th *ngIf="!currentInstance.anonymous">Censored by me?</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let instance of instances">
+            <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
+            <td *ngIf="!currentInstance.anonymous">
+              <a href="javascript:void(0)" (click)="toggleCensure(instance.domain)">
+                {{censoredByMe.indexOf(instance.domain) > -1 ? 'Yes' : 'No'}}
+              </a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer" *ngIf="maxPage > 1">
+        <ul class="pagination text-center">
+          <li class="paginate_button page-item previous" [class.disabled]="currentPage <= 1">
+            <a href="javascript:void(0)" class="page-link" (click)="goToPage(currentPage - 1)">
+              Previous
             </a>
-          </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-    <div class="card-footer" *ngIf="maxPage > 1">
-      <ul class="pagination text-center">
-        <li class="paginate_button page-item previous" [class.disabled]="currentPage <= 1">
-          <a href="javascript:void(0)" class="page-link" (click)="goToPage(currentPage - 1)">
-            Previous
-          </a>
-        </li>
-        <li *ngFor="let page of pages" class="paginate_button page-item" [class.active]="currentPage === page">
-          <a href="javascript:void(0)" class="page-link" (click)="goToPage(page)">{{page}}</a>
-        </li>
-      </ul>
+          </li>
+          <li *ngFor="let page of pages" class="paginate_button page-item" [class.active]="currentPage === page">
+            <a href="javascript:void(0)" class="page-link" (click)="goToPage(page)">{{page}}</a>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
-</div>
+</ng-template>

@@ -8,6 +8,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
 import {toPromise} from "../../../types/resolvable";
 import {SuccessResponse} from "../../../response/success.response";
+import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 
 @Component({
   selector: 'app-blacklisted-instances',
@@ -25,6 +26,7 @@ export class BlacklistedInstancesComponent implements OnInit {
   public maxPage = 1;
   public currentPage = 1;
   public pages: number[] = [];
+  public loading: boolean = true;
 
   constructor(
     private readonly titleService: TitleService,
@@ -33,6 +35,7 @@ export class BlacklistedInstancesComponent implements OnInit {
     private readonly activatedRoute: ActivatedRoute,
     private readonly authManager: AuthenticationManagerService,
     private readonly router: Router,
+    private readonly apiResponseHelper: ApiResponseHelperService,
   ) {
   }
 
@@ -41,16 +44,16 @@ export class BlacklistedInstancesComponent implements OnInit {
 
     if (!this.currentInstance.anonymous) {
       const response = await toPromise(this.api.getCensuresByInstances([this.currentInstance.name]));
-      if (!response.success) {
-        this.messageService.createError(`There was an api error: ${response.errorResponse!.message}`);
+      if (this.apiResponseHelper.handleErrors([response])) {
+        this.loading = false;
         return;
       }
       this.censoredByMe = response.successResponse!.instances.map(instance => instance.domain);
     }
 
     const response = await toPromise(this.api.getBlacklistedInstances());
-    if (!response.success) {
-      this.messageService.createError(`There was an api error: ${response.errorResponse!.message}`);
+    if (this.apiResponseHelper.handleErrors([response])) {
+      this.loading = false;
       return;
     }
     this.allInstances = response.successResponse!.instances;
@@ -58,6 +61,8 @@ export class BlacklistedInstancesComponent implements OnInit {
     for (let i = 1; i <= this.maxPage; ++i) {
       this.pages.push(i);
     }
+
+    this.loading = false;
 
     this.activatedRoute.queryParams.subscribe(query => {
       this.currentPage = query['page'] ? Number(query['page']) : 1;
@@ -68,6 +73,7 @@ export class BlacklistedInstancesComponent implements OnInit {
   public async toggleCensure(instance: string): Promise<void> {
     const censored: boolean = this.censoredByMe.indexOf(instance) > -1;
     if (censored) {
+      this.loading = true;
       const response: ApiResponse<SuccessResponse> = await toPromise(this.api.cancelCensure(instance));
       if (!response.success) {
         this.messageService.createError(`There was an api error: ${response.errorResponse!.message}`);
@@ -80,6 +86,7 @@ export class BlacklistedInstancesComponent implements OnInit {
 
     if (censored) {
       this.censoredByMe = this.censoredByMe.filter(endorsedInstance => endorsedInstance !== instance);
+      this.loading = false;
     }
   }
 

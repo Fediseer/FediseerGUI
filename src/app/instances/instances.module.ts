@@ -4,6 +4,7 @@ import {RouterModule, Routes} from "@angular/router";
 import { WhitelistedInstancesComponent } from './pages/whitelisted-instances/whitelisted-instances.component';
 import { InstanceDetailComponent } from './pages/instance-detail/instance-detail.component';
 import { BlacklistedInstancesComponent } from './pages/blacklisted-instances/blacklisted-instances.component';
+import {SharedModule} from "../shared/shared.module";
 
 const routes: Routes = [
   {
@@ -26,9 +27,10 @@ const routes: Routes = [
     InstanceDetailComponent,
     BlacklistedInstancesComponent
   ],
-  imports: [
-    CommonModule,
-    RouterModule.forChild(routes),
-  ]
+    imports: [
+        CommonModule,
+        RouterModule.forChild(routes),
+        SharedModule,
+    ]
 })
 export class InstancesModule { }

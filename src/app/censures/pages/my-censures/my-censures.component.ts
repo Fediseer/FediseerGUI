@@ -6,6 +6,8 @@ import {MessageService} from "../../../services/message.service";
 import {InstanceDetailResponse} from "../../../response/instance-detail.response";
 import {Observable} from "rxjs";
 import {Instance} from "../../../user/instance";
+import {toPromise} from "../../../types/resolvable";
+import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 
 @Component({
   selector: 'app-my-censures',
@@ -16,47 +18,49 @@ export class MyCensuresComponent implements OnInit {
   public instances: InstanceDetailResponse[] = [];
   public instance: Observable<Instance> = this.authManager.currentInstance;
   public guaranteed: boolean = false;
+  public loading: boolean = true;
 
   constructor(
     private readonly titleService: TitleService,
     private readonly authManager: AuthenticationManagerService,
     private readonly api: FediseerApiService,
     private readonly messageService: MessageService,
+    private readonly apiResponseHelper: ApiResponseHelperService,
   ) {
   }
 
   public async ngOnInit(): Promise<void> {
     this.titleService.title = `My censures`;
 
-    this.api.getCensuresByInstances([this.authManager.currentInstanceSnapshot.name]).subscribe(response => {
-      if (!response.success) {
-        this.messageService.createError(`There was an error: ${response.errorResponse!.message}`);
-        return;
-      }
+    const responses = await Promise.all([
+      toPromise(this.api.getCensuresByInstances([this.authManager.currentInstanceSnapshot.name])),
+      toPromise(this.api.getCurrentInstanceInfo()),
+    ])
 
-      this.instances = response.successResponse!.instances;
-    });
+    if (this.apiResponseHelper.handleErrors(responses)) {
+      this.loading = false;
+      return;
+    }
 
-    this.api.getCurrentInstanceInfo().subscribe(response => {
-      if (!response.success) {
-        this.messageService.createError(`There was an error: ${response.errorResponse!.message}`);
-        return;
-      }
+    this.instances = responses[0].successResponse!.instances;
+    this.guaranteed = responses[1].successResponse!.guarantor !== undefined;
 
-      this.guaranteed = response.successResponse!.guarantor !== undefined;
-    });
+    this.loading = false;
   }
 
   public async cancelCensure(instance: string): Promise<void> {
+    this.loading = true;
     this.api.cancelCensure(instance).subscribe(response => {
       if (!response.success) {
         this.messageService.createError(`There was an error: ${response.errorResponse!.message}`);
+        this.loading = false;
         return;
       }
 
       this.instances = this.instances.filter(
         censoredInstance => censoredInstance.domain !== instance,
       );
+      this.loading = false;
     });
   }
 }

@@ -6,7 +6,8 @@ import {InstanceDetailResponse} from "../../../response/instance-detail.response
 import {MessageService} from "../../../services/message.service";
 import {Observable} from "rxjs";
 import {Instance} from "../../../user/instance";
-import {toObservable} from "../../../types/resolvable";
+import {toObservable, toPromise} from "../../../types/resolvable";
+import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 
 @Component({
   selector: 'app-my-endorsements',
@@ -18,45 +19,41 @@ export class MyEndorsementsComponent implements OnInit {
   public endorsementsByMyInstance: InstanceDetailResponse[] = [];
   public instance: Observable<Instance> = this.authManager.currentInstance;
   public guaranteed: boolean = false;
+  public loading: boolean = true;
 
   constructor(
     private readonly titleService: TitleService,
     private readonly authManager: AuthenticationManagerService,
     private readonly api: FediseerApiService,
     private readonly messageService: MessageService,
+    private readonly apiResponseHelper: ApiResponseHelperService,
   ) {
   }
 
   public async ngOnInit(): Promise<void> {
     this.titleService.title = `My endorsements`;
-    this.api.getEndorsementsForInstance(this.authManager.currentInstanceSnapshot.name).subscribe(response => {
-      if (!response.success) {
-        this.messageService.createError(`There was an error: ${response.errorResponse!.message}`);
-        return;
-      }
 
-      this.endorsementsForMyInstance = response.successResponse!.instances;
-    });
-    this.api.getEndorsementsByInstance([this.authManager.currentInstanceSnapshot.name]).subscribe(response => {
-      if (!response.success) {
-        this.messageService.createError(`There was an error: ${response.errorResponse!.message}`);
-        return;
-      }
+    const responses = await Promise.all([
+      toPromise(this.api.getEndorsementsForInstance(this.authManager.currentInstanceSnapshot.name)),
+      toPromise(this.api.getEndorsementsByInstance([this.authManager.currentInstanceSnapshot.name])),
+      toPromise(this.api.getCurrentInstanceInfo()),
+    ]);
 
-      this.endorsementsByMyInstance = response.successResponse!.instances;
-    });
-    this.api.getCurrentInstanceInfo().subscribe(response => {
-      if (!response.success) {
-        this.messageService.createError(`There was an error: ${response.errorResponse!.message}`);
-        return;
-      }
+    if (this.apiResponseHelper.handleErrors(responses)) {
+      this.loading = false;
+      return;
+    }
 
-      this.guaranteed = response.successResponse!.guarantor !== undefined;
-    });
+    this.endorsementsForMyInstance = responses[0].successResponse!.instances;
+    this.endorsementsByMyInstance = responses[1].successResponse!.instances;
+    this.guaranteed = responses[2].successResponse!.guarantor !== undefined;
+    this.loading = false;
   }
 
   public async cancelEndorsement(instance: string) {
+    this.loading = true;
     this.api.cancelEndorsement(instance).subscribe(response => {
+      this.loading = false;
       if (!response.success) {
         this.messageService.createError(`There was an error: ${response.errorResponse!.message}`);
         return;

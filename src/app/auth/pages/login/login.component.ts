@@ -16,6 +16,7 @@ export class LoginComponent implements OnInit {
   public form = new FormGroup({
     apiKey: new FormControl<string>('', [Validators.required]),
   })
+  public loading: boolean = false;
 
   constructor(
     private readonly titleService: TitleService,
@@ -36,9 +37,11 @@ export class LoginComponent implements OnInit {
       return;
     }
 
+    this.loading = true;
     const apiKey = this.form.controls.apiKey.value!;
     this.api.getCurrentInstanceInfo(apiKey).subscribe(response => {
         if (!response.success) {
+          this.loading = false;
           this.messageService.createError('There was an error while logging in. Is the api key correct?');
           return;
         }

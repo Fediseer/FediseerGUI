@@ -15,6 +15,7 @@ export class ClaimInstanceComponent implements OnInit {
     admin: new FormControl<string>('', [Validators.required]),
     instance: new FormControl<string>('', [Validators.required]),
   })
+  public loading = false;
 
   constructor(
     private readonly titleService: TitleService,
@@ -34,12 +35,14 @@ export class ClaimInstanceComponent implements OnInit {
       return;
     }
 
+    this.loading = true;
     this.api.claimInstance(
       this.form.controls.instance.value!,
       this.form.controls.admin.value!,
     ).subscribe(response => {
       if (!response.success) {
         this.messageService.createError(`The api returned this error: ${response.errorResponse!.message}`);
+        this.loading = false;
         return;
       }
 

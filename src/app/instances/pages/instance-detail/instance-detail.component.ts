@@ -7,6 +7,7 @@ import {toPromise} from "../../../types/resolvable";
 import {MessageService} from "../../../services/message.service";
 import {InstanceDetailResponse} from "../../../response/instance-detail.response";
 import {InstanceListResponse} from "../../../response/instance-list.response";
+import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 
 @Component({
   selector: 'app-instance-detail',
@@ -20,6 +21,7 @@ export class InstanceDetailComponent implements OnInit {
   public endorsementsGiven: InstanceDetailResponse[] = [];
   public guaranteesGiven: InstanceDetailResponse[] = [];
   public detail: InstanceDetailResponse | null = null;
+  public loading: boolean = true;
 
   constructor(
     private readonly titleService: TitleService,
@@ -28,11 +30,14 @@ export class InstanceDetailComponent implements OnInit {
     private readonly activatedRoute: ActivatedRoute,
     private readonly router: Router,
     private readonly messageService: MessageService,
+    private readonly apiResponseHelper: ApiResponseHelperService,
   ) {
   }
 
   public async ngOnInit(): Promise<void> {
     this.activatedRoute.params.subscribe(async params => {
+      this.loading = true;
+
       this.censuresReceived = [];
       this.censuresGiven = [];
       this.endorsementsReceived = [];
@@ -61,11 +66,9 @@ export class InstanceDetailComponent implements OnInit {
       ];
 
       const responses = await Promise.all(promises);
-      for (const response of responses) {
-        if (!response.success) {
-          this.messageService.createError(`There was an api error: ${response.errorResponse!.message}`);
-          return;
-        }
+      if (this.apiResponseHelper.handleErrors(responses)) {
+        this.loading = false;
+        return;
       }
 
       this.censuresReceived = (<InstanceListResponse>responses[map.censuresReceived].successResponse).instances;
@@ -74,6 +77,8 @@ export class InstanceDetailComponent implements OnInit {
       this.endorsementsGiven = (<InstanceListResponse>responses[map.endorsementsGiven].successResponse).instances;
       this.guaranteesGiven = (<InstanceListResponse>responses[map.guaranteesGiven].successResponse).instances;
       this.detail = <InstanceDetailResponse>responses[map.detail].successResponse;
+
+      this.loading = false;
     });
   }
 }

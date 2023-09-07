@@ -15,6 +15,7 @@ export class CensorInstanceComponent implements OnInit {
     instance: new FormControl<string>('', [Validators.required]),
     reason: new FormControl<string>('', [Validators.required]),
   });
+  public loading: boolean = false;
 
   constructor(
     private readonly titleService: TitleService,
@@ -42,15 +43,18 @@ export class CensorInstanceComponent implements OnInit {
       return;
     }
 
+    this.loading = true;
     this.api.censorInstance(
       this.form.controls.instance.value!,
       this.form.controls.reason.value!,
     ).subscribe(response => {
       if (!response.success) {
+        this.loading = false;
         this.messageService.createError(`There was an api error: ${response.errorResponse!.message}`);
         return;
       }
 
+      this.loading = false;
       this.router.navigateByUrl('/censures/my').then(() => {
         this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully censored!`);
       });

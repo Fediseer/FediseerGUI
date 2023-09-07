@@ -14,6 +14,7 @@ export class EndorseInstanceComponent implements OnInit {
   public form = new FormGroup({
     instance: new FormControl<string>('', [Validators.required]),
   });
+  public loading: boolean = false;
 
   constructor(
     private readonly titleService: TitleService,
@@ -32,12 +33,15 @@ export class EndorseInstanceComponent implements OnInit {
       return;
     }
 
+    this.loading = true;
     this.api.endorseInstance(this.form.controls.instance.value!).subscribe(response => {
       if (!response.success) {
         this.messageService.createError(`There was an api error: ${response.errorResponse!.message}`);
+        this.loading = false;
         return;
       }
 
+      this.loading = false;
       this.router.navigateByUrl('/endorsements/my').then(() => {
         this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully endorsed!`);
       });
