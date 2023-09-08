@@ -27,8 +27,7 @@
       <!-- Sidebar user (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="info">
-          <a href="javascript:void(0)" class="d-block">
-            {{instance.name}}
+          <ng-template #badges>
             <div *ngIf="!instance.anonymous">
               <a routerLink="/guarantees/my" title="My guarantees">
                 <img *ngIf="guaranteesBadgeUrl" class="fediseer-badge" src="{{guaranteesBadgeUrl}}"
@@ -39,6 +38,13 @@
                      alt="Endorsements badge"/>
               </a>
             </div>
+          </ng-template>
+          <a href="javascript:void(0)" *ngIf="instance.anonymous" class="d-block">
+            {{instance.name}}
+          </a>
+          <a routerLink="/instances/detail/{{instance.name}}" *ngIf="!instance.anonymous" class="d-block">
+            {{instance.name}}
+            <ng-container *ngTemplateOutlet="badges"></ng-container>
           </a>
         </div>
       </div>
