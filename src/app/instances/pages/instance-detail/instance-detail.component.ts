@@ -17,7 +17,7 @@ import {NormalizedInstanceDetailResponse} from "../../../response/normalized-ins
 })
 export class InstanceDetailComponent implements OnInit {
   public censuresReceived: NormalizedInstanceDetailResponse[] = [];
-  public censuresGiven: InstanceDetailResponse[] = [];
+  public censuresGiven: NormalizedInstanceDetailResponse[] = [];
   public endorsementsReceived: InstanceDetailResponse[] = [];
   public endorsementsGiven: InstanceDetailResponse[] = [];
   public guaranteesGiven: InstanceDetailResponse[] = [];
@@ -74,7 +74,8 @@ export class InstanceDetailComponent implements OnInit {
 
       this.censuresReceived = (<InstanceListResponse<InstanceDetailResponse>>responses[map.censuresReceived].successResponse).instances
         .map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance));
-      this.censuresGiven = (<InstanceListResponse<InstanceDetailResponse>>responses[map.censuresGiven].successResponse).instances;
+      this.censuresGiven = (<InstanceListResponse<InstanceDetailResponse>>responses[map.censuresGiven].successResponse).instances
+        .map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance));
       this.endorsementsReceived = (<InstanceListResponse<InstanceDetailResponse>>responses[map.endorsementsReceived].successResponse).instances;
       this.endorsementsGiven = (<InstanceListResponse<InstanceDetailResponse>>responses[map.endorsementsGiven].successResponse).instances;
       this.guaranteesGiven = (<InstanceListResponse<InstanceDetailResponse>>responses[map.guaranteesGiven].successResponse).instances;

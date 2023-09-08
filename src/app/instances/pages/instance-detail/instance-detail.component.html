@@ -105,11 +105,18 @@
             <thead>
             <tr>
               <th>Instance</th>
+              <th>Reasons</th>
             </tr>
             </thead>
             <tbody>
             <tr *ngFor="let instance of censuresGiven">
               <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
+              <td>
+                <ul *ngIf="instance.censureReasons.length">
+                  <li *ngFor="let reason of instance.censureReasons">{{reason}}</li>
+                </ul>
+                <code *ngIf="!instance.censureReasons.length">N/A</code>
+              </td>
             </tr>
             </tbody>
           </table>
