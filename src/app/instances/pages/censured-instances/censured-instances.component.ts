@@ -146,6 +146,8 @@ export class CensuredInstancesComponent implements OnInit {
   }
 
   public async loadInstances(redirect: boolean = true): Promise<void> {
+    this.loading = true;
+
     let sourceInstances = this.filterForm.controls.instances.value ?? [this.filterInstanceSpecialValueAll];
     if (!sourceInstances.length) {
       sourceInstances.push(this.filterInstanceSpecialValueAll);
@@ -186,7 +188,6 @@ export class CensuredInstancesComponent implements OnInit {
       }
     }
 
-    this.loading = true;
     const response = await toPromise(this.api.getCensuresByInstances(sourceInstances));
     if (this.apiResponseHelper.handleErrors([response])) {
       this.loading = false;
