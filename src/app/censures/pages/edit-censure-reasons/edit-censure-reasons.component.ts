@@ -35,7 +35,7 @@ export class EditCensureReasonsComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.titleService.title = 'Censure an instance';
+    this.titleService.title = 'Update censure reasons';
 
     this.activatedRoute.params.subscribe(async params => {
       const targetInstance = params['instance'] as string;
