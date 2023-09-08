@@ -10,6 +10,7 @@ import {NavigationEnd, Router} from "@angular/router";
 import {FediseerApiService} from "./services/fediseer-api.service";
 import {DOCUMENT} from "@angular/common";
 import {environment} from "../environments/environment";
+import {ApiResponseHelperService} from "./services/api-response-helper.service";
 
 @Component({
   selector: 'app-root',
@@ -33,6 +34,7 @@ export class AppComponent implements OnInit {
 
   public endorsementsBadgeUrl: string | null = null;
   public guaranteesBadgeUrl: string | null = null;
+  public software: string | null = null;
 
   constructor(
     private readonly titleService: TitleService,
@@ -40,6 +42,7 @@ export class AppComponent implements OnInit {
     private readonly messageService: MessageService,
     private readonly router: Router,
     private readonly api: FediseerApiService,
+    private readonly apiResponseHelper: ApiResponseHelperService,
     @Inject(DOCUMENT) private readonly document: Document,
   ) {
   }
@@ -73,11 +76,20 @@ export class AppComponent implements OnInit {
     this.authenticationManager.currentInstance.subscribe(instance => {
       if (instance.anonymous) {
         this.endorsementsBadgeUrl = null;
+        this.guaranteesBadgeUrl = null;
         return;
       }
 
       this.endorsementsBadgeUrl = this.api.endorsementsBadgeUrl;
       this.guaranteesBadgeUrl = this.api.guaranteesBadgeUrl;
+
+      this.api.getCurrentInstanceInfo().subscribe(response => {
+        if (this.apiResponseHelper.handleErrors([response])) {
+          return;
+        }
+
+        this.software = response.successResponse!.software.toLowerCase();
+      });
     });
   }
 
