@@ -31,6 +31,7 @@ export class AppComponent implements OnInit {
 
   public errorNotifications: Resolvable<string>[] = [];
   public successNotifications: Resolvable<string>[] = [];
+  public warningNotifications: Resolvable<string>[] = [];
 
   public endorsementsBadgeUrl: string | null = null;
   public guaranteesBadgeUrl: string | null = null;
@@ -61,6 +62,9 @@ export class AppComponent implements OnInit {
           break;
         case MessageType.Success:
           this.successNotifications.push(message.message);
+          break;
+        case MessageType.Warning:
+          this.warningNotifications.push(message.message);
           break;
       }
     });

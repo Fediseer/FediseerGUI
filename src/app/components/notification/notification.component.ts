@@ -4,6 +4,7 @@ import {Observable, of} from "rxjs";
 export enum NotificationType {
   Error,
   Success,
+  Warning,
 }
 
 @Component({
@@ -28,6 +29,13 @@ export class NotificationComponent {
   }
 
   public get title(): Observable<string> {
-    return of(this.kind === NotificationType.Success ? "Success" : "Error");
+    switch (this.kind) {
+      case NotificationType.Error:
+        return of('Error');
+      case NotificationType.Success:
+        return of('Success');
+      case NotificationType.Warning:
+        return of('Warning');
+    }
   }
 }

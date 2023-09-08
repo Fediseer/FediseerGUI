@@ -8,6 +8,7 @@ import {ErrorResponse} from "../response/error.response";
 import {InstanceListResponse} from "../response/instance-list.response";
 import {SuccessResponse} from "../response/success.response";
 import {SuspiciousInstanceDetailResponse} from "../response/suspicious-instance-detail.response";
+import {NormalizedInstanceDetailResponse} from "../response/normalized-instance-detail.response";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -19,6 +20,7 @@ enum HttpMethod {
   Get = 'GET',
   Put = 'PUT',
   Delete = 'DELETE',
+  Patch = 'PATCH',
 }
 
 @Injectable({
@@ -106,6 +108,14 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Put, `censures/${instance}`, body);
   }
 
+  public updateCensure(instance: string, reason: string | null): Observable<ApiResponse<SuccessResponse>> {
+    const body: {[key: string]: string} = {};
+    if (reason) {
+      body['reason'] = reason;
+    }
+    return this.sendRequest(HttpMethod.Patch, `censures/${instance}`, body);
+  }
+
   public getWhitelistedInstances(): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     return this.sendRequest(HttpMethod.Get, `whitelist`);
   }
@@ -127,6 +137,29 @@ export class FediseerApiService {
 
         const instances = response.successResponse!.instances.map(instance => instance.domain);
         return this.getCensuresByInstances(instances);
+      }),
+    );
+  }
+
+  public getUsedReasons(instances: string[] = []): Observable<string[] | null> {
+    const result = instances.length > 0 ? this.getCensuresByInstances(instances) : this.getCensuredInstances();
+
+    return result.pipe(
+      map (response => {
+        if (!response.success) {
+          return null;
+        }
+
+        const instances = response.successResponse!.instances
+          .map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance));
+
+        let reasons: string[] = [];
+
+        for (const instance of instances) {
+          reasons = [...reasons, ...instance.unmergedCensureReasons];
+        }
+
+        return [...new Set(reasons)];
       }),
     );
   }

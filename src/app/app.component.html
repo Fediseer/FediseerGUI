@@ -170,6 +170,11 @@
               [message]="(message | toObservable | async)!"
             ></app-notification>
             <app-notification
+              *ngFor="let message of warningNotifications"
+              [kind]="NotificationType.Warning"
+              [message]="(message | toObservable | async)!"
+            ></app-notification>
+            <app-notification
               *ngFor="let message of errorNotifications"
               [kind]="NotificationType.Error"
               [message]="(message | toObservable | async)!"

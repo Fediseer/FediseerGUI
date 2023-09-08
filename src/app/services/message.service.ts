@@ -5,6 +5,7 @@ import {Observable} from "rxjs";
 export enum MessageType {
   Success,
   Error,
+  Warning,
 }
 
 export interface Message {
@@ -31,6 +32,10 @@ export class MessageService {
 
   public createSuccess(message: string): void {
     this.create(message, MessageType.Success);
+  }
+
+  public createWarning(message: string): void {
+    this.create(message, MessageType.Warning);
   }
 
   public get messageReceived(): Observable<Message> {

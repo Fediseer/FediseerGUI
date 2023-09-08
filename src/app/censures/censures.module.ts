@@ -7,6 +7,7 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {SharedModule} from "../shared/shared.module";
 import { SynchronizeLemmyComponent } from './pages/synchronize-lemmy/synchronize-lemmy.component';
 import {Guards} from "../guards/guards";
+import { EditCensureReasonsComponent } from './pages/edit-censure-reasons/edit-censure-reasons.component';
 
 const routes: Routes = [
   {
@@ -23,14 +24,20 @@ const routes: Routes = [
     path: 'synchronize/lemmy',
     component: SynchronizeLemmyComponent,
     canActivate: [Guards.isLoggedIn()]
-  }
+  },
+  {
+    path: 'my/edit/:instance',
+    component: EditCensureReasonsComponent,
+    canActivate: [Guards.isLoggedIn()],
+  },
 ];
 
 @NgModule({
   declarations: [
     MyCensuresComponent,
     CensureInstanceComponent,
-    SynchronizeLemmyComponent
+    SynchronizeLemmyComponent,
+    EditCensureReasonsComponent
   ],
     imports: [
         CommonModule,

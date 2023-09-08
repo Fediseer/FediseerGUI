@@ -4,9 +4,7 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-body">
-        <p>Censuring means that you strongly disapprove of an instance. For more information visit the <a routerLink="/glossary">Glossary</a>.</p>
-        <p><strong>You can do this only if your instance is guaranteed by some other instance.</strong></p>
-        <form [formGroup]="form" (submit)="doCensure()">
+        <form [formGroup]="form" (submit)="updateReasons()">
           <div class="form-group">
             <label for="inputInstance">Instance to censure</label>
             <input class="form-control" type="text" id="inputInstance" formControlName="instance" />
@@ -17,7 +15,7 @@
               <option *ngFor="let option of availableReasons" [value]="option">{{option}}</option>
             </select>
           </div>
-          <button type="submit" class="btn btn-primary">Censure</button>
+          <button type="submit" class="btn btn-primary">Update</button>
         </form>
       </div>
     </div>

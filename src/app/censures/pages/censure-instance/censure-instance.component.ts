@@ -4,6 +4,8 @@ import {TitleService} from "../../../services/title.service";
 import {MessageService} from "../../../services/message.service";
 import {FediseerApiService} from "../../../services/fediseer-api.service";
 import {ActivatedRoute, Router} from "@angular/router";
+import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
+import {toPromise} from "../../../types/resolvable";
 
 @Component({
   selector: 'app-censure-instance',
@@ -13,9 +15,10 @@ import {ActivatedRoute, Router} from "@angular/router";
 export class CensureInstanceComponent implements OnInit {
   public form = new FormGroup({
     instance: new FormControl<string>('', [Validators.required]),
-    reason: new FormControl<string>(''),
+    reasons: new FormControl<string[]>([]),
   });
-  public loading: boolean = false;
+  public loading: boolean = true;
+  public availableReasons: string[] = [];
 
   constructor(
     private readonly titleService: TitleService,
@@ -23,6 +26,7 @@ export class CensureInstanceComponent implements OnInit {
     private readonly api: FediseerApiService,
     private readonly router: Router,
     private readonly activatedRoute: ActivatedRoute,
+    private readonly authManager: AuthenticationManagerService,
   ) {
   }
   public async ngOnInit(): Promise<void> {
@@ -35,6 +39,15 @@ export class CensureInstanceComponent implements OnInit {
 
       this.form.patchValue({instance: query['instance']});
     });
+    let availableReasons = await toPromise(this.api.getUsedReasons([
+      this.authManager.currentInstanceSnapshot.name,
+    ]));
+    if (availableReasons === null) {
+      this.messageService.createWarning(`Couldn't get list of reasons you've used previously, autocompletion won't work.`);
+      availableReasons = [];
+    }
+    this.availableReasons = availableReasons;
+    this.loading = false;
   }
 
   public async doCensure(): Promise<void> {
@@ -46,7 +59,7 @@ export class CensureInstanceComponent implements OnInit {
     this.loading = true;
     this.api.censureInstance(
       this.form.controls.instance.value!,
-      this.form.controls.reason.value ?? null,
+      this.form.controls.reasons.value ? this.form.controls.reasons.value!.join(',') : null,
     ).subscribe(response => {
       if (!response.success) {
         this.loading = false;

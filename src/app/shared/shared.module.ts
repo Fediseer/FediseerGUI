@@ -4,6 +4,7 @@ import {ToObservablePipe} from "./pipes/to-observable.pipe";
 import { LoaderComponent } from './components/loader/loader.component';
 import { YesNoComponent } from './components/yes-no/yes-no.component';
 import { IterableEnumPipe } from './pipes/iterable-enum.pipe';
+import { TomSelectDirective } from './directives/tom-select.directive';
 
 
 
@@ -13,12 +14,14 @@ import { IterableEnumPipe } from './pipes/iterable-enum.pipe';
     LoaderComponent,
     YesNoComponent,
     IterableEnumPipe,
+    TomSelectDirective,
   ],
   exports: [
     ToObservablePipe,
     LoaderComponent,
     YesNoComponent,
-    IterableEnumPipe
+    IterableEnumPipe,
+    TomSelectDirective
   ],
   imports: [
     CommonModule

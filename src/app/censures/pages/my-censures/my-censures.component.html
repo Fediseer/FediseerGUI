@@ -15,9 +15,9 @@
           <table class="table table-bordered">
             <thead>
             <tr>
-              <th>{{ "Instance" }}</th>
-              <th>{{"Reasons"}}</th>
-              <th>{{"Cancel"}}</th>
+              <th>Instance</th>
+              <th>Reasons</th>
+              <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -40,6 +40,8 @@
                 </ul>
               </td>
               <td>
+                <a routerLink="/censures/my/edit/{{instance.domain}}" type="button" class="btn btn-primary">Edit</a>
+                &nbsp;
                 <button type="button" class="btn btn-danger" (click)="cancelCensure(instance.domain)">Cancel</button>
               </td>
             </tr>
