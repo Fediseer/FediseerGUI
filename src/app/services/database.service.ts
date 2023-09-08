@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {Instance} from "../user/instance";
 import {SynchronizationMode, SynchronizeSettings} from "../types/synchronize-settings";
+import {CensureListFilters} from "../types/censure-list-filters";
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,7 @@ export class DatabaseService {
   private readonly storedInstanceKey = 'instance';
   private readonly lemmySynchronizationSettingsKey = 'sync_settings_lemmy';
   private readonly lemmyPasswordKey = 'lemmy_password';
+  private readonly censureListFiltersKey = 'censure_list_filters';
 
   public getStoredInstance(): Instance | null {
     const stored = localStorage.getItem(this.storedInstanceKey);
@@ -50,5 +52,25 @@ export class DatabaseService {
 
   public setLemmySynchronizationSettings(settings: SynchronizeSettings): void {
     localStorage.setItem(this.lemmySynchronizationSettingsKey, JSON.stringify(settings));
+  }
+
+  public get censureListFilters(): CensureListFilters {
+    const stored = localStorage.getItem(this.censureListFiltersKey);
+    if (stored !== null) {
+      return JSON.parse(stored);
+    }
+
+    return {
+      instances: [],
+      onlyMatching: false,
+      matchingReasons: [],
+      includeGuaranteed: false,
+      includeEndorsed: false,
+      recursive: false,
+    };
+  }
+
+  public set censureListFilters(filters: CensureListFilters) {
+    localStorage.setItem(this.censureListFiltersKey, JSON.stringify(filters));
   }
 }

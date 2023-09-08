@@ -11,6 +11,9 @@ import {toPromise} from "../../../types/resolvable";
 import {SuccessResponse} from "../../../response/success.response";
 import {InstanceDetailResponse} from "../../../response/instance-detail.response";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
+import {FormControl, FormGroup} from "@angular/forms";
+import {debounceTime} from "rxjs";
+import {DatabaseService} from "../../../services/database.service";
 
 @Component({
   selector: 'app-censured-instances',
@@ -19,6 +22,8 @@ import {NormalizedInstanceDetailResponse} from "../../../response/normalized-ins
 })
 export class CensuredInstancesComponent implements OnInit {
   private readonly perPage = 30;
+
+  public readonly filterInstanceSpecialValueAll = '__all__';
 
   private allInstances: NormalizedInstanceDetailResponse[] = [];
 
@@ -29,6 +34,16 @@ export class CensuredInstancesComponent implements OnInit {
   public currentPage = 1;
   public pages: number[] = [];
   public loading: boolean = true;
+  public allWhitelistedInstances: InstanceDetailResponse[] = [];
+
+  public filterForm = new FormGroup({
+    instances: new FormControl<string[]>([this.filterInstanceSpecialValueAll]),
+    includeEndorsed: new FormControl<boolean>(false),
+    includeGuaranteed: new FormControl<boolean>(false),
+    recursive: new FormControl<boolean>(true),
+    onlyMatching: new FormControl<boolean>(false),
+    matchingReasons: new FormControl<string[]>([]),
+  });
 
   constructor(
     private readonly titleService: TitleService,
@@ -38,6 +53,7 @@ export class CensuredInstancesComponent implements OnInit {
     private readonly authManager: AuthenticationManagerService,
     private readonly router: Router,
     private readonly apiResponseHelper: ApiResponseHelperService,
+    private readonly database: DatabaseService,
   ) {
   }
 
@@ -53,33 +69,51 @@ export class CensuredInstancesComponent implements OnInit {
       this.censuredByMe = response.successResponse!.instances.map(instance => instance.domain);
     }
 
-    const response = await toPromise(this.api.getCensuredInstances());
-    if (this.apiResponseHelper.handleErrors([response])) {
+    const allWhitelistedInstancesResponse = await toPromise(this.api.getWhitelistedInstances());
+    if (this.apiResponseHelper.handleErrors([allWhitelistedInstancesResponse])) {
       this.loading = false;
       return;
     }
-    this.allInstances = response.successResponse!.instances.map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance))
-      .sort((a, b) => {
-        const countA = a.unmergedCensureReasons.length;
-        const countB = b.unmergedCensureReasons.length;
+    this.allWhitelistedInstances = allWhitelistedInstancesResponse.successResponse!.instances;
 
-        if (countA === countB) {
-          return 0;
-        }
-
-        return countA > countB ? -1 : 1;
-      });
-    this.titleService.title = `Censured instances (${this.allInstances.length})`;
-    this.maxPage = Math.ceil(this.allInstances.length / this.perPage);
-    for (let i = 1; i <= this.maxPage; ++i) {
-      this.pages.push(i);
+    const storedFilters = this.database.censureListFilters;
+    if (!storedFilters.instances.length) {
+      storedFilters.instances.push(this.filterInstanceSpecialValueAll);
     }
 
-    this.loading = false;
+    this.filterForm.valueChanges.pipe(
+      debounceTime(500),
+    ).subscribe(values => {
+      this.database.censureListFilters = {
+        instances: values.instances ?? [this.filterInstanceSpecialValueAll],
+        includeEndorsed: values.includeEndorsed ?? false,
+        includeGuaranteed: values.includeGuaranteed ?? false,
+        matchingReasons: values.matchingReasons ?? [],
+        onlyMatching: values.onlyMatching ?? false,
+        recursive: values.recursive ?? false,
+      };
+      if (!values.includeGuaranteed && !values.includeEndorsed && !this.filterForm.controls.recursive.disabled) {
+        this.filterForm.controls.recursive.disable();
+      }
+      if ((values.includeGuaranteed || values.includeEndorsed) && this.filterForm.controls.recursive.disabled) {
+        this.filterForm.controls.recursive.enable();
+      }
+    });
+
+    this.filterForm.patchValue({
+      instances: storedFilters.instances,
+      onlyMatching: storedFilters.onlyMatching,
+      matchingReasons: storedFilters.matchingReasons,
+      includeGuaranteed: storedFilters.includeGuaranteed,
+      includeEndorsed: storedFilters.includeEndorsed,
+      recursive: storedFilters.recursive,
+    });
+
+    await this.loadInstances(false);
 
     this.activatedRoute.queryParams.subscribe(query => {
       this.currentPage = query['page'] ? Number(query['page']) : 1;
-      this.instances = this.allInstances.slice((this.currentPage - 1) * this.perPage, this.currentPage * this.perPage);
+      this.loadPage();
     });
   }
 
@@ -109,5 +143,84 @@ export class CensuredInstancesComponent implements OnInit {
       queryParams: {page: page},
       queryParamsHandling: 'merge',
     });
+  }
+
+  public async loadInstances(redirect: boolean = true): Promise<void> {
+    let sourceInstances = this.filterForm.controls.instances.value ?? [this.filterInstanceSpecialValueAll];
+    if (!sourceInstances.length) {
+      sourceInstances.push(this.filterInstanceSpecialValueAll);
+    }
+    if (sourceInstances.indexOf(this.filterInstanceSpecialValueAll) > -1) {
+      sourceInstances = this.allWhitelistedInstances.map(instance => instance.domain);
+    } else {
+      const allInstancesString = this.allWhitelistedInstances.map(instance => instance.domain);
+      sourceInstances = sourceInstances.filter(instance => allInstancesString.indexOf(instance) > -1);
+      if (this.filterForm.controls.includeEndorsed.value) {
+        const endorsedResponse = await toPromise(this.api.getEndorsementsByInstance(sourceInstances));
+        if (this.apiResponseHelper.handleErrors([endorsedResponse])) {
+          this.loading = false;
+          return;
+        }
+        sourceInstances = [...new Set([
+          ...sourceInstances,
+          ...endorsedResponse.successResponse!.instances.map(instance => instance.domain)
+        ])];
+      }
+      if (this.filterForm.controls.includeGuaranteed.value) {
+        const guaranteed = await Promise.all(sourceInstances.map(async sourceInstance => {
+          const guaranteedResponse = await toPromise(this.api.getGuaranteesByInstance(sourceInstance));
+          if (this.apiResponseHelper.handleErrors([guaranteedResponse])) {
+            this.loading = false;
+            return [sourceInstance];
+          }
+          return [
+            sourceInstance,
+            ...guaranteedResponse.successResponse!.instances.map(instance => instance.domain),
+          ];
+        }));
+
+        sourceInstances = [...new Set([
+          ...sourceInstances,
+          ...(<string[]>guaranteed.flat(Infinity)),
+        ])];
+      }
+    }
+
+    this.loading = true;
+    const response = await toPromise(this.api.getCensuresByInstances(sourceInstances));
+    if (this.apiResponseHelper.handleErrors([response])) {
+      this.loading = false;
+      return;
+    }
+    this.allInstances = response.successResponse!.instances.map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance))
+      .sort((a, b) => {
+        const countA = a.unmergedCensureReasons.length;
+        const countB = b.unmergedCensureReasons.length;
+
+        if (countA === countB) {
+          return 0;
+        }
+
+        return countA > countB ? -1 : 1;
+      });
+    this.titleService.title = `Censured instances (${this.allInstances.length})`;
+    this.maxPage = Math.ceil(this.allInstances.length / this.perPage);
+    this.pages = [];
+    for (let i = 1; i <= this.maxPage; ++i) {
+      this.pages.push(i);
+    }
+    if (redirect) {
+      await this.router.navigate([], {
+        relativeTo: this.activatedRoute,
+        queryParams: {page: 1},
+        queryParamsHandling: 'merge',
+      });
+    }
+    await this.loadPage();
+    this.loading = false;
+  }
+
+  private async loadPage(): Promise<void> {
+    this.instances = this.allInstances.slice((this.currentPage - 1) * this.perPage, this.currentPage * this.perPage);
   }
 }

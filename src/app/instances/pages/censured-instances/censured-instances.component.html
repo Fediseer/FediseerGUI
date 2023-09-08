@@ -4,6 +4,52 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-body">
+
+        <!-- filters -->
+        <form [formGroup]="filterForm" (submit)="loadInstances()">
+          <div class="row">
+            <div class="col-md-6 col-sm-12">
+              <div class="form-group">
+                <label for="inputFilterInstances">Include instances censured by</label>
+                <select id="inputFilterInstances" tom-select [maxItems]="null" multiple formControlName="instances">
+                  <option [value]="filterInstanceSpecialValueAll">All whitelisted instances</option>
+                  <option *ngFor="let option of allWhitelistedInstances" [value]="option.domain">{{option.domain}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-12">
+              <div class="form-group">
+                <label aria-hidden="true"></label>
+                <div class="custom-control custom-switch">
+                  <input class="custom-control-input" type="checkbox" id="inputIncludeEndorsed" formControlName="includeEndorsed" />
+                  <label for="inputIncludeEndorsed" class="custom-control-label">Include endorsed instances</label>
+                  <app-tooltip text="By checking this switch you will include not only censures by all instances you have selected, but also censure by instances your selected instances have endorsed." />
+                </div>
+                <div class="custom-control custom-switch">
+                  <input class="custom-control-input" type="checkbox" id="inputIncludeGuaranteed" formControlName="includeGuaranteed" />
+                  <label for="inputIncludeGuaranteed" class="custom-control-label">Include guaranteed instances</label>
+                  <app-tooltip text="By checking this switch you will include not only censures by all instances you have selected, but also censure by instances they have guaranteed for." />
+                </div>
+<!--                <div class="custom-control custom-switch">-->
+<!--                  <input class="custom-control-input" type="checkbox" id="inputRecursive" formControlName="recursive" />-->
+<!--                  <label for="inputRecursive" class="custom-control-label">Recursive</label>-->
+<!--                  <app-tooltip text="By checking this switch you will make the previous options recursive - meaning that if you choose to include guaranteed instances and choose the recursive option as well, you will form a chain starting with your selected instances and continuing with every instance any instance in the chain has guaranteed for. The same applies for endorsements." />-->
+<!--                </div>-->
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3">
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Filter</button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <!-- end filters -->
+
+        <hr>
+
         <p *ngIf="!currentInstance.anonymous">
           If you're looking for managing of your own censure list, go to <a routerLink="/censures/my">your censures</a>.
         </p>

@@ -6,6 +6,7 @@ import { InstanceDetailComponent } from './pages/instance-detail/instance-detail
 import { SuspiciousInstancesComponent } from './pages/suspicious-instances/suspicious-instances.component';
 import {SharedModule} from "../shared/shared.module";
 import { CensuredInstancesComponent } from './pages/censured-instances/censured-instances.component';
+import {ReactiveFormsModule} from "@angular/forms";
 
 const routes: Routes = [
   {
@@ -33,10 +34,11 @@ const routes: Routes = [
     SuspiciousInstancesComponent,
     CensuredInstancesComponent
   ],
-    imports: [
-        CommonModule,
-        RouterModule.forChild(routes),
-        SharedModule,
-    ]
+  imports: [
+    CommonModule,
+    RouterModule.forChild(routes),
+    SharedModule,
+    ReactiveFormsModule,
+  ]
 })
 export class InstancesModule { }
