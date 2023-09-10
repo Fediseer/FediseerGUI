@@ -21,6 +21,8 @@ export class SynchronizeLemmyComponent implements OnInit {
   protected readonly SynchronizationMode = SynchronizationMode;
   protected readonly Number = Number;
 
+  private cache: {[key in SynchronizationMode]?: string[] | null} = {};
+
   public originallyBlockedInstances: string[] = [];
 
   public form = new FormGroup({
@@ -32,6 +34,8 @@ export class SynchronizeLemmyComponent implements OnInit {
     mode: new FormControl<SynchronizationMode>(SynchronizationMode.Own, [Validators.required]),
   });
   public loading = true;
+  public added: string[] = [];
+  public removed: string[] = [];
 
   constructor(
     private readonly database: DatabaseService,
@@ -73,7 +77,29 @@ export class SynchronizeLemmyComponent implements OnInit {
         purge: values.purgeBlacklist ?? false,
         mode: values.mode ?? SynchronizationMode.Own,
       });
-    })
+    });
+    this.form.controls.mode.valueChanges.subscribe(mode => {
+      if (mode === null) {
+        return;
+      }
+      this.loadDiffs(mode);
+    });
+    if (this.form.controls.mode.value) {
+      await this.loadDiffs(this.form.controls.mode.value);
+    }
+  }
+
+  private async loadDiffs(mode: SynchronizationMode) {
+    this.added = [];
+    this.removed = [];
+
+    const instancesToBan = await this.getInstancesToBan(mode);
+    if (instancesToBan === null) {
+      return;
+    }
+
+    this.added = instancesToBan.filter(item => !this.originallyBlockedInstances.includes(item));
+    this.removed = this.originallyBlockedInstances.filter(item => !instancesToBan.includes(item));
   }
 
   private async getJwt(): Promise<string | null> {
@@ -169,25 +195,8 @@ export class SynchronizeLemmyComponent implements OnInit {
         return;
       }
 
-      let sourceFrom: string[];
-      switch (mode) {
-        case SynchronizationMode.Own:
-          sourceFrom = [myInstance];
-          break;
-        case SynchronizationMode.Endorsed:
-          sourceFrom = await this.getEndorsedCensureChain(myInstance);
-          break;
-        default:
-          throw new Error(`Unsupported mode: ${mode}`);
-      }
-
-      if (!sourceFrom.length) {
-        this.messageService.createError('No instances to get censures from.');
-        return;
-      }
-
       const originalInstances = await this.getBlockedInstancesFromSource(myInstance);
-      const instancesToBan = await this.getCensuresByInstances(sourceFrom);
+      const instancesToBan = await this.getInstancesToBan(mode);
       if (instancesToBan === null || originalInstances === null) {
         return;
       }
@@ -206,5 +215,31 @@ export class SynchronizeLemmyComponent implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+
+  private async getInstancesToBan(mode: SynchronizationMode): Promise<string[] | null> {
+    const myInstance = this.authManager.currentInstanceSnapshot.name;
+    this.cache[mode] ??= await (async () => {
+      let sourceFrom: string[];
+      switch (mode) {
+        case SynchronizationMode.Own:
+          sourceFrom = [myInstance];
+          break;
+        case SynchronizationMode.Endorsed:
+          sourceFrom = await this.getEndorsedCensureChain(myInstance);
+          break;
+        default:
+          throw new Error(`Unsupported mode: ${mode}`);
+      }
+
+      if (!sourceFrom.length) {
+        this.messageService.createError('No instances to get censures from.');
+        return [];
+      }
+
+      return await this.getCensuresByInstances(sourceFrom);
+    })();
+
+    return this.cache[mode]!;
   }
 }
