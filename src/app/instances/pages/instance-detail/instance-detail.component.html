@@ -54,6 +54,23 @@
               <code *ngIf="!detail.guarantor">N/A</code>
             </td>
           </tr>
+          <tr>
+            <td><strong>Amount of system administrators</strong></td>
+            <td>
+              <ng-container *ngIf="detail.sysadmins">{{detail.sysadmins}}</ng-container>
+              <code *ngIf="!detail.sysadmins">N/A</code>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong>Amount of moderators</strong>
+              <app-tooltip text="This includes only moderators who are part of the instance staff." />
+            </td>
+            <td>
+              <ng-container *ngIf="detail.moderators">{{detail.moderators}}</ng-container>
+              <code *ngIf="!detail.moderators">N/A</code>
+            </td>
+          </tr>
           </tbody>
         </table>
       </div>
