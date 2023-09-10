@@ -20,6 +20,7 @@ import {ApiResponseHelperService} from "./services/api-response-helper.service";
 export class AppComponent implements OnInit {
   protected readonly NotificationType = NotificationType;
   protected readonly maintainer: string = environment.maintainer!;
+  protected readonly appVersion: string = environment.appVersion;
 
   @ViewChild('sideMenu') private sideMenu: ElementRef<HTMLElement> | null = null;
   @ViewChild('sideMenuToggle') private sideMenuToggle: ElementRef<HTMLAnchorElement> | null = null;
