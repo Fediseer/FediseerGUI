@@ -14,6 +14,7 @@
             <th>Guarantor</th>
             <th>Claimed?</th>
             <th>Endorsements</th>
+            <th>Admins / moderators</th>
             <th *ngIf="!currentInstance.anonymous">Endorsed by me?</th>
           </tr>
           </thead>
@@ -29,6 +30,18 @@
             </td>
             <td>
               {{instance.endorsements}}
+            </td>
+            <td>
+              <code *ngIf="instance.sysadmins === null && instance.moderators === null; else detailedAdminsModerators">
+                N/A
+              </code>
+              <ng-template #detailedAdminsModerators>
+                <code *ngIf="instance.sysadmins === null">N/A</code>
+                <ng-container *ngIf="instance.sysadmins !== null">{{instance.sysadmins}}</ng-container>
+                /
+                <code *ngIf="instance.moderators === null">N/A</code>
+                <ng-container *ngIf="instance.moderators !== null">{{instance.moderators}}</ng-container>
+              </ng-template>
             </td>
             <td *ngIf="!currentInstance.anonymous">
               <a href="javascript:void(0)" (click)="toggleEndorse(instance.domain)">

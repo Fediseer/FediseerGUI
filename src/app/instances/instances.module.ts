@@ -7,6 +7,8 @@ import { SuspiciousInstancesComponent } from './pages/suspicious-instances/suspi
 import {SharedModule} from "../shared/shared.module";
 import { CensuredInstancesComponent } from './pages/censured-instances/censured-instances.component';
 import {ReactiveFormsModule} from "@angular/forms";
+import { EditOwnInstanceComponent } from './pages/edit-own-instance/edit-own-instance.component';
+import {Guards} from "../guards/guards";
 
 const routes: Routes = [
   {
@@ -24,6 +26,11 @@ const routes: Routes = [
   {
     path: 'detail/:instance',
     component: InstanceDetailComponent,
+  },
+  {
+    path: 'edit/my',
+    component: EditOwnInstanceComponent,
+    canActivate: [Guards.isLoggedIn()],
   }
 ];
 
@@ -32,7 +39,8 @@ const routes: Routes = [
     WhitelistedInstancesComponent,
     InstanceDetailComponent,
     SuspiciousInstancesComponent,
-    CensuredInstancesComponent
+    CensuredInstancesComponent,
+    EditOwnInstanceComponent
   ],
   imports: [
     CommonModule,

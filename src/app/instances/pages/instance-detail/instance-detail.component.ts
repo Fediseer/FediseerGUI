@@ -23,6 +23,7 @@ export class InstanceDetailComponent implements OnInit {
   public guaranteesGiven: InstanceDetailResponse[] = [];
   public detail: InstanceDetailResponse | null = null;
   public loading: boolean = true;
+  public myInstance: boolean = false;
 
   constructor(
     private readonly titleService: TitleService,
@@ -80,6 +81,7 @@ export class InstanceDetailComponent implements OnInit {
       this.endorsementsGiven = (<InstanceListResponse<InstanceDetailResponse>>responses[map.endorsementsGiven].successResponse).instances;
       this.guaranteesGiven = (<InstanceListResponse<InstanceDetailResponse>>responses[map.guaranteesGiven].successResponse).instances;
       this.detail = <InstanceDetailResponse>responses[map.detail].successResponse;
+      this.myInstance = !this.authManager.currentInstanceSnapshot.anonymous && this.detail.domain === this.authManager.currentInstanceSnapshot.name;
 
       this.loading = false;
     });

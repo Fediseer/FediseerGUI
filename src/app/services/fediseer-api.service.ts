@@ -9,6 +9,8 @@ import {InstanceListResponse} from "../response/instance-list.response";
 import {SuccessResponse} from "../response/success.response";
 import {SuspiciousInstanceDetailResponse} from "../response/suspicious-instance-detail.response";
 import {NormalizedInstanceDetailResponse} from "../response/normalized-instance-detail.response";
+import {EditableInstanceData} from "../types/editable-instance-data";
+import {ChangedResponse} from "../response/changed.response";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -164,10 +166,21 @@ export class FediseerApiService {
     );
   }
 
+  public updateInstanceData(instance: string, data: EditableInstanceData): Observable<ApiResponse<ChangedResponse>> {
+    const body = {...data};
+    if (body.sysadmins === null) {
+      delete body.sysadmins;
+    }
+    if (body.moderators === null) {
+      delete body.moderators;
+    }
+    return this.sendRequest(HttpMethod.Patch, `whitelist/${instance}`, body);
+  }
+
   private sendRequest<T>(
     method: HttpMethod,
     endpoint: string,
-    body: {[key: string]: string} | null = null,
+    body: {[key: string]: string | number | null} | null = null,
     headers: {[header: string]: string} | null = null,
   ): Observable<ApiResponse<T>> {
     headers ??= {};
@@ -178,7 +191,12 @@ export class FediseerApiService {
 
     let url = this.createUrl(endpoint);
     if (method === HttpMethod.Get && body !== null) {
-      url += new URLSearchParams(body).toString();
+      for (const key of Object.keys(body)) {
+        if (typeof body[key] !== 'string') {
+          delete body[key];
+        }
+      }
+      url += new URLSearchParams(<any>body).toString();
     }
 
     return this.httpClient.request<T|ErrorResponse>(method, url, {

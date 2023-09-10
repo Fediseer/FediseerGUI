@@ -5,6 +5,7 @@
     <div class="card" *ngIf="detail">
       <div class="card-header">
         <h3 class="card-title" id="instance-details">Instance details</h3>
+        <a *ngIf="myInstance" routerLink="/instances/edit/my" class="btn btn-primary btn-sm float-right">Edit instance details</a>
       </div>
       <div class="card-body">
         <table class="table table-bordered">
@@ -57,8 +58,8 @@
           <tr>
             <td><strong>Amount of system administrators</strong></td>
             <td>
-              <ng-container *ngIf="detail.sysadmins">{{detail.sysadmins}}</ng-container>
-              <code *ngIf="!detail.sysadmins">N/A</code>
+              <ng-container *ngIf="detail.sysadmins !== null">{{detail.sysadmins}}</ng-container>
+              <code *ngIf="detail.sysadmins === null">N/A</code>
             </td>
           </tr>
           <tr>
@@ -67,8 +68,8 @@
               <app-tooltip text="This includes only moderators who are part of the instance staff." />
             </td>
             <td>
-              <ng-container *ngIf="detail.moderators">{{detail.moderators}}</ng-container>
-              <code *ngIf="!detail.moderators">N/A</code>
+              <ng-container *ngIf="detail.moderators !== null">{{detail.moderators}}</ng-container>
+              <code *ngIf="detail.moderators === null">N/A</code>
             </td>
           </tr>
           </tbody>

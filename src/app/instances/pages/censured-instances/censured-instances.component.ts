@@ -14,6 +14,8 @@ import {NormalizedInstanceDetailResponse} from "../../../response/normalized-ins
 import {FormControl, FormGroup} from "@angular/forms";
 import {debounceTime} from "rxjs";
 import {DatabaseService} from "../../../services/database.service";
+import {FilterSpecialValueAllInstances} from "../../../shared/constants";
+import {environment} from "../../../../environments/environment";
 
 @Component({
   selector: 'app-censured-instances',
@@ -23,7 +25,7 @@ import {DatabaseService} from "../../../services/database.service";
 export class CensuredInstancesComponent implements OnInit {
   private readonly perPage = 30;
 
-  public readonly filterInstanceSpecialValueAll = '__all__';
+  public readonly filterInstanceSpecialValueAll = FilterSpecialValueAllInstances;
 
   private allInstances: NormalizedInstanceDetailResponse[] = [];
 
@@ -37,7 +39,7 @@ export class CensuredInstancesComponent implements OnInit {
   public allWhitelistedInstances: InstanceDetailResponse[] = [];
 
   public filterForm = new FormGroup({
-    instances: new FormControl<string[]>([this.filterInstanceSpecialValueAll]),
+    instances: new FormControl<string[]>(environment.defaultCensuresListInstanceFilter),
     includeEndorsed: new FormControl<boolean>(false),
     includeGuaranteed: new FormControl<boolean>(false),
     recursive: new FormControl<boolean>(true),
@@ -78,14 +80,14 @@ export class CensuredInstancesComponent implements OnInit {
 
     const storedFilters = this.database.censureListFilters;
     if (!storedFilters.instances.length) {
-      storedFilters.instances.push(this.filterInstanceSpecialValueAll);
+      storedFilters.instances = environment.defaultCensuresListInstanceFilter;
     }
 
     this.filterForm.valueChanges.pipe(
       debounceTime(500),
     ).subscribe(values => {
       this.database.censureListFilters = {
-        instances: values.instances ?? [this.filterInstanceSpecialValueAll],
+        instances: values.instances ?? environment.defaultCensuresListInstanceFilter,
         includeEndorsed: values.includeEndorsed ?? false,
         includeGuaranteed: values.includeGuaranteed ?? false,
         matchingReasons: values.matchingReasons ?? [],
@@ -148,9 +150,9 @@ export class CensuredInstancesComponent implements OnInit {
   public async loadInstances(redirect: boolean = true): Promise<void> {
     this.loading = true;
 
-    let sourceInstances = this.filterForm.controls.instances.value ?? [this.filterInstanceSpecialValueAll];
+    let sourceInstances = this.filterForm.controls.instances.value ?? environment.defaultCensuresListInstanceFilter;
     if (!sourceInstances.length) {
-      sourceInstances.push(this.filterInstanceSpecialValueAll);
+      sourceInstances = environment.defaultCensuresListInstanceFilter;
     }
     if (sourceInstances.indexOf(this.filterInstanceSpecialValueAll) > -1) {
       sourceInstances = this.allWhitelistedInstances.map(instance => instance.domain);
