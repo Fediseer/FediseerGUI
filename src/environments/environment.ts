@@ -7,4 +7,5 @@ export const environment = {
   appVersion: '0.9.1',
   maintainer: '@rikudou@lemmings.world',
   defaultCensuresListInstanceFilter: [FilterSpecialValueAllInstances],
+  sourceCodeLink: 'https://github.com/RikudouSage/FediseerGUI',
 };

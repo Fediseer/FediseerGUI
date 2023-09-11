@@ -11,6 +11,7 @@ import {FediseerApiService} from "./services/fediseer-api.service";
 import {DOCUMENT} from "@angular/common";
 import {environment} from "../environments/environment";
 import {ApiResponseHelperService} from "./services/api-response-helper.service";
+import * as url from "url";
 
 @Component({
   selector: 'app-root',
@@ -21,6 +22,7 @@ export class AppComponent implements OnInit {
   protected readonly NotificationType = NotificationType;
   protected readonly maintainer: string = environment.maintainer!;
   protected readonly appVersion: string = environment.appVersion;
+  protected readonly sourceCodeLink: string = environment.sourceCodeLink;
 
   @ViewChild('sideMenu') private sideMenu: ElementRef<HTMLElement> | null = null;
   @ViewChild('sideMenuToggle') private sideMenuToggle: ElementRef<HTMLAnchorElement> | null = null;
@@ -37,6 +39,7 @@ export class AppComponent implements OnInit {
   public endorsementsBadgeUrl: string | null = null;
   public guaranteesBadgeUrl: string | null = null;
   public software: string | null = null;
+  public maintainerLink: string | null = null;
 
   constructor(
     private readonly titleService: TitleService,
@@ -51,6 +54,8 @@ export class AppComponent implements OnInit {
 
   public async ngOnInit(): Promise<void> {
     this.titleService.titleChanged.subscribe(title => this.title = title);
+
+    this.createMaintainerLink();
 
     if (window.outerWidth <= this.autoCollapse) {
       await this.toggleSideMenu();
@@ -136,5 +141,14 @@ export class AppComponent implements OnInit {
       body.classList.add('sidebar-closed');
     }
     body.classList.add('sidebar-collapse');
+  }
+
+  private createMaintainerLink(): void {
+    const normalized = this.maintainer.startsWith('@') ? this.maintainer.substring(1) : this.maintainer;
+    const urlized = new URL(`https://${normalized}`);
+    const username = urlized.username;
+    const host = urlized.host;
+
+    this.maintainerLink = `https://${host}/u/${username}`;
   }
 }
