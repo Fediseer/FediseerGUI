@@ -12,7 +12,10 @@
           <tr>
             <th>Instance</th>
             <th>Guarantor</th>
-            <th>Claimed?</th>
+            <th>
+              Claimed?
+              <app-tooltip text="Whether an admin has claimed the instance here on Fediseer." />
+            </th>
             <th>Endorsements</th>
             <th>Admins / moderators</th>
             <th *ngIf="!currentInstance.anonymous">Endorsed by me?</th>

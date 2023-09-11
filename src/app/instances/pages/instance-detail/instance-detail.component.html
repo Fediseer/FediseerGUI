@@ -19,7 +19,10 @@
             <td>{{detail.software}}</td>
           </tr>
           <tr>
-            <td><strong>Is claimed?</strong></td>
+            <td>
+              <strong>Is claimed?</strong>
+              <app-tooltip text="Whether an admin has claimed the instance here on Fediseer." />
+            </td>
             <td>
               <app-yes-no [yes]="detail.claimed > 0"></app-yes-no>
             </td>
