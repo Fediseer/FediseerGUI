@@ -27,7 +27,7 @@ jobs:
       - name: Build docker
         env:
           VERSION: ${{ steps.extract_version.outputs.result }}
-        run: docker build -f docker/Dockerfile -t ghcr.io/rikudousage/fediseer-gui:$VERSION --label "org.opencontainers.image.source=https://github.com/RikudouSage/FediseerGUI" --label "org.opencontainers.image.licenses=MIT" .
+        run: docker build -t ghcr.io/rikudousage/fediseer-gui:$VERSION --label "org.opencontainers.image.source=https://github.com/RikudouSage/FediseerGUI" --label "org.opencontainers.image.licenses=MIT" .
       - name: Login to GHCR
         uses: docker/login-action@v2
         with:
