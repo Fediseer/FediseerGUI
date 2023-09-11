@@ -16,7 +16,7 @@ Building:
 
 ## Running using Docker
 
-A ready-to-use docker image is available as `ghcr.io/rikudousage/fediseer-gui`.
+A ready-to-use docker image is available as [`ghcr.io/rikudousage/fediseer-gui`](https://ghcr.io/rikudousage/fediseer-gui).
 
 Configuration is done using environment variables.
 
