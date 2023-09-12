@@ -31,6 +31,10 @@ const routes: Routes = [
     path: 'glossary',
     loadChildren: () => import('./glossary/glossary.module').then(m => m.GlossaryModule),
   },
+  {
+    path: 'action-log',
+    loadChildren: () => import('./action-log/action-log.module').then(m => m.ActionLogModule),
+  }
 ];
 
 @NgModule({

@@ -7,6 +7,7 @@ import { IterableEnumPipe } from './pipes/iterable-enum.pipe';
 import { TomSelectDirective } from './directives/tom-select.directive';
 import { TooltipComponent } from './components/tooltip/tooltip.component';
 import {NgbTooltip} from "@ng-bootstrap/ng-bootstrap";
+import { FormatDatetimePipe } from './pipes/format-date.pipe';
 
 
 
@@ -18,15 +19,17 @@ import {NgbTooltip} from "@ng-bootstrap/ng-bootstrap";
     IterableEnumPipe,
     TomSelectDirective,
     TooltipComponent,
+    FormatDatetimePipe,
   ],
-  exports: [
-    ToObservablePipe,
-    LoaderComponent,
-    YesNoComponent,
-    IterableEnumPipe,
-    TomSelectDirective,
-    TooltipComponent
-  ],
+    exports: [
+        ToObservablePipe,
+        LoaderComponent,
+        YesNoComponent,
+        IterableEnumPipe,
+        TomSelectDirective,
+        TooltipComponent,
+        FormatDatetimePipe
+    ],
   imports: [
     CommonModule,
     NgbTooltip
