@@ -1,0 +1,41 @@
+<app-loader *ngIf="loading else content" />
+
+<ng-template #content>
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-body">
+        <table class="table table-bordered">
+          <tr>
+            <th>Source</th>
+            <th>Target</th>
+            <th>Type</th>
+            <th>Activity</th>
+            <th>Date & time</th>
+          </tr>
+          <tr *ngFor="let item of actionLog">
+            <td>
+              <a routerLink="/instances/detail/{{item.source_domain}}">
+                {{item.source_domain}}
+              </a>
+            </td>
+            <td>
+              <a routerLink="/instances/detail/{{item.target_domain}}">
+                {{item.target_domain}}
+              </a>
+            </td>
+            <td>
+              <ng-container *ngIf="item.report_type === ActionLogReportType.Censure">Censure</ng-container>
+              <ng-container *ngIf="item.report_type === ActionLogReportType.Endorsement">Endorsement</ng-container>
+            </td>
+            <td>
+              <ng-container *ngIf="item.report_activity === ActionLogReportActivity.Added">Created</ng-container>
+              <ng-container *ngIf="item.report_activity === ActionLogReportActivity.Deleted">Removed</ng-container>
+              <ng-container *ngIf="item.report_activity === ActionLogReportActivity.Modified">Modified</ng-container>
+            </td>
+            <td>{{item.created | formatDatetime}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-template>

@@ -11,6 +11,7 @@ import {SuspiciousInstanceDetailResponse} from "../response/suspicious-instance-
 import {NormalizedInstanceDetailResponse} from "../response/normalized-instance-detail.response";
 import {EditableInstanceData} from "../types/editable-instance-data";
 import {ChangedResponse} from "../response/changed.response";
+import {ActionLogResponse} from "../response/action-log.response";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -175,6 +176,10 @@ export class FediseerApiService {
       delete body.moderators;
     }
     return this.sendRequest(HttpMethod.Patch, `whitelist/${instance}`, body);
+  }
+
+  public getActionLog(): Observable<ApiResponse<ActionLogResponse>> {
+    return this.sendRequest(HttpMethod.Get, `reports`);
   }
 
   private sendRequest<T>(
