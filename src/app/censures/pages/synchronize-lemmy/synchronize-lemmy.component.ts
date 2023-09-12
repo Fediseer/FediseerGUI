@@ -34,6 +34,7 @@ export class SynchronizeLemmyComponent implements OnInit {
     mode: new FormControl<SynchronizationMode>(SynchronizationMode.Own, [Validators.required]),
   });
   public loading = true;
+  public loadingPreview = false;
   public added: string[] = [];
   public removed: string[] = [];
 
@@ -90,16 +91,19 @@ export class SynchronizeLemmyComponent implements OnInit {
   }
 
   private async loadDiffs(mode: SynchronizationMode) {
+    this.loadingPreview = true;
     this.added = [];
     this.removed = [];
 
     const instancesToBan = await this.getInstancesToBan(mode);
     if (instancesToBan === null) {
+      this.loadingPreview = false;
       return;
     }
 
     this.added = instancesToBan.filter(item => !this.originallyBlockedInstances.includes(item));
     this.removed = this.originallyBlockedInstances.filter(item => !instancesToBan.includes(item));
+    this.loadingPreview = false;
   }
 
   private async getJwt(): Promise<string | null> {
