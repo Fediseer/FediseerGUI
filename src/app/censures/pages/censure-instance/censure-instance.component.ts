@@ -16,6 +16,7 @@ export class CensureInstanceComponent implements OnInit {
   public form = new FormGroup({
     instance: new FormControl<string>('', [Validators.required]),
     reasons: new FormControl<string[]>([]),
+    evidence: new FormControl<string | null>(null),
   });
   public loading: boolean = true;
   public availableReasons: string[] = [];
@@ -60,6 +61,7 @@ export class CensureInstanceComponent implements OnInit {
     this.api.censureInstance(
       this.form.controls.instance.value!,
       this.form.controls.reasons.value ? this.form.controls.reasons.value!.join(',') : null,
+      this.form.controls.evidence.value,
     ).subscribe(response => {
       if (!response.success) {
         this.loading = false;

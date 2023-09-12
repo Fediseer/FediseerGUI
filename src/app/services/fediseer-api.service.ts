@@ -103,10 +103,13 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Delete, `censures/${instance}`);
   }
 
-  public censureInstance(instance: string, reason: string | null): Observable<ApiResponse<SuccessResponse>> {
+  public censureInstance(instance: string, reason: string | null, evidence: string | null = null): Observable<ApiResponse<SuccessResponse>> {
     const body: {[key: string]: string} = {};
     if (reason) {
       body['reason'] = reason;
+    }
+    if (evidence) {
+      body['evidence'] = evidence;
     }
     return this.sendRequest(HttpMethod.Put, `censures/${instance}`, body);
   }

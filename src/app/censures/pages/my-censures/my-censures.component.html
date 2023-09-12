@@ -17,18 +17,19 @@
             <tr>
               <th>Instance</th>
               <th>Reasons</th>
+              <th>Evidence</th>
               <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             <tr *ngIf="guaranteed">
-              <td colspan="3">
+              <td colspan="4">
                 <a routerLink="/censures/censure" class="btn btn-primary">Censure an instance</a>
               </td>
             </tr>
             <tr *ngIf="!instances.length">
-              <td colspan="3" *ngIf="guaranteed">You haven't put a censure on any instance yet.</td>
-              <td colspan="3" *ngIf="!guaranteed">No one guaranteed for this instance, you cannot put a censure on
+              <td colspan="4" *ngIf="guaranteed">You haven't put a censure on any instance yet.</td>
+              <td colspan="4" *ngIf="!guaranteed">No one guaranteed for this instance, you cannot put a censure on
                 others.
               </td>
             </tr>
@@ -38,6 +39,10 @@
                 <ul>
                   <li *ngFor="let reason of instance.censureReasons">{{reason}}</li>
                 </ul>
+              </td>
+              <td>
+                <ng-container *ngIf="instance.evidence.length">{{instance.evidence}}</ng-container>
+                <code *ngIf="!instance.evidence.length">N/A</code>
               </td>
               <td>
                 <a routerLink="/censures/my/edit/{{instance.domain}}" type="button" class="btn btn-primary">Edit</a>
