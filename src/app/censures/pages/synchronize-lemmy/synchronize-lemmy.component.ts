@@ -369,7 +369,17 @@ export class SynchronizeLemmyComponent implements OnInit {
         }
       }
 
-      return [...this.cache[myInstance]!, ...foreignInstanceBlacklist];
+      const result = [...this.cache[myInstance]!, ...foreignInstanceBlacklist];
+      const handled: string[] = [];
+
+      return result.filter(instance => {
+        if (handled.includes(instance.domain)) {
+          return false;
+        }
+
+        handled.push(instance.domain);
+        return true;
+      });
     })();
 
     return this.cache[cacheKey]!;
