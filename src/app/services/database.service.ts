@@ -47,6 +47,7 @@ export class DatabaseService {
       username: '',
       purge: false,
       mode: SynchronizationMode.Own,
+      customInstances: [],
     };
   }
 

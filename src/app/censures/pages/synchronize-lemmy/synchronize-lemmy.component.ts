@@ -21,7 +21,7 @@ export class SynchronizeLemmyComponent implements OnInit {
   protected readonly SynchronizationMode = SynchronizationMode;
   protected readonly Number = Number;
 
-  private cache: {[key in SynchronizationMode]?: string[] | null} = {};
+  private cache: {[key: string]: string[] | null} = {};
 
   public originallyBlockedInstances: string[] = [];
 
@@ -32,11 +32,15 @@ export class SynchronizeLemmyComponent implements OnInit {
     totp: new FormControl<string | null>(null),
     purgeBlacklist: new FormControl<boolean>(false, [Validators.required]),
     mode: new FormControl<SynchronizationMode>(SynchronizationMode.Own, [Validators.required]),
+    customInstances: new FormControl<string[]>([]),
   });
   public loading = true;
   public loadingPreview = false;
+  public loadingWhitelistedInstances = false;
+
   public added: string[] = [];
   public removed: string[] = [];
+  public whitelistedInstancesList: string[] | null = null;
 
   constructor(
     private readonly database: DatabaseService,
@@ -59,6 +63,7 @@ export class SynchronizeLemmyComponent implements OnInit {
       username: settings.username,
       instance: this.authManager.currentInstanceSnapshot.name,
       password: this.database.lemmyPassword ?? '',
+      customInstances: settings.customInstances,
     });
 
     const instances = await this.getBlockedInstancesFromSource(this.authManager.currentInstanceSnapshot.name);
@@ -77,6 +82,7 @@ export class SynchronizeLemmyComponent implements OnInit {
         username: values.username ?? '',
         purge: values.purgeBlacklist ?? false,
         mode: values.mode ?? SynchronizationMode.Own,
+        customInstances: values.customInstances ?? [],
       });
     });
     this.form.controls.mode.valueChanges.subscribe(mode => {
@@ -84,9 +90,66 @@ export class SynchronizeLemmyComponent implements OnInit {
         return;
       }
       this.loadDiffs(mode);
+      this.loadCustomInstancesSelect(mode);
+    });
+    this.form.controls.customInstances.valueChanges.subscribe(instances => {
+      const mode = this.form.controls.mode.value;
+      if (instances === null || mode === null) {
+        return;
+      }
+
+      this.loadDiffs(mode);
     });
     if (this.form.controls.mode.value) {
-      await this.loadDiffs(this.form.controls.mode.value);
+      this.loadDiffs(this.form.controls.mode.value);
+      this.loadCustomInstancesSelect(this.form.controls.mode.value);
+    }
+  }
+
+  private async loadCustomInstancesSelect(mode: SynchronizationMode) {
+    if (mode === SynchronizationMode.CustomInstances && this.whitelistedInstancesList === null) {
+      this.loadingWhitelistedInstances = true;
+      const responses = await Promise.all([
+        toPromise(this.fediseerApi.getWhitelistedInstances()),
+        toPromise(this.fediseerApi.getEndorsementsByInstance([this.authManager.currentInstanceSnapshot.name])),
+        toPromise(this.fediseerApi.getGuaranteesByInstance(this.authManager.currentInstanceSnapshot.name)),
+      ]);
+
+      if (this.apiResponseHelper.handleErrors(responses)) {
+        return;
+      }
+
+      const endorsed = responses[1].successResponse!.instances.map(instance => instance.domain);
+      const guaranteed = responses[2].successResponse!.instances.map(instance => instance.domain);
+
+      this.whitelistedInstancesList = responses[0].successResponse!.instances
+        .map(instance => instance.domain)
+        .sort((a, b) => {
+          const endorsedA = endorsed.includes(a);
+          const endorsedB = endorsed.includes(b);
+          const guaranteedA = guaranteed.includes(a);
+          const guaranteedB = guaranteed.includes(b);
+
+          if (!endorsedA && !endorsedB && !guaranteedA && !guaranteedB) {
+            return 0;
+          }
+
+          if (guaranteedA && !guaranteedB) {
+            return -1;
+          }
+          if (guaranteedB && !guaranteedA) {
+            return 1;
+          }
+          if (endorsedA && !endorsedB) {
+            return -1;
+          }
+          if (endorsedB && !endorsedA) {
+            return 1;
+          }
+
+          return 0;
+        });
+      this.loadingWhitelistedInstances = false;
     }
   }
 
@@ -227,7 +290,13 @@ export class SynchronizeLemmyComponent implements OnInit {
 
   private async getInstancesToBan(mode: SynchronizationMode): Promise<string[] | null> {
     const myInstance = this.authManager.currentInstanceSnapshot.name;
-    this.cache[mode] ??= await (async () => {
+    let cacheKey: string = mode;
+
+    if (mode === SynchronizationMode.CustomInstances && this.form.controls.customInstances.value) {
+      cacheKey += this.form.controls.customInstances.value.join('|') ?? '';
+    }
+
+    this.cache[cacheKey] ??= await (async () => {
       let sourceFrom: string[];
       switch (mode) {
         case SynchronizationMode.Own:
@@ -235,6 +304,9 @@ export class SynchronizeLemmyComponent implements OnInit {
           break;
         case SynchronizationMode.Endorsed:
           sourceFrom = await this.getEndorsedCensureChain(myInstance);
+          break;
+        case SynchronizationMode.CustomInstances:
+          sourceFrom = [myInstance, ...(this.form.controls.customInstances.value ?? [])];
           break;
         default:
           throw new Error(`Unsupported mode: ${mode}`);
@@ -248,6 +320,6 @@ export class SynchronizeLemmyComponent implements OnInit {
       return await this.getCensuresByInstances(sourceFrom);
     })();
 
-    return this.cache[mode]!;
+    return this.cache[cacheKey]!;
   }
 }
