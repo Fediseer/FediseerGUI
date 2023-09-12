@@ -40,4 +40,4 @@ JSON="{apiUrl: '$FEDISEER_API_URL', apiVersion: '$FEDISEER_API_VERSION', appName
 
 echo "export const environment = $JSON;" > src/environments/environment.ts
 
-cd /app && yarn build && mv dist/fediseer-gui/* /usr/share/nginx/html && cd "$ORIGINAL_DIR"
+cd /app && yarn build && mv dist/FediseerGUI/browser/* /usr/share/nginx/html && cd "$ORIGINAL_DIR"
