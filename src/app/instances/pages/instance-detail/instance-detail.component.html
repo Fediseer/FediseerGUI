@@ -127,6 +127,7 @@
             <tr>
               <th>Instance</th>
               <th>Reasons</th>
+              <th>Evidence</th>
             </tr>
             </thead>
             <tbody>
@@ -137,6 +138,10 @@
                   <li *ngFor="let reason of instance.censureReasons">{{reason}}</li>
                 </ul>
                 <code *ngIf="!instance.censureReasons.length">N/A</code>
+              </td>
+              <td>
+                <ng-container *ngIf="instance.evidence.length">{{instance.evidence}}</ng-container>
+                <code *ngIf="!instance.evidence.length">N/A</code>
               </td>
             </tr>
             </tbody>

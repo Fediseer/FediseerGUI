@@ -13,6 +13,7 @@ export class NormalizedInstanceDetailResponse {
     public endorsements: int,
     public censureReasons: string[],
     public unmergedCensureReasons: string[],
+    public evidence: string,
     public guarantor?: string | null,
   ) {
   }
@@ -52,6 +53,7 @@ export class NormalizedInstanceDetailResponse {
       detail.endorsements,
       censureReasons,
       unmerged,
+      detail.censure_evidence.join(', '),
       detail.guarantor,
     );
   }
