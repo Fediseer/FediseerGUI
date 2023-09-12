@@ -48,6 +48,8 @@ export class DatabaseService {
       purge: false,
       mode: SynchronizationMode.Own,
       customInstances: [],
+      filterByReasons: false,
+      reasonsFilter: [],
     };
   }
 
