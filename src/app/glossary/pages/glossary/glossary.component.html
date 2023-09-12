@@ -29,12 +29,10 @@
         The three main concepts used in Fediseer are guarantees, endorsements and censures.
       </p>
       <p>
-        The <a href="https://fediseer.com">Fediseer</a> provides a machine readable API to consume the data contained
-        within.
+        The Fediseer provides a machine readable API to consume the data contained within.
       </p>
       <p>
-        You can use <a href="https://fediseer.com">Fediseer</a> easily through the app you're viewing this Glossary in
-        right now.
+        You can use Fediseer easily through the app you're viewing this Glossary in right now.
       </p>
     </div>
   </div>
@@ -45,16 +43,16 @@
     </div>
     <div class="card-body">
       <p>
-        A claimed instance is an instance whose admin has requested an API key from <a href="https://fediseer.com">Fediseer</a>.
+        A claimed instance is an instance whose admin has requested an API key from Fediseer.
       </p>
       <p>
-        <a href="https://fediseer.com">Fediseer</a> has no users. Instead it's driven by instance admins only. Instance
-        admins likewise only act as their instances.
+        Fediseer has no users. Instead it's driven by instance admins only. Instance admins likewise only act as their
+        instances.
       </p>
       <p *ngIf="currentInstance.anonymous">
-        You can claim an instance by going to the <a routerLink="/auth/claim-instance">Claim instance</a> page.
-        You will then receive an API key in a private message, which you can afterwards use to represent your instance
-        on the <a href="https://fediseer.com">Fediseer</a>.
+        You can claim an instance by going to the <a routerLink="/auth/claim-instance">Claim instance</a> page. You will
+        then receive an API key in a private message, which you can afterwards use to represent your instance on the
+        Fediseer.
       </p>
     </div>
   </div>
@@ -65,19 +63,18 @@
     </div>
     <div class="card-body">
       <p>
-        Any guaranteed instance is known as definitely "not spam" (AKA "ham"). That doesn't mean any
-        non-guaranteed instance is spam. Rather it means the status is "unknown". The purpose of guaranteeing for an
-        instance is to let others know whether it's a spam or a ham instance. The objective here being to prevent
-        malicious actors from spawning an infinite amount of new instances on the Fediverse to send spam.
+        Any guaranteed instance is known as definitely "not spam" (AKA "ham"). That doesn't mean any non-guaranteed
+        instance is spam. Rather it means the status is "unknown". The purpose of guaranteeing for an instance is to let
+        others know whether it's a spam or a ham instance. The objective here being to prevent malicious actors from
+        spawning an infinite amount of new instances on the Fediverse to send spam.
       </p>
       <p>
-        Each instance can be guaranteed by an instance and can guarantee other instances. This is called the
-        "chain of trust".
+        Each instance can be guaranteed by an instance and can guarantee other instances. This is called the "chain of
+        trust".
       </p>
       <p>
-        Guarantees are community driven. While the <a href="https://fediseer.com">Fediseer</a> can guarantee at the top
-        level as well, we hope that instance admins will guarantee the instances they know of and help ensure the health
-        of the network.
+        Guarantees are community driven. While the Fediseer can guarantee at the top level as well, we hope that
+        instance admins will guarantee the instances they know of and help ensure the health of the network.
       </p>
     </div>
   </div>
@@ -88,17 +85,15 @@
     </div>
     <div class="card-body">
       <p>
-        Because each instance on the <a href="https://fediseer.com">Fediseer</a> can guarantee and be guaranteed by
-        other instances, this causes a chain to form, starting from the <a href="https://fediseer.com">Fediseer</a>
-        itself. Any instance guaranteed by such an unbroken chain is considered as ham. If the guarantee for any
-        instance in this chain is revoked, the chain of trust is broken and any instances below are considered
-        non-guaranteed.
+        Because each instance on the Fediseer can guarantee and be guaranteed by other instances, this causes a chain to
+        form, starting from the Fediseer itself. Any instance guaranteed by such an unbroken chain is considered as ham.
+        If the guarantee for any instance in this chain is revoked, the chain of trust is broken and any instances below
+        are considered non-guaranteed.
       </p>
       <p>
-        This allows the <a href="https://fediseer.com">Fediseer</a> to quickly deal with spam instances that sneaked
-        into the <a href="https://fediseer.com">Fediseer</a> and then guaranteed a bunch more of the spammy friends. As
-        the chain can be revoked higher up, even a whole spam network can be countered by revoking the guarantee from
-        the first spammer guaranteed.
+        This allows the Fediseer to quickly deal with spam instances that sneaked into the Fediseer and then guaranteed
+        a bunch more of the spammy friends. As the chain can be revoked higher up, even a whole spam network can be
+        countered by revoking the guarantee from the first spammer guaranteed.
       </p>
     </div>
   </div>
@@ -157,8 +152,8 @@
         count and the amount of posts.
       </p>
       <p>
-        The api allows tweaking the parameters to report those instances, support for this feature is coming to this
-        GUI at a later time.
+        The api allows tweaking the parameters to report those instances, support for this feature is coming to this GUI
+        at a later time.
       </p>
     </div>
   </div>
