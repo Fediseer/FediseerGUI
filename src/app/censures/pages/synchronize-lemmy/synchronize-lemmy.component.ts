@@ -11,6 +11,8 @@ import {FediseerApiService} from "../../../services/fediseer-api.service";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {MessageService} from "../../../services/message.service";
 import {HttpErrorResponse} from "@angular/common/http";
+import {InstanceDetailResponse} from "../../../response/instance-detail.response";
+import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 
 @Component({
   selector: 'app-synchronize',
@@ -21,7 +23,7 @@ export class SynchronizeLemmyComponent implements OnInit {
   protected readonly SynchronizationMode = SynchronizationMode;
   protected readonly Number = Number;
 
-  private cache: {[key: string]: string[] | null} = {};
+  private cache: {[key: string]: InstanceDetailResponse[] | null} = {};
 
   public originallyBlockedInstances: string[] = [];
 
@@ -33,14 +35,19 @@ export class SynchronizeLemmyComponent implements OnInit {
     purgeBlacklist: new FormControl<boolean>(false, [Validators.required]),
     mode: new FormControl<SynchronizationMode>(SynchronizationMode.Own, [Validators.required]),
     customInstances: new FormControl<string[]>([]),
+    filterByReasons: new FormControl<boolean>(false),
+    reasonsFilter: new FormControl<string[]>([]),
   });
+
   public loading = true;
   public loadingPreview = false;
   public loadingWhitelistedInstances = false;
+  public loadingReasons = false;
 
-  public added: string[] = [];
+  public added: InstanceDetailResponse[] = [];
   public removed: string[] = [];
-  public whitelistedInstancesList: string[] | null = null;
+  public whitelistedInstancesList: InstanceDetailResponse[] | null = null;
+  public availableReasons: string[] | null = null;
 
   constructor(
     private readonly database: DatabaseService,
@@ -64,6 +71,8 @@ export class SynchronizeLemmyComponent implements OnInit {
       instance: this.authManager.currentInstanceSnapshot.name,
       password: this.database.lemmyPassword ?? '',
       customInstances: settings.customInstances,
+      reasonsFilter: settings.reasonsFilter,
+      filterByReasons: settings.filterByReasons,
     });
 
     const instances = await this.getBlockedInstancesFromSource(this.authManager.currentInstanceSnapshot.name);
@@ -83,6 +92,8 @@ export class SynchronizeLemmyComponent implements OnInit {
         purge: values.purgeBlacklist ?? false,
         mode: values.mode ?? SynchronizationMode.Own,
         customInstances: values.customInstances ?? [],
+        filterByReasons: values.filterByReasons ?? false,
+        reasonsFilter: values.reasonsFilter ?? [],
       });
     });
     this.form.controls.mode.valueChanges.subscribe(mode => {
@@ -100,9 +111,39 @@ export class SynchronizeLemmyComponent implements OnInit {
 
       this.loadDiffs(mode);
     });
+    this.form.controls.filterByReasons.valueChanges.subscribe(filter => {
+      const mode = this.form.controls.mode.value;
+      if (filter === null || mode === null) {
+        return;
+      }
+      this.loadReasons();
+      this.loadDiffs(mode);
+    });
+    this.form.controls.reasonsFilter.valueChanges.subscribe(reasons => {
+      const mode = this.form.controls.mode.value;
+      if (reasons === null || mode === null) {
+        return;
+      }
+      this.loadDiffs(mode);
+    });
     if (this.form.controls.mode.value) {
       this.loadDiffs(this.form.controls.mode.value);
       this.loadCustomInstancesSelect(this.form.controls.mode.value);
+    }
+    if (this.form.controls.filterByReasons.value) {
+      this.loadReasons();
+    }
+  }
+
+  private async loadReasons() {
+    if (this.availableReasons === null) {
+      this.loadingReasons = true;
+      const reasons = await toPromise(this.fediseerApi.getUsedReasons());
+      if (reasons === null) {
+        this.messageService.createError('Failed getting list of reasons from the server');
+      }
+      this.availableReasons = reasons;
+      this.loadingReasons = false;
     }
   }
 
@@ -123,12 +164,11 @@ export class SynchronizeLemmyComponent implements OnInit {
       const guaranteed = responses[2].successResponse!.instances.map(instance => instance.domain);
 
       this.whitelistedInstancesList = responses[0].successResponse!.instances
-        .map(instance => instance.domain)
         .sort((a, b) => {
-          const endorsedA = endorsed.includes(a);
-          const endorsedB = endorsed.includes(b);
-          const guaranteedA = guaranteed.includes(a);
-          const guaranteedB = guaranteed.includes(b);
+          const endorsedA = endorsed.includes(a.domain);
+          const endorsedB = endorsed.includes(b.domain);
+          const guaranteedA = guaranteed.includes(a.domain);
+          const guaranteedB = guaranteed.includes(b.domain);
 
           if (!endorsedA && !endorsedB && !guaranteedA && !guaranteedB) {
             return 0;
@@ -163,9 +203,10 @@ export class SynchronizeLemmyComponent implements OnInit {
       this.loadingPreview = false;
       return;
     }
+    const instancesToBanString = instancesToBan.map(instance => instance.domain);
 
-    this.added = instancesToBan.filter(item => !this.originallyBlockedInstances.includes(item));
-    this.removed = this.originallyBlockedInstances.filter(item => !instancesToBan.includes(item));
+    this.added = instancesToBan.filter(item => !this.originallyBlockedInstances.includes(item.domain));
+    this.removed = this.originallyBlockedInstances.filter(item => !instancesToBanString.includes(item));
     this.loadingPreview = false;
   }
 
@@ -213,7 +254,7 @@ export class SynchronizeLemmyComponent implements OnInit {
   }
 
   private async getEndorsedCensureChain(instance: string): Promise<string[]> {
-    const result = await toPromise(this.fediseerApi.getEndorsementsByInstance([instance]).pipe(
+    return await toPromise(this.fediseerApi.getEndorsementsByInstance([instance]).pipe(
       map(response => {
         if (this.apiResponseHelper.handleErrors([response])) {
           return [];
@@ -222,19 +263,15 @@ export class SynchronizeLemmyComponent implements OnInit {
         return response.successResponse!.instances.map(instance => instance.domain);
       }),
     ));
-
-    result.push(instance);
-
-    return result;
   }
 
-  private async getCensuresByInstances(instances: string[]): Promise<string[] | null> {
+  private async getCensuresByInstances(instances: string[]): Promise<InstanceDetailResponse[] | null> {
     const instancesResponse = await toPromise(this.fediseerApi.getCensuresByInstances(instances));
     if (this.apiResponseHelper.handleErrors([instancesResponse])) {
       return null;
     }
 
-    return instancesResponse.successResponse!.instances.map(instance => instance.domain);
+    return instancesResponse.successResponse!.instances;
   }
 
   private async getBlockedInstancesFromSource(instance: string): Promise<string[] | null> {
@@ -272,7 +309,10 @@ export class SynchronizeLemmyComponent implements OnInit {
         return;
       }
 
-      const newInstances = this.form.controls.purgeBlacklist.value! ? instancesToBan : [...new Set([...originalInstances, ...instancesToBan])];
+      const newInstances =
+        this.form.controls.purgeBlacklist.value!
+          ? instancesToBan.map(instance => instance.domain)
+          : [...new Set([...originalInstances, ...instancesToBan.map(instance => instance.domain)])];
 
       try {
         await toPromise(this.lemmyApi.updateBlacklist(myInstance, jwt, newInstances));
@@ -288,36 +328,46 @@ export class SynchronizeLemmyComponent implements OnInit {
     }
   }
 
-  private async getInstancesToBan(mode: SynchronizationMode): Promise<string[] | null> {
+  private async getInstancesToBan(mode: SynchronizationMode): Promise<InstanceDetailResponse[] | null> {
     const myInstance = this.authManager.currentInstanceSnapshot.name;
     let cacheKey: string = mode;
 
     if (mode === SynchronizationMode.CustomInstances && this.form.controls.customInstances.value) {
-      cacheKey += this.form.controls.customInstances.value.join('|') ?? '';
+      cacheKey += this.form.controls.customInstances.value.join('|');
+    }
+    if (this.form.controls.filterByReasons.value && this.form.controls.reasonsFilter.value) {
+      cacheKey += this.form.controls.reasonsFilter.value!.join('|');
     }
 
+    this.cache[myInstance] ??= await this.getCensuresByInstances([myInstance]);
     this.cache[cacheKey] ??= await (async () => {
       let sourceFrom: string[];
       switch (mode) {
         case SynchronizationMode.Own:
-          sourceFrom = [myInstance];
+          sourceFrom = [];
           break;
         case SynchronizationMode.Endorsed:
           sourceFrom = await this.getEndorsedCensureChain(myInstance);
           break;
         case SynchronizationMode.CustomInstances:
-          sourceFrom = [myInstance, ...(this.form.controls.customInstances.value ?? [])];
+          sourceFrom = this.form.controls.customInstances.value ?? [];
           break;
         default:
           throw new Error(`Unsupported mode: ${mode}`);
       }
 
-      if (!sourceFrom.length) {
-        this.messageService.createError('No instances to get censures from.');
-        return [];
+      let foreignInstanceBlacklist =  await this.getCensuresByInstances(sourceFrom) ?? [];
+      if (this.form.controls.filterByReasons.value && this.form.controls.reasonsFilter.value) {
+        const reasons = this.form.controls.reasonsFilter.value!;
+        foreignInstanceBlacklist = foreignInstanceBlacklist.filter(
+          instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance).unmergedCensureReasons.filter(
+            reason => reasons.includes(reason),
+          ).length,
+        );
       }
 
-      return await this.getCensuresByInstances(sourceFrom);
+
+      return [...this.cache[myInstance]!, ...foreignInstanceBlacklist];
     })();
 
     return this.cache[cacheKey]!;

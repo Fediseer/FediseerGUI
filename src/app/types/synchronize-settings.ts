@@ -9,4 +9,6 @@ export interface SynchronizeSettings {
   mode: SynchronizationMode;
   purge: boolean;
   customInstances: string[];
+  filterByReasons: boolean;
+  reasonsFilter: string[];
 }
