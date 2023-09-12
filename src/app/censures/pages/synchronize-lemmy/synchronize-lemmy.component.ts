@@ -146,7 +146,7 @@ export class SynchronizeLemmyComponent implements OnInit {
   }
 
   private async getEndorsedCensureChain(instance: string): Promise<string[]> {
-    return await toPromise(this.fediseerApi.getEndorsementsByInstance([instance]).pipe(
+    const result = await toPromise(this.fediseerApi.getEndorsementsByInstance([instance]).pipe(
       map(response => {
         if (this.apiResponseHelper.handleErrors([response])) {
           return [];
@@ -155,6 +155,10 @@ export class SynchronizeLemmyComponent implements OnInit {
         return response.successResponse!.instances.map(instance => instance.domain);
       }),
     ));
+
+    result.push(instance);
+
+    return result;
   }
 
   private async getCensuresByInstances(instances: string[]): Promise<string[] | null> {
