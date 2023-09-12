@@ -40,4 +40,12 @@ JSON="{apiUrl: '$FEDISEER_API_URL', apiVersion: '$FEDISEER_API_VERSION', appName
 
 echo "export const environment = $JSON;" > src/environments/environment.ts
 
-cd /app && yarn build && mv dist/fediseer-gui/* /usr/share/nginx/html && cd "$ORIGINAL_DIR"
+cd /app
+if [ -z ${FEDISEER_ENABLE_SSR+x} ]; then
+  yarn build && mv dist/FediseerGUI/browser/* /usr/share/nginx/html
+else
+  cp nginx-proxy.conf /etc/nginx/conf.d/default.conf
+  yarn build:ssr && node dist/FediseerGUI/server/main.js &
+fi
+
+cd "$ORIGINAL_DIR"

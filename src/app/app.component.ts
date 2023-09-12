@@ -57,7 +57,7 @@ export class AppComponent implements OnInit {
 
     this.createMaintainerLink();
 
-    if (window.outerWidth <= this.autoCollapse) {
+    if (typeof window !== 'undefined' && window.outerWidth <= this.autoCollapse) {
       await this.toggleSideMenu();
     }
 
@@ -78,7 +78,7 @@ export class AppComponent implements OnInit {
       if (event instanceof NavigationEnd) {
         this.errorNotifications = [];
         this.successNotifications = [];
-        if (window.outerWidth <= this.autoCollapse) {
+        if (typeof window !== 'undefined' && window.outerWidth <= this.autoCollapse) {
           this.hideMenu();
         }
       }
