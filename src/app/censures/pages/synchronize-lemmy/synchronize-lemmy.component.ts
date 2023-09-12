@@ -356,16 +356,18 @@ export class SynchronizeLemmyComponent implements OnInit {
           throw new Error(`Unsupported mode: ${mode}`);
       }
 
-      let foreignInstanceBlacklist =  await this.getCensuresByInstances(sourceFrom) ?? [];
-      if (this.form.controls.filterByReasons.value && this.form.controls.reasonsFilter.value) {
-        const reasons = this.form.controls.reasonsFilter.value!;
-        foreignInstanceBlacklist = foreignInstanceBlacklist.filter(
-          instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance).unmergedCensureReasons.filter(
-            reason => reasons.includes(reason),
-          ).length,
-        );
+      let foreignInstanceBlacklist: InstanceDetailResponse[] = [];
+      if (sourceFrom.length) {
+        foreignInstanceBlacklist =  await this.getCensuresByInstances(sourceFrom) ?? [];
+        if (this.form.controls.filterByReasons.value && this.form.controls.reasonsFilter.value) {
+          const reasons = this.form.controls.reasonsFilter.value!;
+          foreignInstanceBlacklist = foreignInstanceBlacklist.filter(
+            instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance).unmergedCensureReasons.filter(
+              reason => reasons.includes(reason),
+            ).length,
+          );
+        }
       }
-
 
       return [...this.cache[myInstance]!, ...foreignInstanceBlacklist];
     })();
