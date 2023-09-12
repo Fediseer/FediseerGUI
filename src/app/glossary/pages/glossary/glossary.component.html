@@ -14,9 +14,12 @@
     </div>
     <div class="card-body">
       <p>
-        The Fediseer is a service for the Fediverse which attempts to provide a crowd-sourced human-curated spam/ham
-        classification of Fediverse instances as well as provide a public space to specify approval/disapproval of other
-        instances.
+        The <a href="https://fediseer.com">Fediseer</a> is a service for the Fediverse which attempts to provide a
+        crowd-sourced human-curated spam/ham classification of Fediverse instances as well as provide a public space to
+        specify approval/disapproval of other instances.
+        <a href="https://dbzer0.com/blog/overseer-a-fediverse-chain-of-trust/">
+          Here you can find the blog post announcing Fediseer.
+        </a>
       </p>
       <p>
         In simple terms, using the Fediseer, we attempt to figure out whether an instance is spam or not, through a
@@ -47,9 +50,9 @@
         instances.
       </p>
       <p *ngIf="currentInstance.anonymous">
-        You can claim an instance by going to the <a routerLink="/auth/claim-instance">Claim instance</a> page.
-        You will then receive an API key in a private message, which you can afterwards use to represent your instance
-        on the Fediseer.
+        You can claim an instance by going to the <a routerLink="/auth/claim-instance">Claim instance</a> page. You will
+        then receive an API key in a private message, which you can afterwards use to represent your instance on the
+        Fediseer.
       </p>
     </div>
   </div>
@@ -60,14 +63,14 @@
     </div>
     <div class="card-body">
       <p>
-        Any guaranteed instance is known as definitely "not spam" (AKA "ham"). That doesn't mean any
-        non-guaranteed instance is spam. Rather it means the status is "unknown". The purpose of guaranteeing for an
-        instance is to let others know whether it's a spam or a ham instance. The objective here being to prevent
-        malicious actors from spawning an infinite amount of new instances on the Fediverse to send spam.
+        Any guaranteed instance is known as definitely "not spam" (AKA "ham"). That doesn't mean any non-guaranteed
+        instance is spam. Rather it means the status is "unknown". The purpose of guaranteeing for an instance is to let
+        others know whether it's a spam or a ham instance. The objective here being to prevent malicious actors from
+        spawning an infinite amount of new instances on the Fediverse to send spam.
       </p>
       <p>
-        Each instance can be guaranteed by an instance and can guarantee other instances. This is called the
-        "chain of trust".
+        Each instance can be guaranteed by an instance and can guarantee other instances. This is called the "chain of
+        trust".
       </p>
       <p>
         Guarantees are community driven. While the Fediseer can guarantee at the top level as well, we hope that
@@ -82,10 +85,10 @@
     </div>
     <div class="card-body">
       <p>
-        Because each instance on the Fediseer can guarantee and be guaranteed by other instances, this causes a chain
-        to form, starting from the Fediseer itself. Any instance guaranteed by such an unbroken chain is considered as
-        ham. If the guarantee for any instance in this chain is revoked, the chain of trust is broken and any instances
-        below are considered non-guaranteed.
+        Because each instance on the Fediseer can guarantee and be guaranteed by other instances, this causes a chain to
+        form, starting from the Fediseer itself. Any instance guaranteed by such an unbroken chain is considered as ham.
+        If the guarantee for any instance in this chain is revoked, the chain of trust is broken and any instances below
+        are considered non-guaranteed.
       </p>
       <p>
         This allows the Fediseer to quickly deal with spam instances that sneaked into the Fediseer and then guaranteed
@@ -149,8 +152,8 @@
         count and the amount of posts.
       </p>
       <p>
-        The api allows tweaking the parameters to report those instances, support for this feature is coming to this
-        GUI at a later time.
+        The api allows tweaking the parameters to report those instances, support for this feature is coming to this GUI
+        at a later time.
       </p>
     </div>
   </div>
