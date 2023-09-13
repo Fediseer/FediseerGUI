@@ -68,6 +68,8 @@ export class DatabaseService {
       filterByReasons: false,
       reasonsFilter: [],
       includeHesitations: false,
+      ignoreInstanceList: [],
+      ignoreInstances: false,
     };
   }
 

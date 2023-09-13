@@ -91,6 +91,23 @@
           </div>
           <div class="form-group">
             <div class="custom-control custom-switch custom-switch-on-danger">
+              <input class="custom-control-input" type="checkbox" id="inputIgnoreInstances" formControlName="ignoreInstances" aria-describedby="inputIgnoreInstancesDescription" />
+              <label for="inputIgnoreInstances" class="custom-control-label">Exclude instances from blacklist</label>
+            </div>
+            <small id="inputIgnoreInstancesDescription">
+              If enabled, you can specify a list of instances that will be excluded from blacklisting even if they match the other rules.
+            </small>
+          </div>
+          <div class="form-group position-relative" *ngIf="form.controls.filterByReasons.value">
+            <app-loader *ngIf="loadingWhitelistedInstances else instancesSelect" />
+            <ng-template #instancesSelect>
+              <select formControlName="ignoreInstanceList" tom-select multiple [create]="true" [maxItems]="null">
+                <option *ngFor="let option of whitelistedInstancesList" [value]="option.domain">{{option.domain}}</option>
+              </select>
+            </ng-template>
+          </div>
+          <div class="form-group">
+            <div class="custom-control custom-switch custom-switch-on-danger">
               <input class="custom-control-input" type="checkbox" id="inputIncludeHesitations" formControlName="includeHesitations" aria-describedby="inputIncludeHesitationsDescription" />
               <label for="inputIncludeHesitations" class="custom-control-label">Include hesitations</label>
             </div>
