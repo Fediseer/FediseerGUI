@@ -72,6 +72,7 @@ export class DatabaseService {
       includeHesitations: false,
       ignoreInstanceList: [],
       ignoreInstances: false,
+      reasonsPublic: false,
     };
   }
 

@@ -28,6 +28,10 @@ export class SynchronizeMastodonComponent implements OnInit {
     secret: new FormControl<string>('', [Validators.required]),
   });
 
+  public form = new FormGroup({
+    reasonsPublic: new FormControl<boolean>(false),
+  });
+
   public originallyBlockedInstances: MastodonBlacklistItem[] = [];
 
   public loading: boolean = true;
@@ -74,6 +78,29 @@ export class SynchronizeMastodonComponent implements OnInit {
       return;
     }
 
+    this.form.patchValue({
+      reasonsPublic: this.syncSettings.reasonsPublic,
+    });
+
+    this.form.valueChanges.subscribe(changes => {
+      // this is done as an assignment to a new object because typescript won't let you compile if you miss any
+      this.database.mastodonSynchronizationSettings = {
+        oauthClientId: this.syncSettings.oauthClientId,
+        oauthClientSecret: this.syncSettings.oauthClientSecret,
+        purge: this.syncSettings.purge,
+        filterByReasons: this.syncSettings.filterByReasons,
+        customInstances: this.syncSettings.customInstances,
+        ignoreInstanceList: this.syncSettings.ignoreInstanceList,
+        ignoreInstances: this.syncSettings.ignoreInstances,
+        reasonsFilter: this.syncSettings.reasonsFilter,
+        includeHesitations: this.syncSettings.includeHesitations,
+        mode: this.syncSettings.mode,
+        oauthToken: this.syncSettings.oauthToken,
+        // custom fields
+        reasonsPublic: this.form.controls.reasonsPublic.value ?? false,
+      }
+    });
+
     const instances = await this.getBlockedInstancesFromSource(this.authManager.currentInstanceSnapshot.name);
     this.loading = false;
     if (instances === null) {
@@ -84,19 +111,10 @@ export class SynchronizeMastodonComponent implements OnInit {
   }
 
   public async saveOauth(): Promise<void> {
-    this.database.mastodonSynchronizationSettings = {
-      oauthClientId: this.oauthForm.controls.clientId.value ?? undefined,
-      oauthClientSecret: this.oauthForm.controls.secret.value ?? undefined,
-      oauthToken: this.syncSettings.oauthToken,
-      mode: this.syncSettings.mode,
-      purge: this.syncSettings.purge,
-      filterByReasons: this.syncSettings.filterByReasons,
-      customInstances: this.syncSettings.customInstances,
-      ignoreInstanceList: this.syncSettings.ignoreInstanceList,
-      ignoreInstances: this.syncSettings.ignoreInstances,
-      reasonsFilter: this.syncSettings.reasonsFilter,
-      includeHesitations: this.syncSettings.includeHesitations,
-    };
+    const settings = this.database.mastodonSynchronizationSettings;
+    settings.oauthClientId = this.oauthForm.controls.clientId.value ?? undefined;
+    settings.oauthClientSecret = this.oauthForm.controls.secret.value ?? undefined;
+    this.database.mastodonSynchronizationSettings = settings;
     this.syncSettings = this.database.mastodonSynchronizationSettings;
   }
 
@@ -162,12 +180,14 @@ export class SynchronizeMastodonComponent implements OnInit {
       responses.push(toPromise(this.mastodonApi.deleteBlacklist(myInstance, token, item.id)));
     }
     for (const item of toAdd) {
+      const reasons = [
+        ...item.censureReasons,
+        ...item.hesitationReasons,
+      ].join(', ');
       responses.push(toPromise(this.mastodonApi.blacklistInstance(myInstance, token, item.domain, {
         severity: MastodonBlacklistSeverity.Suspend,
-        private_comment: [
-          ...item.censureReasons,
-          ...item.hesitationReasons,
-        ].join(', '),
+        private_comment: reasons,
+        public_comment: this.form.controls.reasonsPublic.value ? reasons : undefined,
       })));
     }
 

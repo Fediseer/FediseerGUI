@@ -37,12 +37,24 @@
       <app-filter-form
         [getSettingsCallback]="getSettingsCallback"
         [saveSettingsCallback]="saveSettingsCallback"
-        (instancesFetched)="synchronize($event)"
+        (formSubmitted)="synchronize($event)"
         (modeChanged)="currentMode = $event"
         (instancesToBanChanged)="loadDiffs($event)"
         (instancesToBanCalculationStarted)="loadingPreview = true"
         (purgeChanged)="purgeMode = $event"
-      />
+      >
+        <div [formGroup]="form">
+          <div class="form-group">
+            <div class="custom-control custom-switch custom-switch-on-danger">
+              <input class="custom-control-input" type="checkbox" id="inputMakeReasonsPublic" formControlName="reasonsPublic" aria-describedby="inputMakeReasonsPublicDescription" />
+              <label for="inputMakeReasonsPublic" class="custom-control-label">Make reasons public</label>
+            </div>
+            <small id="inputMakeReasonsPublicDescription">
+              If enabled, the censure reasons will be displayed publicly in your Mastodon blocklist, otherwise they'll be visible as a private note.
+            </small>
+          </div>
+        </div>
+      </app-filter-form>
       <div class="row mt-4">
         <div class="col-md-12 minimum-height">
           <h3>Preview</h3>

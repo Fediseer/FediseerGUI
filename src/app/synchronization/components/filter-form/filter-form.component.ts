@@ -24,7 +24,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   @Input() getSettingsCallback: GetSettingsCallback<TSettings> = () => {throw new Error("getSettingsCallback not provided")};
   @Input() saveSettingsCallback: SaveSettingsCallback<TSettings> = () => {throw new Error("saveSettingsCallback not provided")};
 
-  private _result: EventEmitter<InstanceDetailResponse[]> = new EventEmitter<InstanceDetailResponse[]>();
+  private _formSubmitted: EventEmitter<InstanceDetailResponse[]> = new EventEmitter<InstanceDetailResponse[]>();
   private _modeChanged: EventEmitter<SynchronizationMode> = new EventEmitter<SynchronizationMode>();
   private _instancesToBanChanged: EventEmitter<InstanceDetailResponse[]> = new EventEmitter<InstanceDetailResponse[]>();
   private _instancesToBanCalculationStarted: EventEmitter<void> = new EventEmitter<void>();
@@ -60,8 +60,8 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   ) {
   }
 
-  @Output() public get instancesFetched(): Observable<InstanceDetailResponse[]> {
-    return this._result;
+  @Output() public get formSubmitted(): Observable<InstanceDetailResponse[]> {
+    return this._formSubmitted;
   }
 
   @Output() public get modeChanged(): Observable<SynchronizationMode> {
@@ -86,7 +86,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
       this.messageService.createError('Failed calculating the list of instances to ban.');
       return;
     }
-    this._result.next(instances);
+    this._formSubmitted.next(instances);
   }
 
   public async ngOnInit(): Promise<void> {

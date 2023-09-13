@@ -45,7 +45,7 @@
         <app-filter-form
           [getSettingsCallback]="getSettingsCallback"
           [saveSettingsCallback]="saveSettingsCallback"
-          (instancesFetched)="synchronize($event)"
+          (formSubmitted)="synchronize($event)"
           (modeChanged)="currentMode = $event"
           (instancesToBanChanged)="loadDiffs($event)"
           (instancesToBanCalculationStarted)="loadingPreview = true"
