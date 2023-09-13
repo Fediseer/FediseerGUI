@@ -81,6 +81,14 @@
               If enabled, only instances with censure reasons you specify will get blacklisted. Note that your own blacklist is always synchronized in full.
             </small>
           </div>
+          <div class="form-group position-relative" *ngIf="form.controls.filterByReasons.value">
+            <app-loader *ngIf="loadingReasons else reasonsSelect" />
+            <ng-template #reasonsSelect>
+              <select formControlName="reasonsFilter" tom-select multiple [create]="true" [maxItems]="null">
+                <option *ngFor="let option of availableReasons" [value]="option">{{option}}</option>
+              </select>
+            </ng-template>
+          </div>
           <div class="form-group">
             <div class="custom-control custom-switch custom-switch-on-danger">
               <input class="custom-control-input" type="checkbox" id="inputIncludeHesitations" formControlName="includeHesitations" aria-describedby="inputIncludeHesitationsDescription" />
@@ -89,14 +97,6 @@
             <small id="inputIncludeHesitationsDescription">
               If enabled, hesitations following the above rules will be included in addition to censures.
             </small>
-          </div>
-          <div class="form-group position-relative" *ngIf="form.controls.filterByReasons.value">
-            <app-loader *ngIf="loadingReasons else reasonsSelect" />
-            <ng-template #reasonsSelect>
-              <select formControlName="reasonsFilter" tom-select multiple [create]="true" [maxItems]="null">
-                <option *ngFor="let option of availableReasons" [value]="option">{{option}}</option>
-              </select>
-            </ng-template>
           </div>
           <button type="submit" [disabled]="!form.valid" class="btn btn-primary">Synchronize</button>
         </form>
