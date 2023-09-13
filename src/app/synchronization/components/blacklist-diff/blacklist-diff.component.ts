@@ -1,6 +1,8 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {InstanceDetailResponse} from "../../../response/instance-detail.response";
 
+export type OriginalToStringCallback<T> = ((instance: T) => string);
+
 @Component({
   selector: 'app-blacklist-diff',
   templateUrl: './blacklist-diff.component.html',
@@ -13,7 +15,7 @@ export class BlacklistDiffComponent<TOriginalInstance, TNewInstance> implements 
 
   @Input() purgeMode: boolean = false;
 
-  @Input() originalToStringCallback: ((instance: TOriginalInstance) => string) = instance => <string>instance;
+  @Input() originalToStringCallback: OriginalToStringCallback<TOriginalInstance> = instance => <string>instance;
   @Input() newToStringCallback: ((instance: TNewInstance) => string) = (instance) => (<InstanceDetailResponse>instance).domain;
 
   public added: string[] = [];

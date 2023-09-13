@@ -7,7 +7,13 @@ import {AuthenticationManagerService} from "../../../services/authentication-man
 import {getMastodonRedirectUri, mastodonScopes} from "../mastodon-oauth-callback/mastodon-oauth-callback.component";
 import {MastodonApiService} from "../../../services/mastodon-api.service";
 import {toPromise} from "../../../types/resolvable";
-import {MastodonBlacklistItem} from "../../../response/mastodon-blacklist.response";
+import {MastodonBlacklistItem, MastodonBlacklistSeverity} from "../../../response/mastodon-blacklist.response";
+import {MessageService} from "../../../services/message.service";
+import {GetSettingsCallback, SaveSettingsCallback} from "../../components/filter-form/filter-form.component";
+import {InstanceDetailResponse} from "../../../response/instance-detail.response";
+import {SynchronizationMode} from "../../../types/synchronization-mode";
+import {OriginalToStringCallback} from "../../components/blacklist-diff/blacklist-diff.component";
+import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 
 @Component({
   selector: 'app-synchronize-mastodon',
@@ -27,11 +33,25 @@ export class SynchronizeMastodonComponent implements OnInit {
   public loading: boolean = true;
   public oauthSetupFinished: boolean = true;
 
+  public currentMode: SynchronizationMode | null = null;
+  public loadingPreview: boolean = true;
+  public purgeMode: boolean | null = null;
+  public instancesToBanPreview: InstanceDetailResponse[] | null = null;
+
+  public saveSettingsCallback: SaveSettingsCallback<MastodonSynchronizationSettings> = (database, settings) => {
+    database.mastodonSynchronizationSettings = settings;
+  }
+  public getSettingsCallback: GetSettingsCallback<MastodonSynchronizationSettings> = database => {
+    return database.mastodonSynchronizationSettings;
+  }
+  public instanceToStringCallback: OriginalToStringCallback<MastodonBlacklistItem> = instance => instance.domain;
+
   constructor(
     private readonly database: DatabaseService,
     private readonly titleService: TitleService,
     private readonly authManager: AuthenticationManagerService,
     private readonly mastodonApi: MastodonApiService,
+    private readonly messageService: MessageService,
   ) {
   }
 
@@ -49,11 +69,18 @@ export class SynchronizeMastodonComponent implements OnInit {
     }
 
     if (!this.syncSettings.oauthToken) {
+      this.oauthSetupFinished = false;
       await this.oauthRedirect();
       return;
     }
 
-    this.originallyBlockedInstances = await this.getBlockedInstancesFromSource(this.authManager.currentInstanceSnapshot.name);
+    const instances = await this.getBlockedInstancesFromSource(this.authManager.currentInstanceSnapshot.name);
+    this.loading = false;
+    if (instances === null) {
+      this.messageService.createError('Failed getting the original blocked instance list.');
+      return;
+    }
+    this.originallyBlockedInstances = instances;
   }
 
   public async saveOauth(): Promise<void> {
@@ -93,7 +120,71 @@ export class SynchronizeMastodonComponent implements OnInit {
     return getMastodonRedirectUri();
   }
 
-  private async getBlockedInstancesFromSource(instance: string): Promise<MastodonBlacklistItem[]> {
-    return await toPromise(this.mastodonApi.getBlacklist(instance, this.syncSettings.oauthToken!));
+  private async getBlockedInstancesFromSource(instance: string): Promise<MastodonBlacklistItem[] | null> {
+    try {
+      return await toPromise(this.mastodonApi.getBlacklist(instance, this.syncSettings.oauthToken!));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  public async synchronize(instancesToBan: InstanceDetailResponse[]): Promise<void> {
+    if (this.purgeMode === null) {
+      this.messageService.createError('There was an error with submitting the form.');
+      return;
+    }
+
+    this.loading = true;
+
+    const myInstance = this.authManager.currentInstanceSnapshot.name;
+    const originalInstances = await this.getBlockedInstancesFromSource(myInstance);
+    if (originalInstances === null) {
+      this.loading = false;
+      this.messageService.createError('Failed to fetch list of original instances.');
+      return;
+    }
+
+    const instancesToBanString = instancesToBan.map(instance => instance.domain);
+    const originalInstancesString = originalInstances.map(instance => instance.domain);
+
+    const toRemove = this.purgeMode
+      ? originalInstances.filter(instance => !instancesToBanString.includes(instance.domain))
+      : [];
+    const toAdd = instancesToBan
+      .filter(instance => !originalInstancesString.includes(instance.domain))
+      .map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance))
+    ;
+
+    const token = this.syncSettings.oauthToken!;
+    const responses: Promise<any>[] = [];
+
+    for (const item of toRemove) {
+      responses.push(toPromise(this.mastodonApi.deleteBlacklist(myInstance, token, item.id)));
+    }
+    for (const item of toAdd) {
+      responses.push(toPromise(this.mastodonApi.blacklistInstance(myInstance, token, item.domain, {
+        severity: MastodonBlacklistSeverity.Suspend,
+        private_comment: [
+          ...item.censureReasons,
+          ...item.hesitationReasons,
+        ].join(', '),
+      })));
+    }
+
+    try {
+      await Promise.all(responses);
+      this.messageService.createSuccess('The blacklist was successfully updated.');
+    } catch (e) {
+      this.messageService.createError('Failed to update the blacklist.')
+    }
+    this.loading = false;
+  }
+
+  public async loadDiffs(instancesToBan: InstanceDetailResponse[]): Promise<void> {
+    if (this.currentMode === null) {
+      return;
+    }
+    this.instancesToBanPreview = instancesToBan;
+    this.loadingPreview = false;
   }
 }

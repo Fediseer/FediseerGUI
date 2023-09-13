@@ -56,7 +56,7 @@
       If enabled, you can specify a list of instances that will be excluded from blacklisting even if they match the other rules.
     </small>
   </div>
-  <div class="form-group position-relative" *ngIf="form.controls.filterByReasons.value">
+  <div class="form-group position-relative" *ngIf="form.controls.ignoreInstances.value">
     <app-loader *ngIf="loadingWhitelistedInstances else instancesSelect" />
     <ng-template #instancesSelect>
       <select formControlName="ignoreInstanceList" tom-select multiple [create]="true" [maxItems]="null">

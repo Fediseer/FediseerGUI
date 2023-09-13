@@ -28,10 +28,63 @@
   </div>
 </ng-template>
 
+<ng-template #synchronizeForm>
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Synchronization</h3>
+    </div>
+    <div class="card-body">
+      <app-filter-form
+        [getSettingsCallback]="getSettingsCallback"
+        [saveSettingsCallback]="saveSettingsCallback"
+        (instancesFetched)="synchronize($event)"
+        (modeChanged)="currentMode = $event"
+        (instancesToBanChanged)="loadDiffs($event)"
+        (instancesToBanCalculationStarted)="loadingPreview = true"
+        (purgeChanged)="purgeMode = $event"
+      />
+      <div class="row mt-4">
+        <div class="col-md-12 minimum-height">
+          <h3>Preview</h3>
+
+          <div class="position-relative">
+            <app-loader *ngIf="loadingPreview else previewTable" />
+          </div>
+
+          <ng-template #previewTable>
+            <app-blacklist-diff
+              [originalList]="originallyBlockedInstances"
+              [newList]="instancesToBanPreview!"
+              [purgeMode]="purgeMode ?? false"
+              [originalToStringCallback]="instanceToStringCallback"
+            />
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
 <ng-template #content>
   <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Info</h3>
+      </div>
+      <div class="card-body">
+        <p>
+          Here you can synchronize your settings with your instance, if you provide an application OAuth credentials.
+        </p>
+        <p>
+          It's strongly advised to backup the list of your currently blocked instances in case something goes wrong.
+        </p>
+      </div>
+    </div>
     <ng-container *ngIf="!oauthSetupFinished">
       <ng-container *ngTemplateOutlet="oauthSetup"></ng-container>
+    </ng-container>
+    <ng-container *ngIf="oauthSetupFinished">
+      <ng-container *ngTemplateOutlet="synchronizeForm"></ng-container>
     </ng-container>
   </div>
 </ng-template>

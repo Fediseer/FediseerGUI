@@ -87,7 +87,6 @@ export class SynchronizeLemmyComponent implements OnInit {
       return;
     }
     this.instancesToBanPreview = instancesToBan;
-    console.log(this.instancesToBanPreview);
     this.loadingPreview = false;
   }
 
@@ -162,13 +161,12 @@ export class SynchronizeLemmyComponent implements OnInit {
         this.messageService.createError('There was an error with submitting the form.');
         return;
       }
-
-      this.loading = true;
-
       if (!this.form.valid) {
         this.messageService.createError('The form is not filled correctly.');
         return;
       }
+
+      this.loading = true;
       const myInstance = this.authManager.currentInstanceSnapshot.name;
 
       const jwt = await this.getJwt();
@@ -181,6 +179,7 @@ export class SynchronizeLemmyComponent implements OnInit {
 
       const originalInstances = await this.getBlockedInstancesFromSource(myInstance);
       if (originalInstances === null) {
+        this.messageService.createError('Failed to fetch list of original instances.');
         return;
       }
 
