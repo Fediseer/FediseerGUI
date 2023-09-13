@@ -7,20 +7,33 @@
     </div>
     <div class="card-body">
       <p>
-        Before you can synchronize your settings, you must create an OAuth app and put its credentials here.
-        Any settings you put here are only stored in your browser.
+        Before you can synchronize your settings, you must create an
+        <a target="_blank" href="https://{{currentInstance}}/settings/applications">OAuth app</a> and put its
+        credentials here. Any settings you put here are only stored in your browser.
       </p>
 
-      <p>Your OAuth app settings should include this redirect uri: <code>{{redirectUrl}}</code></p>
+      <p>Your OAuth app needs these settings:</p>
+      <ul>
+        <li><strong>Redirect URI</strong> - <code>{{redirectUrl}}</code></li>
+        <li>
+          <strong>Scopes</strong> -
+          <ul>
+            <li><code>admin:read:domain_allows</code></li>
+            <li><code>admin:read:domain_blocks</code></li>
+            <li><code>admin:write:domain_allows</code></li>
+            <li><code>admin:write:domain_blocks</code></li>
+          </ul>
+        </li>
+      </ul>
 
       <form [formGroup]="oauthForm" (submit)="saveOauthAndRedirect()">
         <div class="form-group">
-          <label for="inputClientId">Client ID</label>
-          <input id="inputClientId" class="form-control" formControlName="clientId" />
+          <label for="inputClientId">Client key</label>
+          <input id="inputClientId" class="form-control" formControlName="clientId"/>
         </div>
         <div class="form-group">
           <label for="inputClientSecret">Client secret</label>
-          <input id="inputClientSecret" class="form-control" formControlName="secret" />
+          <input id="inputClientSecret" class="form-control" formControlName="secret"/>
         </div>
         <button type="submit" class="btn btn-primary" [disabled]="!oauthForm.valid">Save</button>
       </form>
@@ -46,11 +59,13 @@
         <div [formGroup]="form">
           <div class="form-group">
             <div class="custom-control custom-switch custom-switch-on-danger">
-              <input class="custom-control-input" type="checkbox" id="inputMakeReasonsPublic" formControlName="reasonsPublic" aria-describedby="inputMakeReasonsPublicDescription" />
+              <input class="custom-control-input" type="checkbox" id="inputMakeReasonsPublic"
+                     formControlName="reasonsPublic" aria-describedby="inputMakeReasonsPublicDescription"/>
               <label for="inputMakeReasonsPublic" class="custom-control-label">Make reasons public</label>
             </div>
             <small id="inputMakeReasonsPublicDescription">
-              If enabled, the censure reasons will be displayed publicly in your Mastodon blocklist, otherwise they'll be visible as a private note.
+              If enabled, the censure reasons will be displayed publicly in your Mastodon blocklist, otherwise they'll
+              be visible as a private note.
             </small>
           </div>
         </div>
@@ -60,7 +75,7 @@
           <h3>Preview</h3>
 
           <div class="position-relative">
-            <app-loader *ngIf="loadingPreview else previewTable" />
+            <app-loader *ngIf="loadingPreview else previewTable"/>
           </div>
 
           <ng-template #previewTable>

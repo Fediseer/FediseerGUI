@@ -21,6 +21,8 @@ import {NormalizedInstanceDetailResponse} from "../../../response/normalized-ins
   styleUrls: ['./synchronize-mastodon.component.scss']
 })
 export class SynchronizeMastodonComponent implements OnInit {
+  protected readonly currentInstance = this.authManager.currentInstanceSnapshot.name;
+
   private syncSettings: MastodonSynchronizationSettings = this.database.mastodonSynchronizationSettings;
 
   public oauthForm = new FormGroup({
