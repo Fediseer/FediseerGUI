@@ -10,6 +10,7 @@ import {ReactiveFormsModule} from "@angular/forms";
 import { EditOwnInstanceComponent } from './pages/edit-own-instance/edit-own-instance.component';
 import {Guards} from "../guards/guards";
 import { HesitatedInstancesComponent } from './pages/hesitated-instances/hesitated-instances.component';
+import { SuspiciousInstanceDetailComponent } from './pages/suspicious-instance-detail/suspicious-instance-detail.component';
 
 const routes: Routes = [
   {
@@ -33,6 +34,10 @@ const routes: Routes = [
     component: InstanceDetailComponent,
   },
   {
+    path: 'suspicious/detail/:instance',
+    component: SuspiciousInstanceDetailComponent,
+  },
+  {
     path: 'edit/my',
     component: EditOwnInstanceComponent,
     canActivate: [Guards.isLoggedIn()],
@@ -46,7 +51,8 @@ const routes: Routes = [
     SuspiciousInstancesComponent,
     CensuredInstancesComponent,
     EditOwnInstanceComponent,
-    HesitatedInstancesComponent
+    HesitatedInstancesComponent,
+    SuspiciousInstanceDetailComponent
   ],
   imports: [
     CommonModule,

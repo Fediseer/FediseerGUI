@@ -16,7 +16,7 @@
           </thead>
           <tbody>
           <tr *ngFor="let instance of instances">
-            <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
+            <td><a routerLink="/instances/suspicious/detail/{{instance.domain}}">{{instance.domain}}</a></td>
             <td *ngIf="!currentInstance.anonymous">
               <a href="javascript:void(0)" (click)="toggleCensure(instance.domain)">
                 <app-yes-no [yes]="censuredByMe.indexOf(instance.domain) > -1"></app-yes-no>

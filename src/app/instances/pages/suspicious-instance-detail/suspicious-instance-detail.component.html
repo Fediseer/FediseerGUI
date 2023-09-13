@@ -1,0 +1,63 @@
+<app-loader *ngIf="loading else content"></app-loader>
+
+<ng-template #content>
+  <div class="col-md-12">
+    <div class="card" *ngIf="detail">
+      <div class="card-header">
+        <h3 class="card-title" id="instance-details">Instance details</h3>
+      </div>
+      <div class="card-body">
+        <table class="table table-bordered">
+          <tbody>
+          <tr>
+            <th>Field</th>
+            <th>Value</th>
+          </tr>
+          <tr>
+            <td>Domain</td>
+            <td>{{detail.domain}}</td>
+          </tr>
+          <tr>
+            <td>Uptime</td>
+            <td>{{(detail.uptime_alltime / 100) | formatPercentage:2}}</td>
+          </tr>
+          <tr>
+            <td>Local posts</td>
+            <td>{{detail.local_posts | formatNumber}}</td>
+          </tr>
+          <tr>
+            <td>Comments count</td>
+            <td>{{detail.comment_counts | formatNumber}}</td>
+          </tr>
+          <tr>
+            <td>Total users</td>
+            <td>{{detail.total_users | formatNumber}}</td>
+          </tr>
+          <tr>
+            <td>Monthly active users</td>
+            <td>{{detail.active_users_monthly | formatNumber}}</td>
+          </tr>
+          <tr>
+            <td>Registrations open</td>
+            <td><app-yes-no [swapColors]="true" [yes]="detail.signup"></app-yes-no></td>
+          </tr>
+          <tr>
+            <td>Local users per comments & posts</td>
+            <td>
+              {{detail.activity_suspicion | formatNumber:2}}
+              <app-tooltip text="Higher is worse" />
+            </td>
+          </tr>
+          <tr>
+            <td>Local users per monthly active users</td>
+            <td>
+              {{detail.active_users_suspicion | formatNumber:2}}
+              <app-tooltip text="Higher is worse" />
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-template>

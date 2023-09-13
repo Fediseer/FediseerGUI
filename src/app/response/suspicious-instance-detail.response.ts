@@ -4,7 +4,7 @@ export interface SuspiciousInstanceDetailResponse {
   domain: string;
   uptime_alltime: float;
   local_posts: int;
-  comments_count: int;
+  comment_counts: int;
   total_users: int;
   active_users_monthly: int;
   signup: boolean;
