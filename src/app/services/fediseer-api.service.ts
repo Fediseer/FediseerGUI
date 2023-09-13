@@ -129,6 +129,10 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Get, `hesitations_given/${instances.join(',')}`);
   }
 
+  public getHesitationsForInstance(instance: string): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    return this.sendRequest(HttpMethod.Get, `hesitations/${instance}`);
+  }
+
   public hesitateOnAnInstance(instance: string, reason: string | null, evidence: string | null = null): Observable<ApiResponse<SuccessResponse>> {
     const body: {[key: string]: string} = {};
     if (reason) {

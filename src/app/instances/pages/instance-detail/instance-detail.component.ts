@@ -18,6 +18,8 @@ import {NormalizedInstanceDetailResponse} from "../../../response/normalized-ins
 export class InstanceDetailComponent implements OnInit {
   public censuresReceived: NormalizedInstanceDetailResponse[] = [];
   public censuresGiven: NormalizedInstanceDetailResponse[] = [];
+  public hesitationsReceived: NormalizedInstanceDetailResponse[] = [];
+  public hesitationsGiven: NormalizedInstanceDetailResponse[] = [];
   public endorsementsReceived: InstanceDetailResponse[] = [];
   public endorsementsGiven: InstanceDetailResponse[] = [];
   public guaranteesGiven: InstanceDetailResponse[] = [];
@@ -50,38 +52,38 @@ export class InstanceDetailComponent implements OnInit {
       const instanceDomain = <string>params['instance'];
       this.titleService.title = `${instanceDomain} | Instance detail`;
 
-      const map = {
-        censuresReceived: 0,
-        censuresGiven: 1,
-        endorsementsReceived: 2,
-        endorsementsGiven: 3,
-        guaranteesGiven: 4,
-        detail: 5,
-      };
-      const promises = [
+      const responses = await Promise.all([
         toPromise(this.api.getCensuresForInstance(instanceDomain)),
         toPromise(this.api.getCensuresByInstances([instanceDomain])),
         toPromise(this.api.getEndorsementsForInstance(instanceDomain)),
         toPromise(this.api.getEndorsementsByInstance([instanceDomain])),
         toPromise(this.api.getGuaranteesByInstance(instanceDomain)),
         toPromise(this.api.getInstanceInfo(instanceDomain)),
-      ];
-
-      const responses = await Promise.all(promises);
+        toPromise(this.api.getHesitationsForInstance(instanceDomain)),
+        toPromise(this.api.getHesitationsByInstances([instanceDomain])),
+      ]);
       if (this.apiResponseHelper.handleErrors(responses)) {
         this.loading = false;
         return;
       }
 
-      this.censuresReceived = (<InstanceListResponse<InstanceDetailResponse>>responses[map.censuresReceived].successResponse).instances
-        .map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance));
-      this.censuresGiven = (<InstanceListResponse<InstanceDetailResponse>>responses[map.censuresGiven].successResponse).instances
-        .map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance));
-      this.endorsementsReceived = (<InstanceListResponse<InstanceDetailResponse>>responses[map.endorsementsReceived].successResponse).instances;
-      this.endorsementsGiven = (<InstanceListResponse<InstanceDetailResponse>>responses[map.endorsementsGiven].successResponse).instances;
-      this.guaranteesGiven = (<InstanceListResponse<InstanceDetailResponse>>responses[map.guaranteesGiven].successResponse).instances;
-      this.detail = <InstanceDetailResponse>responses[map.detail].successResponse;
+      this.censuresReceived = responses[0].successResponse!.instances.map(
+        instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance),
+      );
+      this.censuresGiven = responses[1].successResponse!.instances.map(
+        instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance),
+      );
+      this.endorsementsReceived = responses[2].successResponse!.instances;
+      this.endorsementsGiven = responses[3].successResponse!.instances;
+      this.guaranteesGiven = responses[4].successResponse!.instances;
+      this.detail = responses[5].successResponse!;
       this.myInstance = !this.authManager.currentInstanceSnapshot.anonymous && this.detail.domain === this.authManager.currentInstanceSnapshot.name;
+      this.hesitationsReceived = responses[6].successResponse!.instances.map(
+        instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance),
+      );
+      this.hesitationsGiven = responses[7].successResponse!.instances.map(
+        instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance),
+      );
 
       this.loading = false;
     });
