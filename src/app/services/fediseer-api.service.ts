@@ -154,9 +154,7 @@ export class FediseerApiService {
     if (reason) {
       body['reason'] = reason;
     }
-    if (evidence) {
-      body['evidence'] = evidence;
-    }
+    body['evidence'] = evidence ?? '';
     return this.sendRequest(HttpMethod.Patch, `hesitations/${instance}`, body);
   }
 
