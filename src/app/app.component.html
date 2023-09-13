@@ -169,6 +169,16 @@
               </p>
             </a>
           </li>
+          <li>
+            <hr></li>
+          <li class="nav-item" *ngIf="!instance.anonymous">
+            <a href="{{sourceCodeLink}}/releases" class="nav-link">
+              <i class="nav-icon fas fa-history"></i>
+              <p>
+                {{ "Changelog" }}
+              </p>
+            </a>
+          </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->
