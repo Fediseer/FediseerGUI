@@ -9,6 +9,7 @@ import { CensuredInstancesComponent } from './pages/censured-instances/censured-
 import {ReactiveFormsModule} from "@angular/forms";
 import { EditOwnInstanceComponent } from './pages/edit-own-instance/edit-own-instance.component';
 import {Guards} from "../guards/guards";
+import { HesitatedInstancesComponent } from './pages/hesitated-instances/hesitated-instances.component';
 
 const routes: Routes = [
   {
@@ -22,6 +23,10 @@ const routes: Routes = [
   {
     path: 'censured',
     component: CensuredInstancesComponent,
+  },
+  {
+    path: 'hesitated',
+    component: HesitatedInstancesComponent,
   },
   {
     path: 'detail/:instance',
@@ -40,7 +45,8 @@ const routes: Routes = [
     InstanceDetailComponent,
     SuspiciousInstancesComponent,
     CensuredInstancesComponent,
-    EditOwnInstanceComponent
+    EditOwnInstanceComponent,
+    HesitatedInstancesComponent
   ],
   imports: [
     CommonModule,
