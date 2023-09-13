@@ -5,7 +5,7 @@ import { MyCensuresComponent } from './pages/my-censures/my-censures.component';
 import { CensureInstanceComponent } from './pages/censure-instance/censure-instance.component';
 import {ReactiveFormsModule} from "@angular/forms";
 import {SharedModule} from "../shared/shared.module";
-import { SynchronizeLemmyComponent } from './pages/synchronize-lemmy/synchronize-lemmy.component';
+import { SynchronizeLemmyComponent } from '../synchronization/pages/synchronize-lemmy/synchronize-lemmy.component';
 import {Guards} from "../guards/guards";
 import { EditCensureReasonsComponent } from './pages/edit-censure-reasons/edit-censure-reasons.component';
 
@@ -21,11 +21,6 @@ const routes: Routes = [
     canActivate: [Guards.isLoggedIn()]
   },
   {
-    path: 'synchronize/lemmy',
-    component: SynchronizeLemmyComponent,
-    canActivate: [Guards.isLoggedIn()]
-  },
-  {
     path: 'my/edit/:instance',
     component: EditCensureReasonsComponent,
     canActivate: [Guards.isLoggedIn()],
@@ -36,7 +31,6 @@ const routes: Routes = [
   declarations: [
     MyCensuresComponent,
     CensureInstanceComponent,
-    SynchronizeLemmyComponent,
     EditCensureReasonsComponent
   ],
     imports: [
