@@ -38,6 +38,8 @@ export class SynchronizeLemmyComponent implements OnInit {
     filterByReasons: new FormControl<boolean>(false),
     reasonsFilter: new FormControl<string[]>([]),
     includeHesitations: new FormControl<boolean>(false),
+    ignoreInstances: new FormControl<boolean>(false),
+    ignoreInstanceList: new FormControl<string[]>([]),
   });
 
   public loading = true;
@@ -75,6 +77,8 @@ export class SynchronizeLemmyComponent implements OnInit {
       reasonsFilter: settings.reasonsFilter,
       filterByReasons: settings.filterByReasons,
       includeHesitations: settings.includeHesitations,
+      ignoreInstanceList: settings.ignoreInstanceList,
+      ignoreInstances: settings.ignoreInstances,
     });
 
     const instances = await this.getBlockedInstancesFromSource(this.authManager.currentInstanceSnapshot.name);
@@ -97,6 +101,8 @@ export class SynchronizeLemmyComponent implements OnInit {
         filterByReasons: values.filterByReasons ?? false,
         reasonsFilter: values.reasonsFilter ?? [],
         includeHesitations: values.includeHesitations ?? false,
+        ignoreInstances: values.ignoreInstances ?? false,
+        ignoreInstanceList: values.ignoreInstanceList ?? [],
       });
     });
     this.form.controls.mode.valueChanges.subscribe(mode => {
@@ -132,6 +138,20 @@ export class SynchronizeLemmyComponent implements OnInit {
     this.form.controls.includeHesitations.valueChanges.subscribe(include => {
       const mode = this.form.controls.mode.value;
       if (include === null || mode === null) {
+        return;
+      }
+      this.loadDiffs(mode);
+    });
+    this.form.controls.ignoreInstances.valueChanges.subscribe(ignore => {
+      const mode = this.form.controls.mode.value;
+      if (ignore === null || mode === null) {
+        return;
+      }
+      this.loadDiffs(mode);
+    });
+    this.form.controls.ignoreInstanceList.valueChanges.subscribe(ignoreList => {
+      const mode = this.form.controls.mode.value;
+      if (ignoreList === null || mode === null) {
         return;
       }
       this.loadDiffs(mode);
@@ -358,6 +378,9 @@ export class SynchronizeLemmyComponent implements OnInit {
     if (this.form.controls.filterByReasons.value && this.form.controls.reasonsFilter.value) {
       cacheKey += this.form.controls.reasonsFilter.value!.join('|');
     }
+    if (this.form.controls.ignoreInstances.value && this.form.controls.ignoreInstanceList.value) {
+      cacheKey += this.form.controls.ignoreInstanceList.value!.join('|');
+    }
     cacheKey += String(Number(this.form.controls.includeHesitations.value));
 
     this.cache[myInstanceCacheKey] ??= await (async () => {
@@ -408,6 +431,11 @@ export class SynchronizeLemmyComponent implements OnInit {
             instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance).unmergedCensureReasons.filter(
               reason => reasons.includes(reason),
             ).length,
+          );
+        }
+        if (this.form.controls.ignoreInstances.valid && this.form.controls.ignoreInstanceList.value) {
+          foreignInstanceBlacklist = foreignInstanceBlacklist.filter(
+            instance => !this.form.controls.ignoreInstanceList.value!.includes(instance.domain),
           );
         }
       }
