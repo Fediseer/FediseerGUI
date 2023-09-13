@@ -117,11 +117,12 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Put, `censures/${instance}`, body);
   }
 
-  public updateCensure(instance: string, reason: string | null): Observable<ApiResponse<SuccessResponse>> {
+  public updateCensure(instance: string, reason: string | null, evidence: string | null): Observable<ApiResponse<SuccessResponse>> {
     const body: {[key: string]: string} = {};
     if (reason) {
       body['reason'] = reason;
     }
+    body['evidence'] = evidence ?? '';
     return this.sendRequest(HttpMethod.Patch, `censures/${instance}`, body);
   }
 

@@ -19,6 +19,7 @@ export class EditCensureReasonsComponent implements OnInit {
   public form = new FormGroup({
     instance: new FormControl<string>({value: '', disabled: true}, [Validators.required]),
     reasons: new FormControl<string[]>([]),
+    evidence: new FormControl<string | null>(null),
   });
   public loading: boolean = true;
   public availableReasons: string[] = [];
@@ -74,6 +75,7 @@ export class EditCensureReasonsComponent implements OnInit {
       this.form.patchValue({
         instance: existing.domain,
         reasons: NormalizedInstanceDetailResponse.fromInstanceDetail(existing).unmergedCensureReasons,
+        evidence: NormalizedInstanceDetailResponse.fromInstanceDetail(existing).reasonsEvidence,
       });
       this.loading = false;
     });
@@ -89,6 +91,7 @@ export class EditCensureReasonsComponent implements OnInit {
     this.api.updateCensure(
       this.form.controls.instance.value!,
       this.form.controls.reasons.value ? this.form.controls.reasons.value!.join(',') : null,
+      this.form.controls.evidence.value,
     ).subscribe(response => {
       if (this.apiResponseHelper.handleErrors([response])) {
         this.loading = false;
