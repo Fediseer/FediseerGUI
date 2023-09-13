@@ -38,6 +38,23 @@
           </tr>
         </table>
       </div>
+      <div class="card-footer">
+        <ul class="pagination text-center">
+          <li class="paginate_button page-item previous" [class.disabled]="currentPage <= 1">
+            <a href="javascript:void(0)" class="page-link" (click)="goToPage(currentPage - 1)">
+              Previous
+            </a>
+          </li>
+          <li *ngFor="let page of pages" class="paginate_button page-item" [class.active]="currentPage === page">
+            <a href="javascript:void(0)" class="page-link" (click)="goToPage(page)">{{page}}</a>
+          </li>
+          <li class="paginate_button page-item next" [class.disabled]="currentPage === pages[pages.length - 1]">
+            <a href="javascript:void(0)" class="page-link" (click)="goToPage(currentPage + 1)">
+              Next
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
   </div>
 </ng-template>
