@@ -1,0 +1,32 @@
+<app-loader *ngIf="loading else content"></app-loader>
+
+<ng-template #content>
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-body">
+        <p>Hesitating means that you don't trust an instance. For more information visit the <a routerLink="/glossary" fragment="hesitations">Glossary</a>.</p>
+        <p><strong>You can do this only if your instance is guaranteed by some other instance.</strong></p>
+        <form [formGroup]="form" (submit)="doHesitate()">
+          <div class="form-group">
+            <label for="inputInstance">Instance to hesitate on</label>
+            <input class="form-control" type="text" id="inputInstance" formControlName="instance" />
+          </div>
+          <div class="form-group">
+            <label for="inputReason">Reasons</label>
+            <select formControlName="reasons" id="inputReason" multiple tom-select [maxItems]="null" [create]="true">
+              <option *ngFor="let option of availableReasons" [value]="option">{{option}}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="inputEvidence">Evidence</label>
+            <textarea id="inputEvidence" class="form-control" formControlName="evidence" aria-describedby="inputEvidenceDescription"></textarea>
+            <small id="inputEvidenceDescription">
+              You may optionally provide an evidence, for example links, or any other text up to 1000 characters in length.
+            </small>
+          </div>
+          <button type="submit" class="btn btn-primary">Hesitate on</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</ng-template>

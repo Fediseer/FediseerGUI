@@ -1,0 +1,108 @@
+<app-loader *ngIf="loading else content"></app-loader>
+
+<ng-template #content>
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-body">
+
+        <!-- filters -->
+        <form [formGroup]="filterForm" (submit)="loadInstances()">
+          <div class="row">
+            <div class="col-md-6 col-sm-12">
+              <div class="form-group">
+                <label for="inputFilterInstances">Include instances hesitated on by</label>
+                <select id="inputFilterInstances" tom-select [maxItems]="null" multiple formControlName="instances">
+                  <option [value]="filterInstanceSpecialValueAll">All whitelisted instances</option>
+                  <option *ngFor="let option of allWhitelistedInstances" [value]="option.domain">{{option.domain}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-3 col-sm-12">
+              <div class="form-group">
+                <label aria-hidden="true"></label>
+                <div class="custom-control custom-switch">
+                  <input class="custom-control-input" type="checkbox" id="inputIncludeEndorsed" formControlName="includeEndorsed" />
+                  <label for="inputIncludeEndorsed" class="custom-control-label">Include endorsed instances</label>
+                  <app-tooltip text="By checking this switch you will include not only hesitations by all instances you have selected, but also hesitations by instances your selected instances have endorsed." />
+                </div>
+                <div class="custom-control custom-switch">
+                  <input class="custom-control-input" type="checkbox" id="inputIncludeGuaranteed" formControlName="includeGuaranteed" />
+                  <label for="inputIncludeGuaranteed" class="custom-control-label">Include guaranteed instances</label>
+                  <app-tooltip text="By checking this switch you will include not only hesitations by all instances you have selected, but also hesitations by instances they have guaranteed for." />
+                </div>
+                <!--                <div class="custom-control custom-switch">-->
+                <!--                  <input class="custom-control-input" type="checkbox" id="inputRecursive" formControlName="recursive" />-->
+                <!--                  <label for="inputRecursive" class="custom-control-label">Recursive</label>-->
+                <!--                  <app-tooltip text="If you chose to include guaranteed instances and also choose this recursive option, a chain of trust will be formed. The chain will start with your selected instances, then proceed to include the guaranteed instances of your selected instances, and so on. The same applies for endorsements." />-->
+                <!--                </div>-->
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3">
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Filter</button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <!-- end filters -->
+
+        <hr>
+
+        <p *ngIf="!currentInstance.anonymous">
+          If you're looking for managing of your own hesitation list, go to <a routerLink="/hesitations/my">your hesitations</a>.
+        </p>
+        <table class="table table-bordered">
+          <thead>
+          <tr>
+            <th>Instance</th>
+            <th>Reasons</th>
+            <th *ngIf="!currentInstance.anonymous">Hesitated on by me?</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngIf="!instances.length">
+            <td colspan="3">
+              Instances you selected hadn't hesitated on any instance yet.
+            </td>
+          </tr>
+          <tr *ngFor="let instance of instances">
+            <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
+            <td>
+              <code *ngIf="!instance.hesitationReasons.length; else listReasons">N/A</code>
+              <ng-template #listReasons>
+                <ul>
+                  <li *ngFor="let reason of instance.hesitationReasons">{{reason}}</li>
+                </ul>
+              </ng-template>
+            </td>
+            <td *ngIf="!currentInstance.anonymous">
+              <a href="javascript:void(0)" (click)="toggleHesitation(instance.domain)">
+                <app-yes-no [yes]="hesitatedByMe.indexOf(instance.domain) > -1"></app-yes-no>
+              </a>
+            </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card-footer" *ngIf="maxPage > 1">
+        <ul class="pagination text-center">
+          <li class="paginate_button page-item previous" [class.disabled]="currentPage <= 1">
+            <a href="javascript:void(0)" class="page-link" (click)="goToPage(currentPage - 1)">
+              Previous
+            </a>
+          </li>
+          <li *ngFor="let page of pages" class="paginate_button page-item" [class.active]="currentPage === page">
+            <a href="javascript:void(0)" class="page-link" (click)="goToPage(page)">{{page}}</a>
+          </li>
+          <li class="paginate_button page-item next" [class.disabled]="currentPage >= maxPage">
+            <a href="javascript:void(0)" class="page-link" (click)="goToPage(currentPage + 1)">
+              Next
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</ng-template>

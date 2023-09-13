@@ -140,8 +140,8 @@
                 <code *ngIf="!instance.censureReasons.length">N/A</code>
               </td>
               <td>
-                <ng-container *ngIf="instance.evidence.length">{{instance.evidence}}</ng-container>
-                <code *ngIf="!instance.evidence.length">N/A</code>
+                <ng-container *ngIf="instance.reasonsEvidence.length">{{instance.reasonsEvidence}}</ng-container>
+                <code *ngIf="!instance.reasonsEvidence.length">N/A</code>
               </td>
             </tr>
             </tbody>
@@ -201,6 +201,79 @@
         </ng-container>
         <p *ngIf="!endorsementsGiven.length">
           This instance hasn't endorsed any other instance.
+        </p>
+      </div>
+    </div>
+
+    <div class="card" *ngIf="detail">
+      <div class="card-header">
+        <h3 class="card-title" id="hesitations-received">Hesitations received ({{hesitationsReceived.length}})</h3>
+      </div>
+      <div class="card-body">
+        <ng-container *ngIf="hesitationsReceived.length">
+          <p>Hesitations were received from the following instances:</p>
+          <table class="table table-bordered">
+            <thead>
+            <tr>
+              <th>Instance</th>
+              <th>Reasons</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let instance of hesitationsReceived">
+              <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
+              <td>
+                <code *ngIf="!instance.hesitationReasons.length; else reasonList">N/A</code>
+                <ng-template #reasonList>
+                  <ul>
+                    <li *ngFor="let reason of instance.hesitationReasons">{{reason}}</li>
+                  </ul>
+                </ng-template>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </ng-container>
+        <p *ngIf="!hesitationsReceived.length">
+          This instance isn't hesitated on by anyone.
+        </p>
+      </div>
+    </div>
+
+    <div class="card" *ngIf="detail">
+      <div class="card-header">
+        <h3 class="card-title" id="hesitations-given">Hesitations given ({{hesitationsGiven.length}})</h3>
+      </div>
+      <div class="card-body">
+        <ng-container *ngIf="hesitationsGiven.length">
+          <p>Hesitations were given to the following instances:</p>
+          <table class="table table-bordered">
+            <thead>
+            <tr>
+              <th>Instance</th>
+              <th>Reasons</th>
+              <th>Evidence</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let instance of hesitationsGiven">
+              <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
+              <td>
+                <ul *ngIf="instance.hesitationReasons.length">
+                  <li *ngFor="let reason of instance.hesitationReasons">{{reason}}</li>
+                </ul>
+                <code *ngIf="!instance.hesitationReasons.length">N/A</code>
+              </td>
+              <td>
+                <ng-container *ngIf="instance.hesitationsEvidence.length">{{instance.hesitationsEvidence}}</ng-container>
+                <code *ngIf="!instance.hesitationsEvidence.length">N/A</code>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </ng-container>
+        <p *ngIf="!hesitationsGiven.length">
+          This instance hasn't hesitated on any instance.
         </p>
       </div>
     </div>

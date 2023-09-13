@@ -97,6 +97,14 @@
               </p>
             </a>
           </li>
+          <li class="nav-item" *ngIf="!instance.anonymous">
+            <a routerLink="/hesitations/my" class="nav-link">
+              <i class="nav-icon fas fa-exclamation"></i>
+              <p>
+                {{ "Hesitations" }}
+              </p>
+            </a>
+          </li>
           <li class="nav-item" *ngIf="software === 'lemmy'">
             <a routerLink="/censures/synchronize/lemmy" class="nav-link">
               <i class="nav-icon fas fa-sync"></i>
@@ -118,6 +126,14 @@
               <i class="nav-icon fas fa-ban"></i>
               <p>
                 {{ "Censured instances" }}
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a routerLink="/instances/hesitated" class="nav-link">
+              <i class="nav-icon fas fa-exclamation-triangle"></i>
+              <p>
+                Hesitated instances
               </p>
             </a>
           </li>

@@ -1,6 +1,7 @@
 export enum ActionLogReportType {
   Censure = 'CENSURE',
   Endorsement = 'ENDORSEMENT',
+  Hesitation = 'HESITATION',
 }
 
 export enum ActionLogReportActivity {

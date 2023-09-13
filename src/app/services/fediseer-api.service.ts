@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {InstanceDetailResponse} from "../response/instance-detail.response";
 import {environment} from "../../environments/environment";
-import {catchError, map, Observable, of, switchMap} from "rxjs";
+import {catchError, forkJoin, map, Observable, of, switchMap, tap} from "rxjs";
 import {AuthenticationManagerService} from "./authentication-manager.service";
 import {ErrorResponse} from "../response/error.response";
 import {InstanceListResponse} from "../response/instance-list.response";
@@ -12,6 +12,8 @@ import {NormalizedInstanceDetailResponse} from "../response/normalized-instance-
 import {EditableInstanceData} from "../types/editable-instance-data";
 import {ChangedResponse} from "../response/changed.response";
 import {ActionLogResponse} from "../response/action-log.response";
+import {RuntimeCacheService} from "./cache/runtime-cache.service";
+import {int} from "../types/number";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -33,6 +35,7 @@ export class FediseerApiService {
   constructor(
     private readonly httpClient: HttpClient,
     private readonly authManager: AuthenticationManagerService,
+    private readonly runtimeCache: RuntimeCacheService,
   ) {
   }
 
@@ -122,6 +125,40 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Patch, `censures/${instance}`, body);
   }
 
+  public getHesitationsByInstances(instances: string[]): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    return this.sendRequest(HttpMethod.Get, `hesitations_given/${instances.join(',')}`);
+  }
+
+  public getHesitationsForInstance(instance: string): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    return this.sendRequest(HttpMethod.Get, `hesitations/${instance}`);
+  }
+
+  public hesitateOnAnInstance(instance: string, reason: string | null, evidence: string | null = null): Observable<ApiResponse<SuccessResponse>> {
+    const body: {[key: string]: string} = {};
+    if (reason) {
+      body['reason'] = reason;
+    }
+    if (evidence) {
+      body['evidence'] = evidence;
+    }
+    return this.sendRequest(HttpMethod.Put, `hesitations/${instance}`, body);
+  }
+
+  public cancelHesitation(instance: string): Observable<ApiResponse<SuccessResponse>> {
+    return this.sendRequest(HttpMethod.Delete, `hesitations/${instance}`);
+  }
+
+  public updateHesitation(instance: string, reason: string | null, evidence: string | null): Observable<ApiResponse<SuccessResponse>> {
+    const body: {[key: string]: string} = {};
+    if (reason) {
+      body['reason'] = reason;
+    }
+    if (evidence) {
+      body['evidence'] = evidence;
+    }
+    return this.sendRequest(HttpMethod.Patch, `hesitations/${instance}`, body);
+  }
+
   public getWhitelistedInstances(): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     return this.sendRequest(HttpMethod.Get, `whitelist`);
   }
@@ -148,6 +185,11 @@ export class FediseerApiService {
   }
 
   public getUsedReasons(instances: string[] = []): Observable<string[] | null> {
+    const cacheItem = this.runtimeCache.getItem<string[]>(`used_reasons_${instances.join(',')}`);
+    if (cacheItem.isHit) {
+      return of(cacheItem.value!);
+    }
+
     const result = instances.length > 0 ? this.getCensuresByInstances(instances) : this.getCensuredInstances();
 
     return result.pipe(
@@ -167,6 +209,13 @@ export class FediseerApiService {
 
         return [...new Set(reasons)];
       }),
+      tap (reasons => {
+        if (reasons === null) {
+          return;
+        }
+        cacheItem.value = reasons;
+        this.runtimeCache.save(cacheItem);
+      })
     );
   }
 
@@ -181,8 +230,24 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Patch, `whitelist/${instance}`, body);
   }
 
-  public getActionLog(): Observable<ApiResponse<ActionLogResponse>> {
-    return this.sendRequest(HttpMethod.Get, `reports`);
+  public getActionLog(pageStart: int = 1, pageEnd: int = 1): Observable<ActionLogResponse|null> {
+    const requests: Observable<ApiResponse<ActionLogResponse>>[] = [];
+    for (let i = pageStart; i <= pageEnd; ++i) {
+      requests.push(this.sendRequest<ActionLogResponse>(HttpMethod.Get, `reports`, {page: String(i)}));
+    }
+    return forkJoin(requests).pipe(
+      map (responses => {
+        let result: ActionLogResponse = [];
+        for (const response of responses) {
+          if (!response.success) {
+            return null;
+          }
+          result = [...result, ...response.successResponse!];
+        }
+
+        return result;
+      }),
+    );
   }
 
   private sendRequest<T>(
@@ -204,7 +269,7 @@ export class FediseerApiService {
           delete body[key];
         }
       }
-      url += new URLSearchParams(<any>body).toString();
+      url += '?' + new URLSearchParams(<any>body).toString();
     }
 
     return this.httpClient.request<T|ErrorResponse>(method, url, {

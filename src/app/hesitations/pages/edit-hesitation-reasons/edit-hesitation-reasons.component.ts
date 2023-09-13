@@ -1,24 +1,25 @@
-import {Component, OnInit} from '@angular/core';
+import { Component } from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {TitleService} from "../../../services/title.service";
 import {MessageService} from "../../../services/message.service";
 import {FediseerApiService} from "../../../services/fediseer-api.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
-import {toPromise} from "../../../types/resolvable";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
+import {toPromise} from "../../../types/resolvable";
 import {map} from "rxjs";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 
 @Component({
-  selector: 'app-edit-censure-reasons',
-  templateUrl: './edit-censure-reasons.component.html',
-  styleUrls: ['./edit-censure-reasons.component.scss']
+  selector: 'app-edit-hesitation-reasons',
+  templateUrl: './edit-hesitation-reasons.component.html',
+  styleUrls: ['./edit-hesitation-reasons.component.scss']
 })
-export class EditCensureReasonsComponent implements OnInit {
+export class EditHesitationReasonsComponent {
   public form = new FormGroup({
     instance: new FormControl<string>({value: '', disabled: true}, [Validators.required]),
     reasons: new FormControl<string[]>([]),
+    evidence: new FormControl<string | null>(null),
   });
   public loading: boolean = true;
   public availableReasons: string[] = [];
@@ -35,7 +36,7 @@ export class EditCensureReasonsComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.titleService.title = 'Update censure reasons';
+    this.titleService.title = 'Update hesitation reasons';
 
     this.activatedRoute.params.subscribe(async params => {
       const targetInstance = params['instance'] as string;
@@ -47,7 +48,7 @@ export class EditCensureReasonsComponent implements OnInit {
       this.availableReasons = availableReasons;
 
       const existing = await toPromise(
-        this.api.getCensuresByInstances([this.authManager.currentInstanceSnapshot.name]).pipe(
+        this.api.getHesitationsByInstances([this.authManager.currentInstanceSnapshot.name]).pipe(
           map(response => {
             if (this.apiResponseHelper.handleErrors([response])) {
               return null;
@@ -57,7 +58,7 @@ export class EditCensureReasonsComponent implements OnInit {
               instance => instance.domain === targetInstance,
             );
             if (!instance.length) {
-              this.messageService.createError(`Couldn't find this instance amongst your censures. Are you sure you've censured it?`);
+              this.messageService.createError(`Couldn't find this instance amongst your hesitations. Are you sure you've hesitated on it?`);
               return null;
             }
 
@@ -73,7 +74,8 @@ export class EditCensureReasonsComponent implements OnInit {
 
       this.form.patchValue({
         instance: existing.domain,
-        reasons: NormalizedInstanceDetailResponse.fromInstanceDetail(existing).unmergedCensureReasons,
+        reasons: NormalizedInstanceDetailResponse.fromInstanceDetail(existing).unmergedHesitationReasons,
+        evidence: NormalizedInstanceDetailResponse.fromInstanceDetail(existing).hesitationsEvidence,
       });
       this.loading = false;
     });
@@ -86,9 +88,10 @@ export class EditCensureReasonsComponent implements OnInit {
     }
 
     this.loading = true;
-    this.api.updateCensure(
+    this.api.updateHesitation(
       this.form.controls.instance.value!,
       this.form.controls.reasons.value ? this.form.controls.reasons.value!.join(',') : null,
+      this.form.controls.evidence.value,
     ).subscribe(response => {
       if (this.apiResponseHelper.handleErrors([response])) {
         this.loading = false;
@@ -96,7 +99,7 @@ export class EditCensureReasonsComponent implements OnInit {
       }
 
       this.loading = false;
-      this.router.navigateByUrl('/censures/my').then(() => {
+      this.router.navigateByUrl('/hesitations/my').then(() => {
         this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully updated!`);
       });
     });

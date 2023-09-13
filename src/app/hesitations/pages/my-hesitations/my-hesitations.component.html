@@ -5,11 +5,12 @@
     <div class="col-md-12">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Censures that {{instance.name}} <strong>has given</strong></h3>
+          <h3 class="card-title">Hesitations that {{instance.name}} <strong>has given</strong></h3>
         </div>
         <div class="card-body">
+          <p>See what exactly hesitations mean in the <a routerLink="/glossary" fragment="hesitations">Glossary</a>.</p>
           <p *ngIf="software === 'lemmy'">
-            You can easily synchronize your blacklist to your Lemmy instance defederations from the
+            You can easily synchronize your censures and hesitations to your Lemmy instance defederations from the
             <a routerLink="/censures/synchronize/lemmy">Synchronize page</a>.
           </p>
           <table class="table table-bordered">
@@ -24,30 +25,30 @@
             <tbody>
             <tr *ngIf="guaranteed">
               <td colspan="4">
-                <a routerLink="/censures/censure" class="btn btn-primary">Censure an instance</a>
+                <a routerLink="/hesitations/hesitate" class="btn btn-primary">Hesitate on an instance</a>
               </td>
             </tr>
             <tr *ngIf="!instances.length">
-              <td colspan="4" *ngIf="guaranteed">You haven't put a censure on any instance yet.</td>
-              <td colspan="4" *ngIf="!guaranteed">No one guaranteed for this instance, you cannot put a censure on
-                others.
+              <td colspan="4" *ngIf="guaranteed">You haven't put a hesitation on any instance yet.</td>
+              <td colspan="4" *ngIf="!guaranteed">
+                No one guaranteed for this instance, you cannot put a hesitation on others.
               </td>
             </tr>
             <tr *ngFor="let instance of instances">
               <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
               <td>
                 <ul>
-                  <li *ngFor="let reason of instance.censureReasons">{{reason}}</li>
+                  <li *ngFor="let reason of instance.hesitationReasons">{{reason}}</li>
                 </ul>
               </td>
               <td>
-                <ng-container *ngIf="instance.reasonsEvidence.length">{{instance.reasonsEvidence}}</ng-container>
-                <code *ngIf="!instance.reasonsEvidence.length">N/A</code>
+                <ng-container *ngIf="instance.hesitationsEvidence.length">{{instance.hesitationsEvidence}}</ng-container>
+                <code *ngIf="!instance.hesitationsEvidence.length">N/A</code>
               </td>
               <td>
-                <a routerLink="/censures/my/edit/{{instance.domain}}" type="button" class="btn btn-primary">Edit</a>
+                <a routerLink="/hesitations/my/edit/{{instance.domain}}" type="button" class="btn btn-primary">Edit</a>
                 &nbsp;
-                <button type="button" class="btn btn-danger" (click)="cancelCensure(instance.domain)">Cancel</button>
+                <button type="button" class="btn btn-danger" (click)="cancelHesitation(instance.domain)">Cancel</button>
               </td>
             </tr>
             </tbody>
