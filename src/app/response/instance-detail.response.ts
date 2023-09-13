@@ -13,5 +13,7 @@ export interface InstanceDetailResponse {
   censure_reasons?: string[] | null;
   sysadmins: int | null;
   moderators: int | null;
-  censure_evidence: string[];
+  censure_evidence?: string[];
+  hesitation_reasons?: string[];
+  hesitation_evidence?: string[];
 }

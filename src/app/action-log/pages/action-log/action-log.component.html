@@ -26,6 +26,7 @@
             <td>
               <ng-container *ngIf="item.report_type === ActionLogReportType.Censure">Censure</ng-container>
               <ng-container *ngIf="item.report_type === ActionLogReportType.Endorsement">Endorsement</ng-container>
+              <ng-container *ngIf="item.report_type === ActionLogReportType.Hesitation">Hesitation</ng-container>
             </td>
             <td>
               <ng-container *ngIf="item.report_activity === ActionLogReportActivity.Added">Created</ng-container>

@@ -13,33 +13,25 @@ export class NormalizedInstanceDetailResponse {
     public endorsements: int,
     public censureReasons: string[],
     public unmergedCensureReasons: string[],
-    public evidence: string,
+    public reasonsEvidence: string,
+    public hesitationReasons: string[],
+    public unmergedHesitationReasons: string[],
+    public hesitationsEvidence: string,
     public guarantor?: string | null,
   ) {
   }
 
   public static fromInstanceDetail(detail: InstanceDetailResponse): NormalizedInstanceDetailResponse {
     let censureReasons: string[] = [];
-    if (detail.censure_reasons) {
-      for (const reasonCsv of detail.censure_reasons) {
-        const reasons = reasonCsv.split(',').map(reason => reason.trim().toLowerCase());
-        censureReasons = [...censureReasons, ...reasons];
-      }
-    }
+    let unmergedCensureReasons: string[] = [];
+    let hesitationReasons: string[] = [];
+    let unmergedHesitationReasons: string[] = []
 
-    const reasonCounts: {[reason: string]: int} = {};
-    for (const reason of censureReasons) {
-      reasonCounts[reason] ??= 0;
-      ++reasonCounts[reason];
+    if (detail.censure_reasons) {
+      [censureReasons, unmergedCensureReasons] = this.getReasons(detail.censure_reasons);
     }
-    const unmerged = [...censureReasons];
-    censureReasons = [];
-    for (const reason of Object.keys(reasonCounts)) {
-      if (reasonCounts[reason] > 1) {
-        censureReasons.push(`${reason} (${reasonCounts[reason]}x)`);
-      } else {
-        censureReasons.push(reason);
-      }
+    if (detail.hesitation_reasons) {
+      [hesitationReasons, unmergedHesitationReasons] = this.getReasons(detail.hesitation_reasons);
     }
 
     return new NormalizedInstanceDetailResponse(
@@ -52,9 +44,37 @@ export class NormalizedInstanceDetailResponse {
       detail.approvals,
       detail.endorsements,
       censureReasons,
-      unmerged,
-      detail.censure_evidence.join(', '),
+      unmergedCensureReasons,
+      detail.censure_evidence?.join(', ') ?? '',
+      hesitationReasons,
+      unmergedHesitationReasons,
+      detail.hesitation_evidence?.join(', ') ?? '',
       detail.guarantor,
     );
+  }
+
+  private static getReasons(source: string[]): [string[], string[]] {
+    let allReasons: string[] = [];
+    for (const reasonCsv of source) {
+      const reasons = reasonCsv.split(',').map(reason => reason.trim().toLowerCase());
+      allReasons = [...allReasons, ...reasons];
+    }
+
+    const reasonCounts: { [reason: string]: int } = {};
+    for (const reason of allReasons) {
+      reasonCounts[reason] ??= 0;
+      ++reasonCounts[reason];
+    }
+    const unmerged = [...allReasons];
+    allReasons = [];
+    for (const reason of Object.keys(reasonCounts)) {
+      if (reasonCounts[reason] > 1) {
+        allReasons.push(`${reason} (${reasonCounts[reason]}x)`);
+      } else {
+        allReasons.push(reason);
+      }
+    }
+
+    return [allReasons, unmerged];
   }
 }
