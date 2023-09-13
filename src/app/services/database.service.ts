@@ -67,6 +67,7 @@ export class DatabaseService {
       customInstances: [],
       filterByReasons: false,
       reasonsFilter: [],
+      includeHesitations: false,
     };
   }
 
