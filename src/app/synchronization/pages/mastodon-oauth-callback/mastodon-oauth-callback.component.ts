@@ -71,6 +71,8 @@ export class MastodonOauthCallbackComponent implements OnInit {
         }
       ));
       settings.oauthToken = response.access_token;
+      delete settings.oauthClientId;
+      delete settings.oauthClientSecret;
       this.database.mastodonSynchronizationSettings = settings;
       this.router.navigateByUrl('/synchronize/mastodon').then(() => {
         this.messageService.createSuccess('Successfully logged in!');

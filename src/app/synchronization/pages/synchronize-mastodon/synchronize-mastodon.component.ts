@@ -62,7 +62,7 @@ export class SynchronizeMastodonComponent implements OnInit {
   public async ngOnInit(): Promise<void> {
     this.titleService.title = 'Blacklist synchronization - Mastodon';
 
-    if (!this.syncSettings.oauthClientId || !this.syncSettings.oauthClientSecret) {
+    if (!this.syncSettings.oauthToken && (!this.syncSettings.oauthClientId || !this.syncSettings.oauthClientSecret)) {
       this.oauthForm.patchValue({
         clientId: this.syncSettings.oauthClientId ?? '',
         secret: this.syncSettings.oauthClientSecret ?? '',
