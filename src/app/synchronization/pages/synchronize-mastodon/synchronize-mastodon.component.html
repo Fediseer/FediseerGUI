@@ -1,0 +1,122 @@
+<app-loader *ngIf="loading else content"></app-loader>
+
+<ng-template #oauthSetup>
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Setup OAuth</h3>
+    </div>
+    <div class="card-body">
+      <p>
+        Before you can synchronize your settings, you must create an OAuth app and put its credentials here.
+        Any settings you put here are only stored in your browser.
+      </p>
+
+      <p>Your OAuth app settings should include this redirect uri: <code>{{redirectUrl}}</code></p>
+
+      <form [formGroup]="oauthForm" (submit)="saveOauthAndRedirect()">
+        <div class="form-group">
+          <label for="inputClientId">Client ID</label>
+          <input id="inputClientId" class="form-control" formControlName="clientId" />
+        </div>
+        <div class="form-group">
+          <label for="inputClientSecret">Client secret</label>
+          <input id="inputClientSecret" class="form-control" formControlName="secret" />
+        </div>
+        <button type="submit" class="btn btn-primary" [disabled]="!oauthForm.valid">Save</button>
+      </form>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #synchronizeForm>
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Synchronization</h3>
+    </div>
+    <div class="card-body">
+      <app-filter-form
+        [getSettingsCallback]="getSettingsCallback"
+        [saveSettingsCallback]="saveSettingsCallback"
+        (formSubmitted)="synchronize($event)"
+        (modeChanged)="currentMode = $event"
+        (instancesToBanChanged)="loadDiffs($event)"
+        (instancesToBanCalculationStarted)="loadingPreview = true"
+        (purgeChanged)="purgeMode = $event"
+      >
+        <div [formGroup]="form">
+          <div class="form-group">
+            <div class="custom-control custom-switch custom-switch-on-danger">
+              <input class="custom-control-input" type="checkbox" id="inputMakeReasonsPublic" formControlName="reasonsPublic" aria-describedby="inputMakeReasonsPublicDescription" />
+              <label for="inputMakeReasonsPublic" class="custom-control-label">Make reasons public</label>
+            </div>
+            <small id="inputMakeReasonsPublicDescription">
+              If enabled, the censure reasons will be displayed publicly in your Mastodon blocklist, otherwise they'll be visible as a private note.
+            </small>
+          </div>
+        </div>
+      </app-filter-form>
+      <div class="row mt-4">
+        <div class="col-md-12 minimum-height">
+          <h3>Preview</h3>
+
+          <div class="position-relative">
+            <app-loader *ngIf="loadingPreview else previewTable" />
+          </div>
+
+          <ng-template #previewTable>
+            <app-blacklist-diff
+              [originalList]="originallyBlockedInstances"
+              [newList]="instancesToBanPreview!"
+              [purgeMode]="purgeMode ?? false"
+              [originalToStringCallback]="instanceToStringCallback"
+            />
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Original blacklist</h3>
+    </div>
+    <div class="card-body">
+      <p>
+        Please back up this list before attempting any synchronization.
+        <strong>
+          If you move away from this page after a failed operation, there's no way to retrieve the original blacklist.
+        </strong>
+      </p>
+      <p>
+        <code>
+          <ng-container *ngFor="let instance of originallyBlockedInstances">
+            {{instance.domain}}<br>
+          </ng-container>
+        </code>
+      </p>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #content>
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Info</h3>
+      </div>
+      <div class="card-body">
+        <p>
+          Here you can synchronize your settings with your instance, if you provide an application OAuth credentials.
+        </p>
+        <p>
+          It's strongly advised to backup the list of your currently blocked instances in case something goes wrong.
+        </p>
+      </div>
+    </div>
+    <ng-container *ngIf="!oauthSetupFinished">
+      <ng-container *ngTemplateOutlet="oauthSetup"></ng-container>
+    </ng-container>
+    <ng-container *ngIf="oauthSetupFinished">
+      <ng-container *ngTemplateOutlet="synchronizeForm"></ng-container>
+    </ng-container>
+  </div>
+</ng-template>

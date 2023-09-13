@@ -12,6 +12,10 @@
             You can easily synchronize your blacklist to your Lemmy instance defederations from the
             <a routerLink="/synchronize/lemmy">Synchronize page</a>.
           </p>
+          <p *ngIf="software === 'mastodon'">
+            You can easily synchronize your blacklist to your Mastodon instance blocklist from the
+            <a routerLink="/synchronize/mastodon">Synchronize page</a>.
+          </p>
           <table class="table table-bordered">
             <thead>
             <tr>

@@ -1,0 +1,319 @@
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {SynchronizationMode} from "../../../types/synchronization-mode";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {toPromise} from "../../../types/resolvable";
+import {FediseerApiService} from "../../../services/fediseer-api.service";
+import {InstanceDetailResponse} from "../../../response/instance-detail.response";
+import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
+import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
+import {MessageService} from "../../../services/message.service";
+import {SynchronizationSettings} from "../../../types/synchronization-settings";
+import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
+import {debounceTime, map, Observable} from "rxjs";
+import {DatabaseService} from "../../../services/database.service";
+
+export type SaveSettingsCallback<TSettings> = (database: DatabaseService, settings: TSettings) => void;
+export type GetSettingsCallback<TSettings> = (database: DatabaseService) => TSettings;
+
+@Component({
+  selector: 'app-filter-form',
+  templateUrl: './filter-form.component.html',
+  styleUrls: ['./filter-form.component.scss']
+})
+export class FilterFormComponent<TSettings extends SynchronizationSettings> implements OnInit {
+  @Input() getSettingsCallback: GetSettingsCallback<TSettings> = () => {throw new Error("getSettingsCallback not provided")};
+  @Input() saveSettingsCallback: SaveSettingsCallback<TSettings> = () => {throw new Error("saveSettingsCallback not provided")};
+
+  private _formSubmitted: EventEmitter<InstanceDetailResponse[]> = new EventEmitter<InstanceDetailResponse[]>();
+  private _modeChanged: EventEmitter<SynchronizationMode> = new EventEmitter<SynchronizationMode>();
+  private _instancesToBanChanged: EventEmitter<InstanceDetailResponse[]> = new EventEmitter<InstanceDetailResponse[]>();
+  private _instancesToBanCalculationStarted: EventEmitter<void> = new EventEmitter<void>();
+  private _purgeChanged: EventEmitter<boolean> = new EventEmitter<boolean>();
+
+  protected readonly SynchronizationMode = SynchronizationMode;
+
+  private cache: {[key: string]: InstanceDetailResponse[] | null} = {};
+
+  public loadingWhitelistedInstances = false;
+  public loadingReasons = false;
+
+  public whitelistedInstancesList: InstanceDetailResponse[] | null = null;
+  public availableReasons: string[] | null = null;
+
+  public form = new FormGroup({
+    purgeBlacklist: new FormControl<boolean>(false, [Validators.required]),
+    mode: new FormControl<SynchronizationMode>(SynchronizationMode.Own, [Validators.required]),
+    customInstances: new FormControl<string[]>([]),
+    filterByReasons: new FormControl<boolean>(false),
+    reasonsFilter: new FormControl<string[]>([]),
+    includeHesitations: new FormControl<boolean>(false),
+    ignoreInstances: new FormControl<boolean>(false),
+    ignoreInstanceList: new FormControl<string[]>([]),
+  });
+
+  constructor(
+    private readonly api: FediseerApiService,
+    private readonly authManager: AuthenticationManagerService,
+    private readonly apiResponseHelper: ApiResponseHelperService,
+    private readonly messageService: MessageService,
+    private readonly database: DatabaseService,
+  ) {
+  }
+
+  @Output() public get formSubmitted(): Observable<InstanceDetailResponse[]> {
+    return this._formSubmitted;
+  }
+
+  @Output() public get modeChanged(): Observable<SynchronizationMode> {
+    return this._modeChanged;
+  }
+
+  @Output() public get instancesToBanChanged(): Observable<InstanceDetailResponse[]> {
+    return this._instancesToBanChanged;
+  }
+
+  @Output() public get instancesToBanCalculationStarted(): Observable<void> {
+    return this._instancesToBanCalculationStarted;
+  }
+
+  @Output() public get purgeChanged(): Observable<boolean> {
+    return this._purgeChanged;
+  }
+
+  public async resolveInstanceList(): Promise<void> {
+    const instances = await this.getInstancesToBan();
+    if (instances === null) {
+      this.messageService.createError('Failed calculating the list of instances to ban.');
+      return;
+    }
+    this._formSubmitted.next(instances);
+  }
+
+  public async ngOnInit(): Promise<void> {
+    const settings = this.getSettingsCallback(this.database);
+    this.form.patchValue({
+      mode: settings.mode,
+      purgeBlacklist: settings.purge,
+      filterByReasons: settings.filterByReasons,
+      includeHesitations: settings.includeHesitations,
+      ignoreInstanceList: settings.ignoreInstanceList,
+      ignoreInstances: settings.ignoreInstances,
+      reasonsFilter: settings.reasonsFilter,
+      customInstances: settings.customInstances,
+    });
+
+    this.form.valueChanges.subscribe(changes => {
+      this._instancesToBanCalculationStarted.next();
+
+      const settings = this.getSettingsCallback(this.database);
+
+      settings.reasonsFilter = changes.reasonsFilter ?? [];
+      settings.mode = changes.mode ?? SynchronizationMode.Own;
+      settings.filterByReasons = changes.filterByReasons ?? false;
+      settings.purge = changes.purgeBlacklist ?? false;
+      settings.customInstances = changes.customInstances ?? [];
+      settings.ignoreInstances = changes.ignoreInstances ?? false;
+      settings.ignoreInstanceList = changes.ignoreInstanceList ?? [];
+      settings.includeHesitations = changes.includeHesitations ?? false;
+
+      this.saveSettingsCallback(this.database, settings);
+    });
+
+    this.form.valueChanges.pipe(
+      debounceTime(500),
+    ).subscribe(changes => {
+      this.getInstancesToBan().then(instances => {
+        if (instances === null) {
+          return;
+        }
+
+        this._instancesToBanChanged.next(instances);
+      });
+    });
+
+    this.form.controls.mode.valueChanges.subscribe(mode => {
+      if (mode === null) {
+        return;
+      }
+
+      this.loadCustomInstancesSelect(mode);
+      this._modeChanged.next(mode);
+    });
+    this.form.controls.purgeBlacklist.valueChanges.subscribe(purge => {
+      if (purge === null) {
+        return;
+      }
+
+      this._purgeChanged.next(purge);
+    });
+
+    if (this.form.controls.mode.value) {
+      this.loadCustomInstancesSelect(this.form.controls.mode.value);
+      this._modeChanged.next(this.form.controls.mode.value);
+    }
+    if (this.form.controls.purgeBlacklist.value !== null) {
+      this._purgeChanged.next(this.form.controls.purgeBlacklist.value);
+    }
+    if (this.form.controls.filterByReasons.value) {
+      this.loadReasons();
+    }
+
+    this._instancesToBanCalculationStarted.next();
+    this.getInstancesToBan();
+  }
+
+  private async loadCustomInstancesSelect(mode: SynchronizationMode) {
+    if (mode === SynchronizationMode.CustomInstances && this.whitelistedInstancesList === null) {
+      this.loadingWhitelistedInstances = true;
+      const responses = await Promise.all([
+        toPromise(this.api.getWhitelistedInstances()),
+        toPromise(this.api.getEndorsementsByInstance([this.authManager.currentInstanceSnapshot.name])),
+        toPromise(this.api.getGuaranteesByInstance(this.authManager.currentInstanceSnapshot.name)),
+      ]);
+
+      if (this.apiResponseHelper.handleErrors(responses)) {
+        return;
+      }
+
+      this.whitelistedInstancesList = responses[0].successResponse!.instances;
+      this.loadingWhitelistedInstances = false;
+    }
+  }
+
+  private async loadReasons() {
+    if (this.availableReasons === null) {
+      this.loadingReasons = true;
+      const reasons = await toPromise(this.api.getUsedReasons());
+      if (reasons === null) {
+        this.messageService.createError('Failed getting list of reasons from the server');
+      }
+      this.availableReasons = reasons;
+      this.loadingReasons = false;
+    }
+  }
+
+  private async getInstancesToBan(): Promise<InstanceDetailResponse[] | null> {
+    const myInstance = this.authManager.currentInstanceSnapshot.name;
+    const mode = this.form.controls.mode.value!;
+
+    let cacheKey: string = mode;
+    const myInstanceCacheKey = myInstance + String(Number(this.form.controls.includeHesitations.value));
+
+    if (mode === SynchronizationMode.CustomInstances && this.form.controls.customInstances.value) {
+      cacheKey += this.form.controls.customInstances.value.join('|');
+    }
+    if (this.form.controls.filterByReasons.value && this.form.controls.reasonsFilter.value) {
+      cacheKey += this.form.controls.reasonsFilter.value!.join('|');
+    }
+    if (this.form.controls.ignoreInstances.value && this.form.controls.ignoreInstanceList.value) {
+      cacheKey += this.form.controls.ignoreInstanceList.value!.join('|');
+    }
+    cacheKey += String(Number(this.form.controls.includeHesitations.value));
+
+    this.cache[myInstanceCacheKey] ??= await (async () => {
+      const censures = await this.getCensuresByInstances([myInstance]);
+      if (!this.form.controls.includeHesitations.value) {
+        return censures;
+      }
+      const hesitations = await this.getHesitationsByInstances([myInstance]);
+
+      if (censures === null || hesitations === null) {
+        return null;
+      }
+
+      return [...censures, ...hesitations];
+    })();
+    this.cache[cacheKey] ??= await (async () => {
+      let sourceFrom: string[];
+      switch (mode) {
+        case SynchronizationMode.Own:
+          sourceFrom = [];
+          break;
+        case SynchronizationMode.Endorsed:
+          sourceFrom = await this.getEndorsedCensureChain(myInstance);
+          break;
+        case SynchronizationMode.CustomInstances:
+          sourceFrom = this.form.controls.customInstances.value ?? [];
+          break;
+        default:
+          throw new Error(`Unsupported mode: ${mode}`);
+      }
+
+      let foreignInstanceBlacklist: InstanceDetailResponse[] = [];
+      if (sourceFrom.length) {
+        foreignInstanceBlacklist =  await (async () => {
+          const censures = await this.getCensuresByInstances(sourceFrom);
+          if (!this.form.controls.includeHesitations.value) {
+            return censures ?? [];
+          }
+          const hesitations = await this.getHesitationsByInstances(sourceFrom);
+          if (censures === null || hesitations === null) {
+            return [];
+          }
+          return [...censures, ...hesitations];
+        })();
+        if (this.form.controls.filterByReasons.value && this.form.controls.reasonsFilter.value) {
+          const reasons = this.form.controls.reasonsFilter.value!;
+          foreignInstanceBlacklist = foreignInstanceBlacklist.filter(
+            instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance).unmergedCensureReasons.filter(
+              reason => reasons.includes(reason),
+            ).length,
+          );
+        }
+        if (this.form.controls.ignoreInstances.valid && this.form.controls.ignoreInstanceList.value) {
+          foreignInstanceBlacklist = foreignInstanceBlacklist.filter(
+            instance => !this.form.controls.ignoreInstanceList.value!.includes(instance.domain),
+          );
+        }
+      }
+
+      const result = [...this.cache[myInstanceCacheKey]!, ...foreignInstanceBlacklist];
+      const handled: string[] = [];
+
+      return result.filter(instance => {
+        if (handled.includes(instance.domain)) {
+          return false;
+        }
+
+        handled.push(instance.domain);
+        return true;
+      });
+    })();
+
+    const result = this.cache[cacheKey]!;
+    this._instancesToBanChanged.next(result);
+
+    return result;
+  }
+
+  private async getCensuresByInstances(instances: string[]): Promise<InstanceDetailResponse[] | null> {
+    const instancesResponse = await toPromise(this.api.getCensuresByInstances(instances));
+    if (this.apiResponseHelper.handleErrors([instancesResponse])) {
+      return null;
+    }
+
+    return instancesResponse.successResponse!.instances;
+  }
+
+  private async getHesitationsByInstances(instances: string[]): Promise<InstanceDetailResponse[] | null> {
+    const instancesResponse = await toPromise(this.api.getHesitationsByInstances(instances));
+    if (this.apiResponseHelper.handleErrors([instancesResponse])) {
+      return null;
+    }
+
+    return instancesResponse.successResponse!.instances;
+  }
+
+  private async getEndorsedCensureChain(instance: string): Promise<string[]> {
+    return await toPromise(this.api.getEndorsementsByInstance([instance]).pipe(
+      map(response => {
+        if (this.apiResponseHelper.handleErrors([response])) {
+          return [];
+        }
+
+        return response.successResponse!.instances.map(instance => instance.domain);
+      }),
+    ));
+  }
+
+}

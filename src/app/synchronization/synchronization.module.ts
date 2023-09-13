@@ -5,18 +5,36 @@ import {RouterModule, Routes} from "@angular/router";
 import {Guards} from "../guards/guards";
 import {ReactiveFormsModule} from "@angular/forms";
 import {SharedModule} from "../shared/shared.module";
+import { SynchronizeMastodonComponent } from './pages/synchronize-mastodon/synchronize-mastodon.component';
+import { MastodonOauthCallbackComponent } from './pages/mastodon-oauth-callback/mastodon-oauth-callback.component';
+import { BlacklistDiffComponent } from './components/blacklist-diff/blacklist-diff.component';
+import { FilterFormComponent } from './components/filter-form/filter-form.component';
 
 const routes: Routes = [
   {
     path: 'lemmy',
     component: SynchronizeLemmyComponent,
-    canActivate: [Guards.isLoggedIn()]
+    canActivate: [Guards.isLoggedIn()],
+  },
+  {
+    path: 'mastodon',
+    component: SynchronizeMastodonComponent,
+    canActivate: [Guards.isLoggedIn()],
+  },
+  {
+    path: 'mastodon/callback',
+    component: MastodonOauthCallbackComponent,
+    canActivate: [Guards.isLoggedIn()],
   },
 ];
 
 @NgModule({
   declarations: [
     SynchronizeLemmyComponent,
+    SynchronizeMastodonComponent,
+    MastodonOauthCallbackComponent,
+    BlacklistDiffComponent,
+    FilterFormComponent,
   ],
   imports: [
     CommonModule,
