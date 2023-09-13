@@ -1,7 +1,9 @@
 import {Injectable} from '@angular/core';
 import {Instance} from "../user/instance";
-import {SynchronizationMode, SynchronizeSettings} from "../types/synchronize-settings";
+import {LemmySynchronizationSettings} from "../types/lemmy-synchronization-settings";
 import {CensureListFilters} from "../types/censure-list-filters";
+import {SynchronizationMode} from "../types/synchronization-mode";
+import {MastodonSynchronizationSettings} from "../types/mastodon-synchronization-settings";
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +11,7 @@ import {CensureListFilters} from "../types/censure-list-filters";
 export class DatabaseService {
   private readonly storedInstanceKey = 'instance';
   private readonly lemmySynchronizationSettingsKey = 'sync_settings_lemmy';
+  private readonly mastodonSynchronizationSettingsKey = 'sync_settings_mstdn';
   private readonly lemmyPasswordKey = 'lemmy_password';
   private readonly censureListFiltersKey = 'censure_list_filters';
 
@@ -52,7 +55,34 @@ export class DatabaseService {
     localStorage.removeItem(this.storedInstanceKey);
   }
 
-  public getLemmySynchronizationSettings(): SynchronizeSettings {
+  public get mastodonSynchronizationSettings(): MastodonSynchronizationSettings {
+    if (typeof localStorage !== 'undefined') {
+      const stored = localStorage.getItem(this.mastodonSynchronizationSettingsKey);
+      if (stored !== null) {
+        return JSON.parse(stored);
+      }
+    }
+
+    return {
+      purge: false,
+      mode: SynchronizationMode.Own,
+      customInstances: [],
+      filterByReasons: false,
+      reasonsFilter: [],
+      includeHesitations: false,
+      ignoreInstanceList: [],
+      ignoreInstances: false,
+    };
+  }
+
+  public set mastodonSynchronizationSettings(settings: MastodonSynchronizationSettings) {
+    if (typeof localStorage === 'undefined') {
+      return;
+    }
+    localStorage.setItem(this.mastodonSynchronizationSettingsKey, JSON.stringify(settings));
+  }
+
+  public get lemmySynchronizationSettings(): LemmySynchronizationSettings {
     if (typeof localStorage !== 'undefined') {
       const stored = localStorage.getItem(this.lemmySynchronizationSettingsKey);
       if (stored !== null) {
@@ -73,7 +103,7 @@ export class DatabaseService {
     };
   }
 
-  public setLemmySynchronizationSettings(settings: SynchronizeSettings): void {
+  public set lemmySynchronizationSettings(settings: LemmySynchronizationSettings) {
     if (typeof localStorage === 'undefined') {
       return;
     }

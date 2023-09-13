@@ -1,11 +1,6 @@
-export enum SynchronizationMode {
-  Own = 'own',
-  Endorsed = 'endorsed',
-  CustomInstances = 'custom',
-}
+import {SynchronizationMode} from "./synchronization-mode";
 
-export interface SynchronizeSettings {
-  username: string;
+export interface SynchronizationSettings {
   mode: SynchronizationMode;
   purge: boolean;
   customInstances: string[];

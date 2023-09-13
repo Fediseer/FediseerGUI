@@ -1,0 +1,20 @@
+<table class="table table-bordered mt-3">
+  <tr *ngFor="let instance of added" class="bg-success">
+    <td>
+      {{instance}}
+      <app-tooltip text="This instance is only on Fediseer and not synchronized to your instance." />
+    </td>
+  </tr>
+  <tr
+    *ngFor="let instance of originalListString"
+    [class.bg-danger]="removed.includes(instance) && purgeMode"
+    [class.bg-warning]="removed.includes(instance) && !purgeMode"
+  >
+    <td>
+      {{instance}}
+      <app-tooltip *ngIf="!removed.includes(instance)" text="This instance is on both your Fediseer censure list and instance blocklist." />
+      <app-tooltip *ngIf="removed.includes(instance) && purgeMode" text="This instance is only on your instance blocklist but not on your Fediseer blocklist and will be removed from your Lemmy blocklist if you run a synchronization." />
+      <app-tooltip *ngIf="removed.includes(instance) && !purgeMode" text="This instance is only on your instance blocklist but not on your Fediseer blocklist. It will not be removed because you don't have the 'Purge blacklist' option checked." />
+    </td>
+  </tr>
+</table>

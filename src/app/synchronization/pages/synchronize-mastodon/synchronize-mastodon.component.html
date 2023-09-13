@@ -1,0 +1,37 @@
+<app-loader *ngIf="loading else content"></app-loader>
+
+<ng-template #oauthSetup>
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Setup OAuth</h3>
+    </div>
+    <div class="card-body">
+      <p>
+        Before you can synchronize your settings, you must create an OAuth app and put its credentials here.
+        Any settings you put here are only stored in your browser.
+      </p>
+
+      <p>Your OAuth app settings should include this redirect uri: <code>{{redirectUrl}}</code></p>
+
+      <form [formGroup]="oauthForm" (submit)="saveOauthAndRedirect()">
+        <div class="form-group">
+          <label for="inputClientId">Client ID</label>
+          <input id="inputClientId" class="form-control" formControlName="clientId" />
+        </div>
+        <div class="form-group">
+          <label for="inputClientSecret">Client secret</label>
+          <input id="inputClientSecret" class="form-control" formControlName="secret" />
+        </div>
+        <button type="submit" class="btn btn-primary" [disabled]="!oauthForm.valid">Save</button>
+      </form>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #content>
+  <div class="col-md-12">
+    <ng-container *ngIf="!oauthSetupFinished">
+      <ng-container *ngTemplateOutlet="oauthSetup"></ng-container>
+    </ng-container>
+  </div>
+</ng-template>

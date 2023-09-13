@@ -1,0 +1,78 @@
+<form [formGroup]="form" (submit)="resolveInstanceList()">
+  <div class="form-group">
+    <label for="inputMode">Mode</label>
+    <select formControlName="mode" id="inputMode" aria-describedby="inputModeDescription" class="form-control">
+      <option *ngFor="let enumCase of SynchronizationMode | iterableEnum" [value]="enumCase.value">{{enumCase.key}}</option>
+    </select>
+    <small *ngIf="form.controls.mode.value === SynchronizationMode.Own">
+      Only instances you have censured will be synchronized.
+    </small>
+    <small *ngIf="form.controls.mode.value === SynchronizationMode.Endorsed">
+      In addition to instances you have censured, all instances censured by instances you have endorsed will be blocked as well.
+    </small>
+    <small *ngIf="form.controls.mode.value === SynchronizationMode.CustomInstances">
+      Only blacklist by your instance and the instances you specify manually will be blocked.
+    </small>
+  </div>
+  <div class="form-group position-relative" *ngIf="form.controls.mode.value === SynchronizationMode.CustomInstances">
+    <app-loader *ngIf="loadingWhitelistedInstances else whitelistedInstancesSelect" />
+    <ng-template #whitelistedInstancesSelect>
+      <label for="inputCustomInstances">Custom instances</label>
+      <select formControlName="customInstances" id="inputCustomInstances" *ngIf="whitelistedInstancesList" tom-select multiple [maxItems]="null">
+        <option *ngFor="let option of whitelistedInstancesList" [value]="option.domain">{{option.domain}}</option>
+      </select>
+    </ng-template>
+  </div>
+  <div class="form-group">
+    <div class="custom-control custom-switch custom-switch-on-danger">
+      <input class="custom-control-input" type="checkbox" id="inputPurge" formControlName="purgeBlacklist" aria-describedby="inputPurgeDescription" />
+      <label for="inputPurge" class="custom-control-label">Purge blacklist</label>
+    </div>
+    <small id="inputPurgeDescription">If enabled, your blacklist will be purged before synchronizing the new one. Make sure you've backed up the original one.</small>
+  </div>
+  <div class="form-group">
+    <div class="custom-control custom-switch custom-switch-on-danger">
+      <input class="custom-control-input" type="checkbox" id="inputFilterReasons" formControlName="filterByReasons" aria-describedby="inputFilterReasonsDescription" />
+      <label for="inputFilterReasons" class="custom-control-label">Filter by reasons</label>
+    </div>
+    <small id="inputFilterReasonsDescription">
+      If enabled, only instances with censure reasons you specify will get blacklisted. Note that your own blacklist is always synchronized in full.
+    </small>
+  </div>
+  <div class="form-group position-relative" *ngIf="form.controls.filterByReasons.value">
+    <app-loader *ngIf="loadingReasons else reasonsSelect" />
+    <ng-template #reasonsSelect>
+      <select formControlName="reasonsFilter" tom-select multiple [create]="true" [maxItems]="null">
+        <option *ngFor="let option of availableReasons" [value]="option">{{option}}</option>
+      </select>
+    </ng-template>
+  </div>
+  <div class="form-group">
+    <div class="custom-control custom-switch custom-switch-on-danger">
+      <input class="custom-control-input" type="checkbox" id="inputIgnoreInstances" formControlName="ignoreInstances" aria-describedby="inputIgnoreInstancesDescription" />
+      <label for="inputIgnoreInstances" class="custom-control-label">Exclude instances from blacklist</label>
+    </div>
+    <small id="inputIgnoreInstancesDescription">
+      If enabled, you can specify a list of instances that will be excluded from blacklisting even if they match the other rules.
+    </small>
+  </div>
+  <div class="form-group position-relative" *ngIf="form.controls.filterByReasons.value">
+    <app-loader *ngIf="loadingWhitelistedInstances else instancesSelect" />
+    <ng-template #instancesSelect>
+      <select formControlName="ignoreInstanceList" tom-select multiple [create]="true" [maxItems]="null">
+        <option *ngFor="let option of whitelistedInstancesList" [value]="option.domain">{{option.domain}}</option>
+      </select>
+    </ng-template>
+  </div>
+  <div class="form-group">
+    <div class="custom-control custom-switch custom-switch-on-danger">
+      <input class="custom-control-input" type="checkbox" id="inputIncludeHesitations" formControlName="includeHesitations" aria-describedby="inputIncludeHesitationsDescription" />
+      <label for="inputIncludeHesitations" class="custom-control-label">Include hesitations</label>
+    </div>
+    <small id="inputIncludeHesitationsDescription">
+      If enabled, hesitations following the above rules will be included in addition to censures.
+    </small>
+  </div>
+  <ng-content></ng-content>
+  <button type="submit" [disabled]="!form.valid" class="btn btn-primary">Synchronize</button>
+</form>
