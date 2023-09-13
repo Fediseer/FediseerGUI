@@ -4,9 +4,8 @@ import {FediseerApiService} from "../../../services/fediseer-api.service";
 import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {toPromise} from "../../../types/resolvable";
-import {MessageService} from "../../../services/message.service";
+import {MessageService, MessageType} from "../../../services/message.service";
 import {InstanceDetailResponse} from "../../../response/instance-detail.response";
-import {InstanceListResponse} from "../../../response/instance-list.response";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 
@@ -16,14 +15,15 @@ import {NormalizedInstanceDetailResponse} from "../../../response/normalized-ins
   styleUrls: ['./instance-detail.component.scss']
 })
 export class InstanceDetailComponent implements OnInit {
-  public censuresReceived: NormalizedInstanceDetailResponse[] = [];
-  public censuresGiven: NormalizedInstanceDetailResponse[] = [];
-  public hesitationsReceived: NormalizedInstanceDetailResponse[] = [];
-  public hesitationsGiven: NormalizedInstanceDetailResponse[] = [];
-  public endorsementsReceived: InstanceDetailResponse[] = [];
-  public endorsementsGiven: InstanceDetailResponse[] = [];
-  public guaranteesGiven: InstanceDetailResponse[] = [];
+  public censuresReceived: NormalizedInstanceDetailResponse[] | null = null;
+  public censuresGiven: NormalizedInstanceDetailResponse[] | null = null;
+  public hesitationsReceived: NormalizedInstanceDetailResponse[] | null = null;
+  public hesitationsGiven: NormalizedInstanceDetailResponse[] | null = null;
+  public endorsementsReceived: InstanceDetailResponse[] | null = null;
+  public endorsementsGiven: InstanceDetailResponse[] | null = null;
+  public guaranteesGiven: InstanceDetailResponse[] | null = null;
   public detail: InstanceDetailResponse | null = null;
+
   public loading: boolean = true;
   public myInstance: boolean = false;
 
@@ -62,22 +62,19 @@ export class InstanceDetailComponent implements OnInit {
         toPromise(this.api.getHesitationsForInstance(instanceDomain)),
         toPromise(this.api.getHesitationsByInstances([instanceDomain])),
       ]);
-      if (this.apiResponseHelper.handleErrors(responses)) {
-        this.loading = false;
-        return;
-      }
+      this.apiResponseHelper.handleErrors(responses, MessageType.Warning);
 
-      this.censuresReceived = responses[0].successResponse!.instances.map(
+      this.censuresReceived = responses[0].successResponse?.instances.map(
         instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance),
-      );
-      this.censuresGiven = responses[1].successResponse!.instances.map(
+      ) ?? null;
+      this.censuresGiven = responses[1].successResponse?.instances.map(
         instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance),
-      );
-      this.endorsementsReceived = responses[2].successResponse!.instances;
-      this.endorsementsGiven = responses[3].successResponse!.instances;
-      this.guaranteesGiven = responses[4].successResponse!.instances;
-      this.detail = responses[5].successResponse!;
-      this.myInstance = !this.authManager.currentInstanceSnapshot.anonymous && this.detail.domain === this.authManager.currentInstanceSnapshot.name;
+      ) ?? null;
+      this.endorsementsReceived = responses[2].successResponse?.instances ?? null;
+      this.endorsementsGiven = responses[3].successResponse?.instances ?? null;
+      this.guaranteesGiven = responses[4].successResponse?.instances ?? null;
+      this.detail = responses[5].successResponse ?? null;
+      this.myInstance = !this.authManager.currentInstanceSnapshot.anonymous && this.detail?.domain === this.authManager.currentInstanceSnapshot.name;
       this.hesitationsReceived = responses[6].successResponse!.instances.map(
         instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance),
       );

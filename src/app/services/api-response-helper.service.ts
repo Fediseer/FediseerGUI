@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {MessageService} from "./message.service";
+import {MessageService, MessageType} from "./message.service";
 import {ApiResponse} from "./fediseer-api.service";
 
 @Injectable({
@@ -11,11 +11,11 @@ export class ApiResponseHelperService {
   ) {
   }
 
-  public handleErrors(responses: ApiResponse<any>[]): boolean {
+  public handleErrors(responses: ApiResponse<any>[], mode: MessageType = MessageType.Error): boolean {
     let hasErrors = false;
     for (const response of responses) {
       if (!response.success) {
-        this.messageService.createError(`There was an api error: ${response.errorResponse!.message}`);
+        this.messageService.create(`There was an api error: ${response.errorResponse!.message}`, mode);
         hasErrors = true;
       }
     }
