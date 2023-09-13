@@ -7,4 +7,5 @@ import {Component, Input} from '@angular/core';
 })
 export class YesNoComponent {
   @Input() yes: boolean = false;
+  @Input() swapColors: boolean = false;
 }
