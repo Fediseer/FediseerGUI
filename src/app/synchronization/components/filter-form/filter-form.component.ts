@@ -136,6 +136,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
         return;
       }
 
+      this.loadCustomInstancesSelect(mode);
       this._modeChanged.next(mode);
     });
     this.form.controls.purgeBlacklist.valueChanges.subscribe(purge => {

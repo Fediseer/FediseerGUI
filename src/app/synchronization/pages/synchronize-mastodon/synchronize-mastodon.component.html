@@ -75,6 +75,26 @@
       </div>
     </div>
   </div>
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Original blacklist</h3>
+    </div>
+    <div class="card-body">
+      <p>
+        Please back up this list before attempting any synchronization.
+        <strong>
+          If you move away from this page after a failed operation, there's no way to retrieve the original blacklist.
+        </strong>
+      </p>
+      <p>
+        <code>
+          <ng-container *ngFor="let instance of originallyBlockedInstances">
+            {{instance.domain}}<br>
+          </ng-container>
+        </code>
+      </p>
+    </div>
+  </div>
 </ng-template>
 
 <ng-template #content>
