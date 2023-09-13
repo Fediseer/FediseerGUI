@@ -11,4 +11,5 @@ export interface SynchronizeSettings {
   customInstances: string[];
   filterByReasons: boolean;
   reasonsFilter: string[];
+  includeHesitations: boolean,
 }

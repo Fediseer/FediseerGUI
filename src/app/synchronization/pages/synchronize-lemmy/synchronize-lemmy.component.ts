@@ -37,6 +37,7 @@ export class SynchronizeLemmyComponent implements OnInit {
     customInstances: new FormControl<string[]>([]),
     filterByReasons: new FormControl<boolean>(false),
     reasonsFilter: new FormControl<string[]>([]),
+    includeHesitations: new FormControl<boolean>(false),
   });
 
   public loading = true;
@@ -73,6 +74,7 @@ export class SynchronizeLemmyComponent implements OnInit {
       customInstances: settings.customInstances,
       reasonsFilter: settings.reasonsFilter,
       filterByReasons: settings.filterByReasons,
+      includeHesitations: settings.includeHesitations,
     });
 
     const instances = await this.getBlockedInstancesFromSource(this.authManager.currentInstanceSnapshot.name);
@@ -94,6 +96,7 @@ export class SynchronizeLemmyComponent implements OnInit {
         customInstances: values.customInstances ?? [],
         filterByReasons: values.filterByReasons ?? false,
         reasonsFilter: values.reasonsFilter ?? [],
+        includeHesitations: values.includeHesitations ?? false,
       });
     });
     this.form.controls.mode.valueChanges.subscribe(mode => {
@@ -122,6 +125,13 @@ export class SynchronizeLemmyComponent implements OnInit {
     this.form.controls.reasonsFilter.valueChanges.subscribe(reasons => {
       const mode = this.form.controls.mode.value;
       if (reasons === null || mode === null) {
+        return;
+      }
+      this.loadDiffs(mode);
+    });
+    this.form.controls.includeHesitations.valueChanges.subscribe(include => {
+      const mode = this.form.controls.mode.value;
+      if (include === null || mode === null) {
         return;
       }
       this.loadDiffs(mode);
@@ -274,6 +284,15 @@ export class SynchronizeLemmyComponent implements OnInit {
     return instancesResponse.successResponse!.instances;
   }
 
+  private async getHesitationsByInstances(instances: string[]): Promise<InstanceDetailResponse[] | null> {
+    const instancesResponse = await toPromise(this.fediseerApi.getHesitationsByInstances(instances));
+    if (this.apiResponseHelper.handleErrors([instancesResponse])) {
+      return null;
+    }
+
+    return instancesResponse.successResponse!.instances;
+  }
+
   private async getBlockedInstancesFromSource(instance: string): Promise<string[] | null> {
     try {
       return await toPromise(this.lemmyApi.getBlockedInstances(instance));
@@ -331,6 +350,7 @@ export class SynchronizeLemmyComponent implements OnInit {
   private async getInstancesToBan(mode: SynchronizationMode): Promise<InstanceDetailResponse[] | null> {
     const myInstance = this.authManager.currentInstanceSnapshot.name;
     let cacheKey: string = mode;
+    const myInstanceCacheKey = myInstance + String(Number(this.form.controls.includeHesitations.value));
 
     if (mode === SynchronizationMode.CustomInstances && this.form.controls.customInstances.value) {
       cacheKey += this.form.controls.customInstances.value.join('|');
@@ -338,8 +358,21 @@ export class SynchronizeLemmyComponent implements OnInit {
     if (this.form.controls.filterByReasons.value && this.form.controls.reasonsFilter.value) {
       cacheKey += this.form.controls.reasonsFilter.value!.join('|');
     }
+    cacheKey += String(Number(this.form.controls.includeHesitations.value));
 
-    this.cache[myInstance] ??= await this.getCensuresByInstances([myInstance]);
+    this.cache[myInstanceCacheKey] ??= await (async () => {
+      const censures = await this.getCensuresByInstances([myInstance]);
+      if (!this.form.controls.includeHesitations.value) {
+        return censures;
+      }
+      const hesitations = await this.getHesitationsByInstances([myInstance]);
+
+      if (censures === null || hesitations === null) {
+        return null;
+      }
+
+      return [...censures, ...hesitations];
+    })();
     this.cache[cacheKey] ??= await (async () => {
       let sourceFrom: string[];
       switch (mode) {
@@ -358,7 +391,17 @@ export class SynchronizeLemmyComponent implements OnInit {
 
       let foreignInstanceBlacklist: InstanceDetailResponse[] = [];
       if (sourceFrom.length) {
-        foreignInstanceBlacklist =  await this.getCensuresByInstances(sourceFrom) ?? [];
+        foreignInstanceBlacklist =  await (async () => {
+          const censures = await this.getCensuresByInstances(sourceFrom);
+          if (!this.form.controls.includeHesitations.value) {
+            return censures ?? [];
+          }
+          const hesitations = await this.getHesitationsByInstances(sourceFrom);
+          if (censures === null || hesitations === null) {
+            return [];
+          }
+          return [...censures, ...hesitations];
+        })();
         if (this.form.controls.filterByReasons.value && this.form.controls.reasonsFilter.value) {
           const reasons = this.form.controls.reasonsFilter.value!;
           foreignInstanceBlacklist = foreignInstanceBlacklist.filter(
@@ -369,7 +412,7 @@ export class SynchronizeLemmyComponent implements OnInit {
         }
       }
 
-      const result = [...this.cache[myInstance]!, ...foreignInstanceBlacklist];
+      const result = [...this.cache[myInstanceCacheKey]!, ...foreignInstanceBlacklist];
       const handled: string[] = [];
 
       return result.filter(instance => {
