@@ -62,6 +62,11 @@
           </tr>
           </thead>
           <tbody>
+          <tr *ngIf="!instances.length">
+            <td colspan="3">
+              No one has hesitated on any instance yet.
+            </td>
+          </tr>
           <tr *ngFor="let instance of instances">
             <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
             <td>
