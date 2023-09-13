@@ -146,6 +146,13 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
 
       this._purgeChanged.next(purge);
     });
+    this.form.controls.filterByReasons.valueChanges.subscribe(filter => {
+      if (!filter) {
+        return;
+      }
+
+      this.loadReasons();
+    });
 
     if (this.form.controls.mode.value) {
       this.loadCustomInstancesSelect(this.form.controls.mode.value);
