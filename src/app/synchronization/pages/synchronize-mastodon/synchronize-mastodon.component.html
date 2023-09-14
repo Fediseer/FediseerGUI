@@ -111,7 +111,7 @@
 
           <ng-template #previewTable>
             <app-blacklist-diff
-              [originalList]="originallyBlockedInstances"
+              [originalList]="sourceBlockedInstances"
               [newList]="instancesToBanPreview!"
               [purgeMode]="purgeMode ?? false"
               [originalToStringCallback]="instanceToStringCallback"
