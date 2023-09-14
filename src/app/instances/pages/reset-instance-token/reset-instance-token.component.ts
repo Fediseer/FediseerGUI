@@ -14,11 +14,13 @@ import {Router} from "@angular/router";
   styleUrls: ['./reset-instance-token.component.scss']
 })
 export class ResetInstanceTokenComponent implements OnInit {
-  public loading = false;
+  public loading = true;
   public form = new FormGroup({
     currentApiKey: new FormControl<string>('', [Validators.required]),
     adminUsername: new FormControl<string>('', [Validators.required]),
   });
+  public instance: string = this.authManager.currentInstanceSnapshot.name;
+  public software: string | null = null;
 
   constructor(
     private readonly titleService: TitleService,
@@ -32,6 +34,14 @@ export class ResetInstanceTokenComponent implements OnInit {
 
   public async ngOnInit(): Promise<void> {
     this.titleService.title = `Reset api key for ${this.authManager.currentInstanceSnapshot.name}`;
+    const response = await toPromise(this.api.getCurrentInstanceInfo())
+    if (this.apiResponseHelper.handleErrors([response])) {
+      this.loading = false;
+      return;
+    }
+
+    this.software = response.successResponse!.software.toLowerCase();
+    this.loading = false;
   }
 
   public async validateAndReset(): Promise<void> {
