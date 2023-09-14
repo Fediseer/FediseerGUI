@@ -45,8 +45,8 @@
                 </ul>
               </td>
               <td>
-                <ng-container *ngIf="instance.reasonsEvidence.length">{{instance.reasonsEvidence}}</ng-container>
-                <code *ngIf="!instance.reasonsEvidence.length">N/A</code>
+                <ng-container *ngIf="instance.censuresEvidence.length">{{instance.censuresEvidence}}</ng-container>
+                <code *ngIf="!instance.censuresEvidence.length">N/A</code>
               </td>
               <td>
                 <a routerLink="/censures/my/edit/{{instance.domain}}" type="button" class="btn btn-primary">Edit</a>

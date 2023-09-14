@@ -13,7 +13,7 @@ export class NormalizedInstanceDetailResponse {
     public endorsements: int,
     public censureReasons: string[],
     public unmergedCensureReasons: string[],
-    public reasonsEvidence: string,
+    public censuresEvidence: string,
     public hesitationReasons: string[],
     public unmergedHesitationReasons: string[],
     public hesitationsEvidence: string,

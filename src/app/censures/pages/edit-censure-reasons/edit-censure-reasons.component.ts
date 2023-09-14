@@ -75,7 +75,7 @@ export class EditCensureReasonsComponent implements OnInit {
       this.form.patchValue({
         instance: existing.domain,
         reasons: NormalizedInstanceDetailResponse.fromInstanceDetail(existing).unmergedCensureReasons,
-        evidence: NormalizedInstanceDetailResponse.fromInstanceDetail(existing).reasonsEvidence,
+        evidence: NormalizedInstanceDetailResponse.fromInstanceDetail(existing).censuresEvidence,
       });
       this.loading = false;
     });
