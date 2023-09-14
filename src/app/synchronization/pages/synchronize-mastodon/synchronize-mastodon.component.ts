@@ -168,13 +168,13 @@ export class SynchronizeMastodonComponent implements OnInit {
       return;
     }
 
-    const instancesToBanString = instancesToBan.censured.map(instance => instance.domain);
+    const instancesToBanString = instancesToBan.all.map(instance => instance.domain);
     const originalInstancesString = originalInstances.map(instance => instance.domain);
 
     const toRemove = this.purgeMode
       ? originalInstances.filter(instance => !instancesToBanString.includes(instance.domain))
       : [];
-    const toAdd = instancesToBan.censured
+    const toAdd = instancesToBan.all
       .filter(instance => !originalInstancesString.includes(instance.domain))
       .map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance))
     ;

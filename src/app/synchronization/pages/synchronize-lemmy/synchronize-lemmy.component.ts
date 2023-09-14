@@ -189,8 +189,9 @@ export class SynchronizeLemmyComponent implements OnInit {
 
       const newInstances =
         this.purgeMode
-          ? instancesToBan.censured.map(instance => instance.domain)
-          : [...new Set([...originalInstances, ...instancesToBan.censured.map(instance => instance.domain)])];
+          ? instancesToBan.all.map(instance => instance.domain)
+          : [...new Set([...originalInstances, ...instancesToBan.all.map(instance => instance.domain)])]
+      ;
 
       try {
         await toPromise(this.lemmyApi.updateBlacklist(myInstance, jwt, newInstances));

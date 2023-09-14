@@ -18,6 +18,8 @@ export type GetSettingsCallback<TSettings> = (database: DatabaseService) => TSet
 export interface FilterFormResult {
   censured: InstanceDetailResponse[];
   hesitated: InstanceDetailResponse[];
+  all: InstanceDetailResponse[];
+  includeHesitationsAsCensures: boolean;
 }
 
 @Component({
@@ -86,14 +88,18 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   }
 
   public async resolveInstanceList(): Promise<void> {
-    const instances = await this.getInstancesToBan();
-    if (instances === null) {
+    const censured = await this.getInstancesToBan(false);
+    const hesitated = await this.getInstancesToBan(true);
+    const all = await this.getInstancesToBan(null);
+    if (censured === null || hesitated === null || all === null) {
       this.messageService.createError('Failed calculating the list of instances to ban.');
       return;
     }
     this._formSubmitted.next({
-      censured: instances,
-      hesitated: [],
+      censured: censured,
+      hesitated: hesitated,
+      all: all,
+      includeHesitationsAsCensures: this.form.controls.includeHesitations.value ?? false,
     });
   }
 
@@ -207,7 +213,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
     }
   }
 
-  private async getInstancesToBan(): Promise<InstanceDetailResponse[] | null> {
+  private async getInstancesToBan(includeHesitations: boolean | null = null): Promise<InstanceDetailResponse[] | null> {
     const myInstance = this.authManager.currentInstanceSnapshot.name;
     const mode = this.form.controls.mode.value!;
 
@@ -227,7 +233,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
 
     this.cache[myInstanceCacheKey] ??= await (async () => {
       const censures = await this.getCensuresByInstances([myInstance]);
-      if (!this.form.controls.includeHesitations.value) {
+      if ((!this.form.controls.includeHesitations.value && includeHesitations !== true) || includeHesitations === false) {
         return censures;
       }
       const hesitations = await this.getHesitationsByInstances([myInstance]);
@@ -258,7 +264,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
       if (sourceFrom.length) {
         foreignInstanceBlacklist =  await (async () => {
           const censures = await this.getCensuresByInstances(sourceFrom);
-          if (!this.form.controls.includeHesitations.value) {
+          if ((!this.form.controls.includeHesitations.value && includeHesitations !== true) || includeHesitations === false) {
             return censures ?? [];
           }
           const hesitations = await this.getHesitationsByInstances(sourceFrom);
