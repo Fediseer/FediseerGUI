@@ -75,8 +75,20 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Get, `approvals/${instanceString}`);
   }
 
-  public endorseInstance(instance: string): Observable<ApiResponse<SuccessResponse>> {
-    return this.sendRequest(HttpMethod.Put, `endorsements/${instance}`);
+  public endorseInstance(instance: string, reason: string | null = null): Observable<ApiResponse<SuccessResponse>> {
+    const body: {reason?: string} = {};
+    if (reason) {
+      body.reason = reason;
+    }
+    return this.sendRequest(HttpMethod.Put, `endorsements/${instance}`, body);
+  }
+
+  public updateEndorsement(instance: string, reason: string | null): Observable<ApiResponse<SuccessResponse>> {
+    const body: {[key: string]: string} = {};
+    if (reason) {
+      body['reason'] = reason;
+    }
+    return this.sendRequest(HttpMethod.Patch, `endorsements/${instance}`, body);
   }
 
   public cancelEndorsement(instance: string): Observable<ApiResponse<SuccessResponse>> {
@@ -205,6 +217,39 @@ export class FediseerApiService {
 
         for (const instance of instances) {
           reasons = [...reasons, ...instance.unmergedCensureReasons];
+        }
+
+        return [...new Set(reasons)];
+      }),
+      tap (reasons => {
+        if (reasons === null) {
+          return;
+        }
+        cacheItem.value = reasons;
+        this.runtimeCache.save(cacheItem);
+      })
+    );
+  }
+
+  public get usedEndorsementReasons(): Observable<string[] | null> {
+    const cacheItem = this.runtimeCache.getItem<string[]>(`used_endorsement_reasons`);
+    if (cacheItem.isHit) {
+      return of(cacheItem.value!);
+    }
+
+    return this.getEndorsementsByInstance([this.authManager.currentInstanceSnapshot.name]).pipe(
+      map (response => {
+        if (!response.success) {
+          return null;
+        }
+
+        const instances = response.successResponse!.instances
+          .map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance));
+
+        let reasons: string[] = [];
+
+        for (const instance of instances) {
+          reasons = [...reasons, ...instance.unmergedEndorsementReasons];
         }
 
         return [...new Set(reasons)];

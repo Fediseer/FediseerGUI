@@ -16,4 +16,5 @@ export interface InstanceDetailResponse {
   censure_evidence?: string[];
   hesitation_reasons?: string[];
   hesitation_evidence?: string[];
+  endorsement_reasons?: string[] | null;
 }
