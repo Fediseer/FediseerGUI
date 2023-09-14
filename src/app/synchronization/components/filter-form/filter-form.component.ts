@@ -15,6 +15,11 @@ import {DatabaseService} from "../../../services/database.service";
 export type SaveSettingsCallback<TSettings> = (database: DatabaseService, settings: TSettings) => void;
 export type GetSettingsCallback<TSettings> = (database: DatabaseService) => TSettings;
 
+export interface FilterFormResult {
+  censured: InstanceDetailResponse[];
+  hesitated: InstanceDetailResponse[];
+}
+
 @Component({
   selector: 'app-filter-form',
   templateUrl: './filter-form.component.html',
@@ -24,7 +29,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   @Input() getSettingsCallback: GetSettingsCallback<TSettings> = () => {throw new Error("getSettingsCallback not provided")};
   @Input() saveSettingsCallback: SaveSettingsCallback<TSettings> = () => {throw new Error("saveSettingsCallback not provided")};
 
-  private _formSubmitted: EventEmitter<InstanceDetailResponse[]> = new EventEmitter<InstanceDetailResponse[]>();
+  private _formSubmitted: EventEmitter<FilterFormResult> = new EventEmitter<FilterFormResult>();
   private _modeChanged: EventEmitter<SynchronizationMode> = new EventEmitter<SynchronizationMode>();
   private _instancesToBanChanged: EventEmitter<InstanceDetailResponse[]> = new EventEmitter<InstanceDetailResponse[]>();
   private _instancesToBanCalculationStarted: EventEmitter<void> = new EventEmitter<void>();
@@ -60,7 +65,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   ) {
   }
 
-  @Output() public get formSubmitted(): Observable<InstanceDetailResponse[]> {
+  @Output() public get formSubmitted(): Observable<FilterFormResult> {
     return this._formSubmitted;
   }
 
@@ -86,7 +91,10 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
       this.messageService.createError('Failed calculating the list of instances to ban.');
       return;
     }
-    this._formSubmitted.next(instances);
+    this._formSubmitted.next({
+      censured: instances,
+      hesitated: [],
+    });
   }
 
   public async ngOnInit(): Promise<void> {

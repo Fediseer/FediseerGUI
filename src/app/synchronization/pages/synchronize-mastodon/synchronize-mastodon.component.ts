@@ -9,7 +9,11 @@ import {MastodonApiService} from "../../../services/mastodon-api.service";
 import {toPromise} from "../../../types/resolvable";
 import {MastodonBlacklistItem, MastodonBlacklistSeverity} from "../../../response/mastodon-blacklist.response";
 import {MessageService} from "../../../services/message.service";
-import {GetSettingsCallback, SaveSettingsCallback} from "../../components/filter-form/filter-form.component";
+import {
+  FilterFormResult,
+  GetSettingsCallback,
+  SaveSettingsCallback
+} from "../../components/filter-form/filter-form.component";
 import {InstanceDetailResponse} from "../../../response/instance-detail.response";
 import {SynchronizationMode} from "../../../types/synchronization-mode";
 import {OriginalToStringCallback} from "../../components/blacklist-diff/blacklist-diff.component";
@@ -148,7 +152,7 @@ export class SynchronizeMastodonComponent implements OnInit {
     }
   }
 
-  public async synchronize(instancesToBan: InstanceDetailResponse[]): Promise<void> {
+  public async synchronize(instancesToBan: FilterFormResult): Promise<void> {
     if (this.purgeMode === null) {
       this.messageService.createError('There was an error with submitting the form.');
       return;
@@ -164,13 +168,13 @@ export class SynchronizeMastodonComponent implements OnInit {
       return;
     }
 
-    const instancesToBanString = instancesToBan.map(instance => instance.domain);
+    const instancesToBanString = instancesToBan.censured.map(instance => instance.domain);
     const originalInstancesString = originalInstances.map(instance => instance.domain);
 
     const toRemove = this.purgeMode
       ? originalInstances.filter(instance => !instancesToBanString.includes(instance.domain))
       : [];
-    const toAdd = instancesToBan
+    const toAdd = instancesToBan.censured
       .filter(instance => !originalInstancesString.includes(instance.domain))
       .map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance))
     ;
