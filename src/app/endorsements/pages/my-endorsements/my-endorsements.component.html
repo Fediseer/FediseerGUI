@@ -12,14 +12,21 @@
             <thead>
             <tr>
               <th>{{ "Instance" }}</th>
+              <th>Reasons</th>
             </tr>
             </thead>
             <tbody>
             <tr *ngIf="!endorsementsForMyInstance.length">
-              <td>This instance didn't receive any endorsements yet.</td>
+              <td colspan="2">This instance didn't receive any endorsements yet.</td>
             </tr>
             <tr *ngFor="let endorsed of endorsementsForMyInstance">
               <td><a routerLink="/instances/detail/{{endorsed.domain}}">{{endorsed.domain}}</a></td>
+              <td>
+                <ul *ngIf="endorsed.endorsementReasons.length">
+                  <li *ngFor="let reason of endorsed.endorsementReasons">{{reason}}</li>
+                </ul>
+                <code *ngIf="!endorsed.endorsementReasons.length">N/A</code>
+              </td>
             </tr>
             </tbody>
           </table>
@@ -35,8 +42,8 @@
             <thead>
             <tr>
               <th>Instance</th>
-              <th>Endorsements</th>
-              <th>Cancel</th>
+              <th>Reasons</th>
+              <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -51,8 +58,15 @@
             </tr>
             <tr *ngFor="let endorsed of endorsementsByMyInstance">
               <td><a routerLink="/instances/detail/{{endorsed.domain}}">{{endorsed.domain}}</a></td>
-              <td>{{endorsed.endorsements}}</td>
               <td>
+                <ul *ngIf="endorsed.endorsementReasons.length">
+                  <li *ngFor="let reason of endorsed.endorsementReasons">{{reason}}</li>
+                </ul>
+                <code *ngIf="!endorsed.endorsementReasons.length">N/A</code>
+              </td>
+              <td>
+                <a routerLink="/endorsements/my/edit/{{endorsed.domain}}" type="button" class="btn btn-primary">Edit</a>
+                &nbsp;
                 <button class="btn btn-danger" (click)="cancelEndorsement(endorsed.domain)">Cancel</button>
               </td>
             </tr>

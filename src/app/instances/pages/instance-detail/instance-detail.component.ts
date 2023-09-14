@@ -19,8 +19,8 @@ export class InstanceDetailComponent implements OnInit {
   public censuresGiven: NormalizedInstanceDetailResponse[] | null = null;
   public hesitationsReceived: NormalizedInstanceDetailResponse[] | null = null;
   public hesitationsGiven: NormalizedInstanceDetailResponse[] | null = null;
-  public endorsementsReceived: InstanceDetailResponse[] | null = null;
-  public endorsementsGiven: InstanceDetailResponse[] | null = null;
+  public endorsementsReceived: NormalizedInstanceDetailResponse[] | null = null;
+  public endorsementsGiven: NormalizedInstanceDetailResponse[] | null = null;
   public guaranteesGiven: InstanceDetailResponse[] | null = null;
   public detail: InstanceDetailResponse | null = null;
 
@@ -70,8 +70,12 @@ export class InstanceDetailComponent implements OnInit {
       this.censuresGiven = responses[1].successResponse?.instances.map(
         instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance),
       ) ?? null;
-      this.endorsementsReceived = responses[2].successResponse?.instances ?? null;
-      this.endorsementsGiven = responses[3].successResponse?.instances ?? null;
+      this.endorsementsReceived = responses[2].successResponse?.instances.map(
+        instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance),
+      ) ?? null;
+      this.endorsementsGiven = responses[3].successResponse?.instances.map(
+        instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance),
+      ) ?? null;
       this.guaranteesGiven = responses[4].successResponse?.instances ?? null;
       this.detail = responses[5].successResponse ?? null;
       this.myInstance = !this.authManager.currentInstanceSnapshot.anonymous && this.detail?.domain === this.authManager.currentInstanceSnapshot.name;

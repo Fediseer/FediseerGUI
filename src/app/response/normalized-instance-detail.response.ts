@@ -17,6 +17,10 @@ export class NormalizedInstanceDetailResponse {
     public hesitationReasons: string[],
     public unmergedHesitationReasons: string[],
     public hesitationsEvidence: string,
+    public endorsementReasons: string[],
+    public unmergedEndorsementReasons: string[],
+    public sysadmins: int | null,
+    public moderators: int | null,
     public guarantor?: string | null,
   ) {
   }
@@ -26,12 +30,17 @@ export class NormalizedInstanceDetailResponse {
     let unmergedCensureReasons: string[] = [];
     let hesitationReasons: string[] = [];
     let unmergedHesitationReasons: string[] = []
+    let endorsementReasons: string[] = [];
+    let unmergedEndorsementReasons: string[] = [];
 
     if (detail.censure_reasons) {
       [censureReasons, unmergedCensureReasons] = this.getReasons(detail.censure_reasons);
     }
     if (detail.hesitation_reasons) {
       [hesitationReasons, unmergedHesitationReasons] = this.getReasons(detail.hesitation_reasons);
+    }
+    if (detail.endorsement_reasons) {
+      [endorsementReasons, unmergedEndorsementReasons] = this.getReasons(detail.endorsement_reasons);
     }
 
     return new NormalizedInstanceDetailResponse(
@@ -49,6 +58,10 @@ export class NormalizedInstanceDetailResponse {
       hesitationReasons,
       unmergedHesitationReasons,
       detail.hesitation_evidence?.join(', ') ?? '',
+      endorsementReasons,
+      unmergedEndorsementReasons,
+      detail.sysadmins,
+      detail.moderators,
       detail.guarantor,
     );
   }

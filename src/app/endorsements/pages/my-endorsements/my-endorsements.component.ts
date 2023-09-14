@@ -8,6 +8,7 @@ import {Observable} from "rxjs";
 import {Instance} from "../../../user/instance";
 import {toObservable, toPromise} from "../../../types/resolvable";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
+import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 
 @Component({
   selector: 'app-my-endorsements',
@@ -15,8 +16,8 @@ import {ApiResponseHelperService} from "../../../services/api-response-helper.se
   styleUrls: ['./my-endorsements.component.scss']
 })
 export class MyEndorsementsComponent implements OnInit {
-  public endorsementsForMyInstance: InstanceDetailResponse[] = [];
-  public endorsementsByMyInstance: InstanceDetailResponse[] = [];
+  public endorsementsForMyInstance: NormalizedInstanceDetailResponse[] = [];
+  public endorsementsByMyInstance: NormalizedInstanceDetailResponse[] = [];
   public instance: Observable<Instance> = this.authManager.currentInstance;
   public guaranteed: boolean = false;
   public loading: boolean = true;
@@ -44,8 +45,12 @@ export class MyEndorsementsComponent implements OnInit {
       return;
     }
 
-    this.endorsementsForMyInstance = responses[0].successResponse!.instances;
-    this.endorsementsByMyInstance = responses[1].successResponse!.instances;
+    this.endorsementsForMyInstance = responses[0].successResponse!.instances.map(
+      instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance),
+    );
+    this.endorsementsByMyInstance = responses[1].successResponse!.instances.map(
+      instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance),
+    );
     this.guaranteed = responses[2].successResponse!.guarantor !== undefined;
     this.loading = false;
   }
