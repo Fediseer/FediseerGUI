@@ -16,8 +16,11 @@ export type SaveSettingsCallback<TSettings> = (database: DatabaseService, settin
 export type GetSettingsCallback<TSettings> = (database: DatabaseService) => TSettings;
 
 export interface FilterFormResult {
+  // always only censured
   censured: InstanceDetailResponse[];
+  // always only hesitated
   hesitated: InstanceDetailResponse[];
+  // always censured, also includes hesitated if `includeHesitationsAsCensures` is true
   all: InstanceDetailResponse[];
   includeHesitationsAsCensures: boolean;
 }
