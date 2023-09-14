@@ -5,7 +5,11 @@
     <div class="card" *ngIf="detail">
       <div class="card-header">
         <h3 class="card-title" id="instance-details">Instance details</h3>
-        <a *ngIf="myInstance" routerLink="/instances/edit/my" class="btn btn-primary btn-sm float-right">Edit instance details</a>
+        <div class="float-right">
+          <a *ngIf="myInstance" routerLink="/instances/edit/reset-token" class="btn btn-primary btn-sm">Reset my api key</a>
+          &nbsp;
+          <a *ngIf="myInstance" routerLink="/instances/edit/my" class="btn btn-primary btn-sm">Edit instance details</a>
+        </div>
       </div>
       <div class="card-body">
         <table class="table table-bordered">

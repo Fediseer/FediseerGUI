@@ -11,6 +11,7 @@ import { EditOwnInstanceComponent } from './pages/edit-own-instance/edit-own-ins
 import {Guards} from "../guards/guards";
 import { HesitatedInstancesComponent } from './pages/hesitated-instances/hesitated-instances.component';
 import { SuspiciousInstanceDetailComponent } from './pages/suspicious-instance-detail/suspicious-instance-detail.component';
+import { ResetInstanceTokenComponent } from './pages/reset-instance-token/reset-instance-token.component';
 
 const routes: Routes = [
   {
@@ -41,7 +42,12 @@ const routes: Routes = [
     path: 'edit/my',
     component: EditOwnInstanceComponent,
     canActivate: [Guards.isLoggedIn()],
-  }
+  },
+  {
+    path: 'edit/reset-token',
+    component: ResetInstanceTokenComponent,
+    canActivate: [Guards.isLoggedIn()],
+  },
 ];
 
 @NgModule({
@@ -52,7 +58,8 @@ const routes: Routes = [
     CensuredInstancesComponent,
     EditOwnInstanceComponent,
     HesitatedInstancesComponent,
-    SuspiciousInstanceDetailComponent
+    SuspiciousInstanceDetailComponent,
+    ResetInstanceTokenComponent
   ],
   imports: [
     CommonModule,
