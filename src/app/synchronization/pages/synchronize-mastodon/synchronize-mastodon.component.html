@@ -68,6 +68,37 @@
               be visible as a private note.
             </small>
           </div>
+          <ng-template #modeSelect let-name="name" let-id="id">
+            <select class="form-control" formControlName="{{name}}" id="{{id}}">
+              <option [value]="MastodonBlacklistSeverity.Silence">Silence</option>
+              <option [value]="MastodonBlacklistSeverity.Suspend">Suspend</option>
+              <option [value]="MastodonBlacklistSeverity.RejectMedia">Reject media</option>
+              <option [value]="MastodonBlacklistSeverity.Nothing">No action</option>
+            </select>
+            <small *ngIf="$any(form.controls)[name].value === MastodonBlacklistSeverity.Silence">
+              <strong>Silence</strong> will make posts from accounts at this instance invisible to anyone who isn't following them.
+            </small>
+            <small *ngIf="$any(form.controls)[name].value === MastodonBlacklistSeverity.Suspend">
+              <strong>Suspend</strong> will remove all content, media, and profile data for this instance's accounts from your server.
+            </small>
+            <small *ngIf="$any(form.controls)[name].value === MastodonBlacklistSeverity.RejectMedia">
+              <strong>Reject media</strong> will reject all media files.
+            </small>
+            <small *ngIf="$any(form.controls)[name].value === MastodonBlacklistSeverity.Nothing">
+              <strong>No action</strong> will do nothing.
+            </small>
+          </ng-template>
+
+          <div class="form-group">
+            <!--suppress XmlInvalidId -->
+            <label for="inputCensuresMode">Censures action</label>
+            <ng-container *ngTemplateOutlet="modeSelect; context: {name: 'censuresMode', id: 'inputCensuresMode'}"></ng-container>
+          </div>
+          <div class="form-group">
+            <!--suppress XmlInvalidId -->
+            <label for="inputHesitationsMode">Hesitations action</label>
+            <ng-container *ngTemplateOutlet="modeSelect; context: {name: 'hesitationsMode', id: 'inputHesitationsMode'}"></ng-container>
+          </div>
         </div>
       </app-filter-form>
       <div class="row mt-4">

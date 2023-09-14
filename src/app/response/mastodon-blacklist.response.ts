@@ -1,7 +1,8 @@
 export enum MastodonBlacklistSeverity {
   Silence = "silence",
   Suspend = "suspend",
-  Nothing = "noop",
+  RejectMedia = "noop",
+  Nothing = '',
 }
 
 export interface MastodonBlacklistItem {

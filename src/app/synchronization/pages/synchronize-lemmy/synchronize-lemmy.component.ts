@@ -12,7 +12,11 @@ import {MessageService} from "../../../services/message.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {InstanceDetailResponse} from "../../../response/instance-detail.response";
 import {SynchronizationMode} from "../../../types/synchronization-mode";
-import {GetSettingsCallback, SaveSettingsCallback} from "../../components/filter-form/filter-form.component";
+import {
+  FilterFormResult,
+  GetSettingsCallback,
+  SaveSettingsCallback
+} from "../../components/filter-form/filter-form.component";
 import {LemmySynchronizationSettings} from "../../../types/lemmy-synchronization-settings";
 
 @Component({
@@ -82,11 +86,11 @@ export class SynchronizeLemmyComponent implements OnInit {
     });
   }
 
-  public async loadDiffs(instancesToBan: InstanceDetailResponse[]): Promise<void> {
+  public async loadDiffs(instancesToBan: FilterFormResult): Promise<void> {
     if (this.currentMode === null) {
       return;
     }
-    this.instancesToBanPreview = instancesToBan;
+    this.instancesToBanPreview = instancesToBan.all;
     this.loadingPreview = false;
   }
 
@@ -155,7 +159,7 @@ export class SynchronizeLemmyComponent implements OnInit {
     }
   }
 
-  public async synchronize(instancesToBan: InstanceDetailResponse[]): Promise<void> {
+  public async synchronize(instancesToBan: FilterFormResult): Promise<void> {
     try {
       if (this.purgeMode === null) {
         this.messageService.createError('There was an error with submitting the form.');
@@ -185,8 +189,9 @@ export class SynchronizeLemmyComponent implements OnInit {
 
       const newInstances =
         this.purgeMode
-          ? instancesToBan.map(instance => instance.domain)
-          : [...new Set([...originalInstances, ...instancesToBan.map(instance => instance.domain)])];
+          ? instancesToBan.all.map(instance => instance.domain)
+          : [...new Set([...originalInstances, ...instancesToBan.all.map(instance => instance.domain)])]
+      ;
 
       try {
         await toPromise(this.lemmyApi.updateBlacklist(myInstance, jwt, newInstances));

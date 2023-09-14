@@ -9,7 +9,11 @@ import {MastodonApiService} from "../../../services/mastodon-api.service";
 import {toPromise} from "../../../types/resolvable";
 import {MastodonBlacklistItem, MastodonBlacklistSeverity} from "../../../response/mastodon-blacklist.response";
 import {MessageService} from "../../../services/message.service";
-import {GetSettingsCallback, SaveSettingsCallback} from "../../components/filter-form/filter-form.component";
+import {
+  FilterFormResult,
+  GetSettingsCallback,
+  SaveSettingsCallback
+} from "../../components/filter-form/filter-form.component";
 import {InstanceDetailResponse} from "../../../response/instance-detail.response";
 import {SynchronizationMode} from "../../../types/synchronization-mode";
 import {OriginalToStringCallback} from "../../components/blacklist-diff/blacklist-diff.component";
@@ -21,6 +25,7 @@ import {NormalizedInstanceDetailResponse} from "../../../response/normalized-ins
   styleUrls: ['./synchronize-mastodon.component.scss']
 })
 export class SynchronizeMastodonComponent implements OnInit {
+  protected readonly MastodonBlacklistSeverity = MastodonBlacklistSeverity;
   protected readonly currentInstance = this.authManager.currentInstanceSnapshot.name;
 
   private syncSettings: MastodonSynchronizationSettings = this.database.mastodonSynchronizationSettings;
@@ -32,6 +37,8 @@ export class SynchronizeMastodonComponent implements OnInit {
 
   public form = new FormGroup({
     reasonsPublic: new FormControl<boolean>(false),
+    censuresMode: new FormControl<MastodonBlacklistSeverity>(MastodonBlacklistSeverity.Suspend),
+    hesitationsMode: new FormControl<MastodonBlacklistSeverity>(MastodonBlacklistSeverity.Silence),
   });
 
   public originallyBlockedInstances: MastodonBlacklistItem[] = [];
@@ -82,6 +89,8 @@ export class SynchronizeMastodonComponent implements OnInit {
 
     this.form.patchValue({
       reasonsPublic: this.syncSettings.reasonsPublic,
+      hesitationsMode: this.syncSettings.hesitationsMode,
+      censuresMode: this.syncSettings.censuresMode,
     });
 
     this.form.valueChanges.subscribe(changes => {
@@ -100,6 +109,8 @@ export class SynchronizeMastodonComponent implements OnInit {
         oauthToken: this.syncSettings.oauthToken,
         // custom fields
         reasonsPublic: this.form.controls.reasonsPublic.value ?? false,
+        censuresMode: this.form.controls.censuresMode.value ?? MastodonBlacklistSeverity.Suspend,
+        hesitationsMode: this.form.controls.hesitationsMode.value ?? MastodonBlacklistSeverity.Silence,
       }
     });
 
@@ -148,7 +159,7 @@ export class SynchronizeMastodonComponent implements OnInit {
     }
   }
 
-  public async synchronize(instancesToBan: InstanceDetailResponse[]): Promise<void> {
+  public async synchronize(filterFormResult: FilterFormResult): Promise<void> {
     if (this.purgeMode === null) {
       this.messageService.createError('There was an error with submitting the form.');
       return;
@@ -164,30 +175,64 @@ export class SynchronizeMastodonComponent implements OnInit {
       return;
     }
 
-    const instancesToBanString = instancesToBan.map(instance => instance.domain);
     const originalInstancesString = originalInstances.map(instance => instance.domain);
 
-    const toRemove = this.purgeMode
-      ? originalInstances.filter(instance => !instancesToBanString.includes(instance.domain))
-      : [];
-    const toAdd = instancesToBan
-      .filter(instance => !originalInstancesString.includes(instance.domain))
-      .map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance))
-    ;
+    let censuredInstances: NormalizedInstanceDetailResponse[] = [];
+    let hesitatedInstances: NormalizedInstanceDetailResponse[] = [];
+    let instancesToRemove: MastodonBlacklistItem[] = [];
+
+    if (filterFormResult.includeHesitationsAsCensures) {
+      censuredInstances = filterFormResult.all
+        .filter(instance => !originalInstancesString.includes(instance.domain))
+        .map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance));
+    } else {
+      censuredInstances = filterFormResult.censured
+        .filter(instance => !originalInstancesString.includes(instance.domain))
+        .map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance));
+      hesitatedInstances = filterFormResult.hesitated
+        .filter(instance => !originalInstancesString.includes(instance.domain))
+        .map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance));
+    }
+    const instancesToBanString = [...filterFormResult.censured, ...filterFormResult.hesitated].map(instance => instance.domain);
+
+    if (this.purgeMode) {
+      instancesToRemove = originalInstances
+        .filter(instance => !instancesToBanString.includes(instance.domain))
+      ;
+    }
 
     const token = this.syncSettings.oauthToken!;
     const responses: Promise<any>[] = [];
 
-    for (const item of toRemove) {
+    for (const item of instancesToRemove) {
       responses.push(toPromise(this.mastodonApi.deleteBlacklist(myInstance, token, item.id)));
     }
-    for (const item of toAdd) {
+    for (const item of censuredInstances) {
+      const severity = this.form.controls.censuresMode.value ?? MastodonBlacklistSeverity.Suspend;
+      if (severity === MastodonBlacklistSeverity.Nothing) {
+        break;
+      }
       const reasons = [
         ...item.censureReasons,
         ...item.hesitationReasons,
       ].join(', ');
       responses.push(toPromise(this.mastodonApi.blacklistInstance(myInstance, token, item.domain, {
-        severity: MastodonBlacklistSeverity.Suspend,
+        severity: severity,
+        private_comment: reasons,
+        public_comment: this.form.controls.reasonsPublic.value ? reasons : undefined,
+      })));
+    }
+    for (const item of hesitatedInstances) {
+      const severity = this.form.controls.hesitationsMode.value ?? MastodonBlacklistSeverity.Silence;
+      if (severity === MastodonBlacklistSeverity.Nothing) {
+        break;
+      }
+      const reasons = [
+        ...item.censureReasons,
+        ...item.hesitationReasons,
+      ].join(', ');
+      responses.push(toPromise(this.mastodonApi.blacklistInstance(myInstance, token, item.domain, {
+        severity: severity,
         private_comment: reasons,
         public_comment: this.form.controls.reasonsPublic.value ? reasons : undefined,
       })));
@@ -202,11 +247,11 @@ export class SynchronizeMastodonComponent implements OnInit {
     this.loading = false;
   }
 
-  public async loadDiffs(instancesToBan: InstanceDetailResponse[]): Promise<void> {
+  public async loadDiffs(instancesToBan: FilterFormResult): Promise<void> {
     if (this.currentMode === null) {
       return;
     }
-    this.instancesToBanPreview = instancesToBan;
+    this.instancesToBanPreview = [...instancesToBan.censured, ...instancesToBan.hesitated];
     this.loadingPreview = false;
   }
 }
