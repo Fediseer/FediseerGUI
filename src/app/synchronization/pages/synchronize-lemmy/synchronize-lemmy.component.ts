@@ -86,11 +86,11 @@ export class SynchronizeLemmyComponent implements OnInit {
     });
   }
 
-  public async loadDiffs(instancesToBan: InstanceDetailResponse[]): Promise<void> {
+  public async loadDiffs(instancesToBan: FilterFormResult): Promise<void> {
     if (this.currentMode === null) {
       return;
     }
-    this.instancesToBanPreview = instancesToBan;
+    this.instancesToBanPreview = instancesToBan.all;
     this.loadingPreview = false;
   }
 

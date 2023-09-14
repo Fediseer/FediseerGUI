@@ -13,7 +13,7 @@
     <td>
       {{instance}}
       <app-tooltip *ngIf="!removed.includes(instance)" text="This instance is on both your Fediseer censure list and instance blocklist." />
-      <app-tooltip *ngIf="removed.includes(instance) && purgeMode" text="This instance is only on your instance blocklist but not on your Fediseer blocklist and will be removed from your Lemmy blocklist if you run a synchronization." />
+      <app-tooltip *ngIf="removed.includes(instance) && purgeMode" text="This instance is only on your instance blocklist but not on your Fediseer blocklist and will be removed from your instance's blocklist if you run synchronization." />
       <app-tooltip *ngIf="removed.includes(instance) && !purgeMode" text="This instance is only on your instance blocklist but not on your Fediseer blocklist. It will not be removed because you don't have the 'Purge blacklist' option checked." />
     </td>
   </tr>

@@ -36,7 +36,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
 
   private _formSubmitted: EventEmitter<FilterFormResult> = new EventEmitter<FilterFormResult>();
   private _modeChanged: EventEmitter<SynchronizationMode> = new EventEmitter<SynchronizationMode>();
-  private _instancesToBanChanged: EventEmitter<InstanceDetailResponse[]> = new EventEmitter<InstanceDetailResponse[]>();
+  private _instancesToBanChanged: EventEmitter<FilterFormResult> = new EventEmitter<FilterFormResult>();
   private _instancesToBanCalculationStarted: EventEmitter<void> = new EventEmitter<void>();
   private _purgeChanged: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -78,7 +78,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
     return this._modeChanged;
   }
 
-  @Output() public get instancesToBanChanged(): Observable<InstanceDetailResponse[]> {
+  @Output() public get instancesToBanChanged(): Observable<FilterFormResult> {
     return this._instancesToBanChanged;
   }
 
@@ -90,20 +90,29 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
     return this._purgeChanged;
   }
 
-  public async resolveInstanceList(): Promise<void> {
+  private async getFormResult(): Promise<FilterFormResult | null> {
     const censured = await this.getInstancesToBan(false);
     const hesitated = await this.getInstancesToBan(true);
     const all = await this.getInstancesToBan(null);
     if (censured === null || hesitated === null || all === null) {
       this.messageService.createError('Failed calculating the list of instances to ban.');
-      return;
+      return null;
     }
-    this._formSubmitted.next({
+
+    return {
       censured: censured,
       hesitated: hesitated,
       all: all,
       includeHesitationsAsCensures: this.form.controls.includeHesitations.value ?? false,
-    });
+    };
+  }
+
+  public async resolveInstanceList(): Promise<void> {
+    const result = await this.getFormResult();
+    if (result === null) {
+      return;
+    }
+    this._formSubmitted.next(result);
   }
 
   public async ngOnInit(): Promise<void> {
@@ -139,12 +148,11 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
     this.form.valueChanges.pipe(
       debounceTime(500),
     ).subscribe(changes => {
-      this.getInstancesToBan().then(instances => {
-        if (instances === null) {
+      this.getFormResult().then(result => {
+        if (result === null) {
           return;
         }
-
-        this._instancesToBanChanged.next(instances);
+        this._instancesToBanChanged.next(result)
       });
     });
 
@@ -183,7 +191,13 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
     }
 
     this._instancesToBanCalculationStarted.next();
-    this.getInstancesToBan();
+    this.getFormResult().then(result => {
+      if (result === null) {
+        return;
+      }
+
+      this._instancesToBanChanged.next(result);
+    });
   }
 
   private async loadCustomInstancesSelect(mode: SynchronizationMode) {
@@ -216,12 +230,12 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
     }
   }
 
-  private async getInstancesToBan(includeHesitations: boolean | null = null): Promise<InstanceDetailResponse[] | null> {
+  private async getInstancesToBan(hesitationsMode: boolean | null = null): Promise<InstanceDetailResponse[] | null> {
     const myInstance = this.authManager.currentInstanceSnapshot.name;
     const mode = this.form.controls.mode.value!;
 
     let cacheKey: string = mode;
-    const myInstanceCacheKey = myInstance + String(Number(this.form.controls.includeHesitations.value));
+    const myInstanceCacheKey = myInstance + String(Number(this.form.controls.includeHesitations.value)) + String(hesitationsMode);
 
     if (mode === SynchronizationMode.CustomInstances && this.form.controls.customInstances.value) {
       cacheKey += this.form.controls.customInstances.value.join('|');
@@ -233,13 +247,13 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
       cacheKey += this.form.controls.ignoreInstanceList.value!.join('|');
     }
     cacheKey += String(Number(this.form.controls.includeHesitations.value));
+    cacheKey += String(hesitationsMode);
 
     this.cache[myInstanceCacheKey] ??= await (async () => {
-      const censures = await this.getCensuresByInstances([myInstance]);
-      if ((!this.form.controls.includeHesitations.value && includeHesitations !== true) || includeHesitations === false) {
-        return censures;
-      }
-      const hesitations = await this.getHesitationsByInstances([myInstance]);
+      const censures = hesitationsMode === true ? [] : await this.getCensuresByInstances([myInstance]);
+      const hesitations = hesitationsMode === false || (hesitationsMode === null && !this.form.controls.includeHesitations.value)
+        ? []
+        : await this.getHesitationsByInstances([myInstance]);
 
       if (censures === null || hesitations === null) {
         return null;
@@ -266,14 +280,15 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
       let foreignInstanceBlacklist: InstanceDetailResponse[] = [];
       if (sourceFrom.length) {
         foreignInstanceBlacklist =  await (async () => {
-          const censures = await this.getCensuresByInstances(sourceFrom);
-          if ((!this.form.controls.includeHesitations.value && includeHesitations !== true) || includeHesitations === false) {
-            return censures ?? [];
-          }
-          const hesitations = await this.getHesitationsByInstances(sourceFrom);
+          const censures = hesitationsMode === true ? [] : await this.getCensuresByInstances(sourceFrom);
+          const hesitations = hesitationsMode === false || (hesitationsMode === null && !this.form.controls.includeHesitations.value)
+            ? []
+            : await this.getHesitationsByInstances(sourceFrom);
+
           if (censures === null || hesitations === null) {
             return [];
           }
+
           return [...censures, ...hesitations];
         })();
         if (this.form.controls.filterByReasons.value && this.form.controls.reasonsFilter.value) {
@@ -304,10 +319,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
       });
     })();
 
-    const result = this.cache[cacheKey]!;
-    this._instancesToBanChanged.next(result);
-
-    return result;
+    return this.cache[cacheKey]!;
   }
 
   private async getCensuresByInstances(instances: string[]): Promise<InstanceDetailResponse[] | null> {
