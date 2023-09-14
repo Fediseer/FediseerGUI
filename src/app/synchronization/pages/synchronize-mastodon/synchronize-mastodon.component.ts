@@ -42,6 +42,7 @@ export class SynchronizeMastodonComponent implements OnInit {
   });
 
   public originallyBlockedInstances: MastodonBlacklistItem[] = [];
+  public sourceBlockedInstances: MastodonBlacklistItem[] = [];
 
   public loading: boolean = true;
   public oauthSetupFinished: boolean = true;
@@ -121,6 +122,7 @@ export class SynchronizeMastodonComponent implements OnInit {
       return;
     }
     this.originallyBlockedInstances = instances;
+    this.sourceBlockedInstances = instances;
   }
 
   public async saveOauth(): Promise<void> {
@@ -243,6 +245,13 @@ export class SynchronizeMastodonComponent implements OnInit {
       this.messageService.createSuccess('The blacklist was successfully updated.');
     } catch (e) {
       this.messageService.createError('Failed to update the blacklist.')
+    }
+
+    const newBlockedInstances = await this.getBlockedInstancesFromSource(this.authManager.currentInstanceSnapshot.name);
+    if (newBlockedInstances === null) {
+      this.messageService.createError('Failed to fetch the updated list from your instance, please refresh the page');
+    } else {
+      this.sourceBlockedInstances = newBlockedInstances;
     }
     this.loading = false;
   }

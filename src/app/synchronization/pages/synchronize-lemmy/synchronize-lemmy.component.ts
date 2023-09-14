@@ -38,6 +38,7 @@ export class SynchronizeLemmyComponent implements OnInit {
   public currentMode: SynchronizationMode | null = null;
   public purgeMode: boolean | null = null;
   public originallyBlockedInstances: string[] = [];
+  public sourceBlockedInstances: string[] = [];
   public instancesToBanPreview: InstanceDetailResponse[] | null = null;
 
   public saveSettingsCallback: SaveSettingsCallback<LemmySynchronizationSettings> = (database, settings) => {
@@ -75,6 +76,7 @@ export class SynchronizeLemmyComponent implements OnInit {
       return;
     }
     this.originallyBlockedInstances = instances;
+    this.sourceBlockedInstances = instances;
 
     this.form.valueChanges.pipe(
       debounceTime(500),
@@ -202,6 +204,13 @@ export class SynchronizeLemmyComponent implements OnInit {
       }
 
       this.messageService.createSuccess('The list was successfully synchronized');
+
+      const newBlockedInstances = await this.getBlockedInstancesFromSource(this.authManager.currentInstanceSnapshot.name);
+      if (newBlockedInstances === null) {
+        this.messageService.createError('Failed to fetch the updated list from your instance, please refresh the page');
+      } else {
+        this.sourceBlockedInstances = newBlockedInstances;
+      }
     } finally {
       this.loading = false;
     }
