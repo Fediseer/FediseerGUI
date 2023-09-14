@@ -14,6 +14,7 @@ import {ChangedResponse} from "../response/changed.response";
 import {ActionLogResponse} from "../response/action-log.response";
 import {RuntimeCacheService} from "./cache/runtime-cache.service";
 import {int} from "../types/number";
+import {ResetApiKeyResponse} from "../response/reset-api-key.response";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -249,10 +250,17 @@ export class FediseerApiService {
     );
   }
 
+  public resetApiKey(instance: string, adminUsername: string): Observable<ApiResponse<ResetApiKeyResponse>> {
+    return this.sendRequest(HttpMethod.Patch, `whitelist/${instance}`, {
+      return_new_key: true,
+      admin_username: adminUsername,
+    });
+  }
+
   private sendRequest<T>(
     method: HttpMethod,
     endpoint: string,
-    body: {[key: string]: string | number | null} | null = null,
+    body: {[key: string]: string | number | null | boolean} | null = null,
     headers: {[header: string]: string} | null = null,
   ): Observable<ApiResponse<T>> {
     headers ??= {};
