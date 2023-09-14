@@ -58,6 +58,7 @@
           <tr>
             <th>Instance</th>
             <th>Reasons</th>
+            <th>Evidence</th>
             <th *ngIf="!currentInstance.anonymous">Censured by me?</th>
           </tr>
           </thead>
@@ -71,6 +72,10 @@
                   <li *ngFor="let reason of instance.censureReasons">{{reason}}</li>
                 </ul>
               </ng-template>
+            </td>
+            <td>
+              <code *ngIf="!instance.censuresEvidence">N/A</code>
+              <ng-container *ngIf="instance.censuresEvidence">{{instance.censuresEvidence}}</ng-container>
             </td>
             <td *ngIf="!currentInstance.anonymous">
               <a href="javascript:void(0)" (click)="toggleCensure(instance.domain)">

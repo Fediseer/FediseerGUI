@@ -58,6 +58,7 @@
           <tr>
             <th>Instance</th>
             <th>Reasons</th>
+            <th>Evidence</th>
             <th *ngIf="!currentInstance.anonymous">Hesitated on by me?</th>
           </tr>
           </thead>
@@ -76,6 +77,10 @@
                   <li *ngFor="let reason of instance.hesitationReasons">{{reason}}</li>
                 </ul>
               </ng-template>
+            </td>
+            <td>
+              <code *ngIf="!instance.hesitationsEvidence">N/A</code>
+              <ng-container *ngIf="instance.hesitationsEvidence">{{instance.hesitationsEvidence}}</ng-container>
             </td>
             <td *ngIf="!currentInstance.anonymous">
               <a href="javascript:void(0)" (click)="toggleHesitation(instance.domain)">

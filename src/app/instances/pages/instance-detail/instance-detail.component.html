@@ -96,6 +96,7 @@
             <tr>
               <th>Instance</th>
               <th>Reasons</th>
+              <th>Evidence</th>
             </tr>
             </thead>
             <tbody>
@@ -108,6 +109,10 @@
                     <li *ngFor="let reason of instance.censureReasons">{{reason}}</li>
                   </ul>
                 </ng-template>
+              </td>
+              <td>
+                <code *ngIf="!instance.censuresEvidence">N/A</code>
+                <ng-container *ngIf="instance.censuresEvidence">{{instance.censuresEvidence}}</ng-container>
               </td>
             </tr>
             </tbody>
@@ -144,8 +149,8 @@
                 <code *ngIf="!instance.censureReasons.length">N/A</code>
               </td>
               <td>
-                <ng-container *ngIf="instance.reasonsEvidence.length">{{instance.reasonsEvidence}}</ng-container>
-                <code *ngIf="!instance.reasonsEvidence.length">N/A</code>
+                <ng-container *ngIf="instance.censuresEvidence.length">{{instance.censuresEvidence}}</ng-container>
+                <code *ngIf="!instance.censuresEvidence.length">N/A</code>
               </td>
             </tr>
             </tbody>
@@ -221,6 +226,7 @@
             <tr>
               <th>Instance</th>
               <th>Reasons</th>
+              <th>Evidence</th>
             </tr>
             </thead>
             <tbody>
@@ -233,6 +239,10 @@
                     <li *ngFor="let reason of instance.hesitationReasons">{{reason}}</li>
                   </ul>
                 </ng-template>
+              </td>
+              <td>
+                <code *ngIf="!instance.hesitationsEvidence">N/A</code>
+                <ng-container *ngIf="instance.hesitationsEvidence">{{instance.hesitationsEvidence}}</ng-container>
               </td>
             </tr>
             </tbody>
