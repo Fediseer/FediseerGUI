@@ -15,6 +15,7 @@ import {ActionLogResponse} from "../response/action-log.response";
 import {RuntimeCacheService} from "./cache/runtime-cache.service";
 import {int} from "../types/number";
 import {ResetApiKeyResponse} from "../response/reset-api-key.response";
+import {PrivateMessageProxy} from "../types/private-message-proxy";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -60,9 +61,10 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Get, `whitelist/${instance}`);
   }
 
-  public claimInstance(instance: string, admin: string): Observable<ApiResponse<InstanceDetailResponse>> {
+  public claimInstance(instance: string, admin: string, proxy: PrivateMessageProxy): Observable<ApiResponse<InstanceDetailResponse>> {
     return this.sendRequest(HttpMethod.Put, `whitelist/${instance}`, {
       admin: admin,
+      pm_proxy: proxy,
     });
   }
 
