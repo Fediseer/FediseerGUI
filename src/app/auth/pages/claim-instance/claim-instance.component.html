@@ -19,6 +19,24 @@
               {{"Provide the username of the admin who will receive a private message with the api key. The user should exist on the instance you specified."}}
             </small>
           </div>
+          <div class="form-group">
+            <label for="inputPmProxy">Private message proxy</label>
+            <select formControlName="pmProxy" id="inputPmProxy" class="form-control" aria-describedby="inputPmProxyDescription">
+              <option [value]="PrivateMessageProxy.None">None</option>
+              <option [value]="PrivateMessageProxy.Mastodon">Mastodon</option>
+            </select>
+            <small id="inputPmProxyDescription">
+              <ng-container *ngIf="form.controls.pmProxy.value === PrivateMessageProxy.None">
+                No proxy will be used and you will receive the message with the api key directly from Fediseer.com.
+                Note that this option doesn't work with many apps, if you get an error saying so, switch to the Mastodon
+                proxy.
+              </ng-container>
+              <ng-container *ngIf="form.controls.pmProxy.value === PrivateMessageProxy.Mastodon">
+                A Mastodon account proxy will be used to send you the api key. This should support all Fediverse
+                software. Make sure you can receive messages from <code>botsin.space</code>.
+              </ng-container>
+            </small>
+          </div>
 
           <button class="btn btn-primary" type="submit">
             {{"Claim instance" }}

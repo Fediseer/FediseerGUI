@@ -4,6 +4,7 @@ import {FediseerApiService} from "../../../services/fediseer-api.service";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MessageService} from "../../../services/message.service";
 import {Router} from "@angular/router";
+import {PrivateMessageProxy} from "../../../types/private-message-proxy";
 
 @Component({
   selector: 'app-claim-instance',
@@ -11,9 +12,12 @@ import {Router} from "@angular/router";
   styleUrls: ['./claim-instance.component.scss']
 })
 export class ClaimInstanceComponent implements OnInit {
+  protected readonly PrivateMessageProxy = PrivateMessageProxy;
+
   public form = new FormGroup({
     admin: new FormControl<string>('', [Validators.required]),
     instance: new FormControl<string>('', [Validators.required]),
+    pmProxy: new FormControl<PrivateMessageProxy>(PrivateMessageProxy.None, [Validators.required]),
   })
   public loading = false;
 
@@ -39,6 +43,7 @@ export class ClaimInstanceComponent implements OnInit {
     this.api.claimInstance(
       this.form.controls.instance.value!,
       this.form.controls.admin.value!,
+      this.form.controls.pmProxy.value!,
     ).subscribe(response => {
       if (!response.success) {
         this.messageService.createError(`The api returned this error: ${response.errorResponse!.message}`);
