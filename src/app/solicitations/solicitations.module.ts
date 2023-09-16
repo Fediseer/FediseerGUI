@@ -11,7 +11,6 @@ const routes: Routes = [
   {
     path: '',
     component: ListSolicitationsComponent,
-    canActivate: [Guards.isLoggedIn()],
   },
   {
     path: 'create',
