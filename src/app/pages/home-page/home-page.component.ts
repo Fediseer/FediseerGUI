@@ -27,7 +27,7 @@ export class HomePageComponent implements OnInit {
     this.titleService.title = 'Fediseer';
 
     this.api.getCurrentInstanceInfo().subscribe(response => {
-      if (this.apiResponseHelper.handleErrors([response])) {
+      if (!response.success) {
         return;
       }
 
