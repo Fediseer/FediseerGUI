@@ -28,6 +28,8 @@
               <ng-container *ngIf="item.report_type === ActionLogReportType.Endorsement">Endorsement</ng-container>
               <ng-container *ngIf="item.report_type === ActionLogReportType.Hesitation">Hesitation</ng-container>
               <ng-container *ngIf="item.report_type === ActionLogReportType.Guarantee">Guarantee</ng-container>
+              <ng-container *ngIf="item.report_type === ActionLogReportType.Solicitation">Guarantee solicitation</ng-container>
+              <ng-container *ngIf="item.report_type === ActionLogReportType.Claim">Instance claim</ng-container>
             </td>
             <td>
               <ng-container *ngIf="item.report_activity === ActionLogReportActivity.Added">Created</ng-container>
