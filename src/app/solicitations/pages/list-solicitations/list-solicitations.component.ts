@@ -29,7 +29,7 @@ export class ListSolicitationsComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.titleService.title = 'Instance claim solicitations';
+    this.titleService.title = 'Instance guarantee solicitations';
 
     const response = await toPromise(this.api.getSolicitations());
     if (this.apiResponseHelper.handleErrors([response])) {
