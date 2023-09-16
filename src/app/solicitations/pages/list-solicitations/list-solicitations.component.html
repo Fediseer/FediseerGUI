@@ -22,15 +22,16 @@
             <th>Domain</th>
             <th>Software</th>
             <th>Open registrations</th>
+            <th>Email verification</th>
             <th *ngIf="!currentInstance.anonymous && currentInstanceDetail!.guarantor">Guarantee</th>
           </tr>
           <tr *ngIf="!currentInstance.anonymous && !currentInstanceDetail!.guarantor">
-            <td [colSpan]="4">
+            <td [colSpan]="5">
               <a class="btn btn-primary" routerLink="/solicitations/create">Ask for a guarantee</a>
             </td>
           </tr>
           <tr *ngIf="!instances.length">
-            <td [colSpan]="!currentInstance.anonymous && currentInstanceDetail!.guarantor ? 4 : 3">
+            <td [colSpan]="!currentInstance.anonymous && currentInstanceDetail!.guarantor ? 5 : 4">
               There are currently no instances asking for a guarantee.
             </td>
           </tr>
@@ -39,6 +40,9 @@
             <td>{{instance.software}}</td>
             <td>
               <app-yes-no [yes]="instance.open_registrations" [swapColors]="true" />
+            </td>
+            <td>
+              <app-yes-no [yes]="instance.email_verify" />
             </td>
             <td *ngIf="!currentInstance.anonymous && currentInstanceDetail!.guarantor">
               <button (click)="guaranteeFor(instance.domain)" class="btn btn-primary">Guarantee</button>
