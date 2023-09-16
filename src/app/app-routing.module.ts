@@ -42,7 +42,11 @@ const routes: Routes = [
   {
     path: 'action-log',
     loadChildren: () => import('./action-log/action-log.module').then(m => m.ActionLogModule),
-  }
+  },
+  {
+    path: 'solicitations',
+    loadChildren: () => import('./solicitations/solicitations.module').then(m => m.SolicitationsModule),
+  },
 ];
 
 @NgModule({

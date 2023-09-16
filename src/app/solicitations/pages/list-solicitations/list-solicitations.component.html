@@ -1,0 +1,60 @@
+<app-loader *ngIf="loading else content" />
+
+<ng-template #content>
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-body">
+        <p>
+          On this page you can see list of instances that are asking for someone to guarantee them.
+          <ng-container *ngIf="!currentInstance.anonymous && currentInstanceDetail!.guarantor">
+            If you're familiar with any instance and can guarantee for it, please do so.
+          </ng-container>
+          <ng-container *ngIf="!currentInstance.anonymous && !currentInstanceDetail!.guarantor">
+            You can ask for someone to guarantee for you here.
+          </ng-container>
+          <ng-container *ngIf="currentInstance.anonymous">
+            If you log in, you can either ask for guarantee or guarantee others here.
+          </ng-container>
+        </p>
+
+        <table class="table table-bordered">
+          <tr>
+            <th>Domain</th>
+            <th>Software</th>
+            <th>Sysadmins/moderators</th>
+            <th *ngIf="!currentInstance.anonymous && currentInstanceDetail!.guarantor">Guarantee</th>
+          </tr>
+          <tr *ngIf="!currentInstance.anonymous && !currentInstanceDetail!.guarantor">
+            <td [colSpan]="4">
+              <a class="btn btn-primary" routerLink="/solicitations/create">Ask for a guarantee</a>
+            </td>
+          </tr>
+          <tr *ngIf="!instances.length">
+            <td [colSpan]="!currentInstance.anonymous && currentInstanceDetail!.guarantor ? 4 : 3">
+              There are currently no instances asking for a guarantee.
+            </td>
+          </tr>
+          <tr *ngFor="let instance of instances">
+            <td>{{instance.domain}}</td>
+            <td>{{instance.software}}</td>
+            <td>
+              <code *ngIf="instance.sysadmins === null && instance.moderators === null; else detailedAdminsModerators">
+                N/A
+              </code>
+              <ng-template #detailedAdminsModerators>
+                <code *ngIf="instance.sysadmins === null">N/A</code>
+                <ng-container *ngIf="instance.sysadmins !== null">{{instance.sysadmins}}</ng-container>
+                /
+                <code *ngIf="instance.moderators === null">N/A</code>
+                <ng-container *ngIf="instance.moderators !== null">{{instance.moderators}}</ng-container>
+              </ng-template>
+            </td>
+            <td *ngIf="!currentInstance.anonymous && currentInstanceDetail!.guarantor">
+              <button (click)="guaranteeFor(instance.domain)" class="btn btn-primary">Guarantee</button>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</ng-template>

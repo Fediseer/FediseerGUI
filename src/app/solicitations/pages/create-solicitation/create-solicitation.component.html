@@ -1,0 +1,28 @@
+<app-loader *ngIf="loading else content" />
+
+<ng-template #content>
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-body">
+        <form [formGroup]="form" (submit)="askForAGuarantee()">
+          <div class="form-group">
+            <label for="inputGuarantor">Guarantor</label>
+            <input type="text" class="form-control" formControlName="guarantor" id="inputGuarantor" aria-describedby="inputGuarantorDescription" />
+            <small id="inputGuarantorDescription">
+              You can optionally put an instance domain here and their admins will be notified.
+            </small>
+          </div>
+          <div class="form-group">
+            <label for="inputComment">Comment</label>
+            <textarea class="form-control" [rows]="3" formControlName="comment" id="inputComment" aria-describedby="inputCommentDescription"></textarea>
+            <small id="inputCommentDescription">
+              If you are requesting a specific instance to guarantee for you, you might optionally write a comment.
+            </small>
+          </div>
+
+          <button [disabled]="!form.valid || currentInstance!.guarantor" class="btn-primary btn">Ask for a guarantee</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</ng-template>
