@@ -4,7 +4,7 @@ export enum ActionLogReportType {
   Hesitation = 'HESITATION',
   Guarantee = 'GUARANTEE',
   Claim = 'CLAIM',
-  Solicitation = 'Solicitation',
+  Solicitation = 'SOLICITATION',
 }
 
 export enum ActionLogReportActivity {

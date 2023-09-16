@@ -12,10 +12,16 @@
         routerLink="/auth/claim-instance">register your instance</a>) to manage your own endorsements, censures and
         guarantees.
       </p>
-      <p *ngIf="!currentInstance.anonymous">
+      <p *ngIf="!currentInstance.anonymous && currentInstanceDetail!.guarantor">
         You can view <a routerLink="/instances/whitelisted">whitelisted</a> and <a routerLink="/instances/censured">censured</a>
         instances or manage your <a routerLink="/endorsements/my">endorsements</a>, <a routerLink="/guarantees/my">guarantees</a>
         and <a routerLink="/censures/my">censures</a>.
+      </p>
+      <p *ngIf="!currentInstance.anonymous && !currentInstanceDetail!.guarantor">
+        <strong>
+          Your instance isn't currently guaranteed, you may go to <a routerLink="/solicitations">Solicitations</a> to
+          ask for a guarantee.
+        </strong>
       </p>
     </div>
   </div>

@@ -28,6 +28,7 @@ enum HttpMethod {
   Put = 'PUT',
   Delete = 'DELETE',
   Patch = 'PATCH',
+  Post = 'POST',
 }
 
 @Injectable({
@@ -302,6 +303,22 @@ export class FediseerApiService {
       return_new_key: true,
       admin_username: adminUsername,
     });
+  }
+
+  public getSolicitations(): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    return this.sendRequest(HttpMethod.Get, `solicitations`);
+  }
+
+  public solicitGuarantee(guarantor: string | null = null, comment: string | null = null): Observable<ApiResponse<SuccessResponse>> {
+    const body: {guarantor?: string, comment?: string} = {};
+    if (guarantor) {
+      body.guarantor = guarantor;
+    }
+    if (comment) {
+      body.comment = comment;
+    }
+
+    return this.sendRequest(HttpMethod.Post, `solicitations`, body);
   }
 
   private sendRequest<T>(
