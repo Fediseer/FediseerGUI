@@ -21,7 +21,7 @@ if [ -z ${FEDISEER_DEFAULT_CENSURE_LIST_FILTER_INSTANCES+x} ]; then
   FEDISEER_DEFAULT_CENSURE_LIST_FILTER_INSTANCES=__all__
 fi
 if [ -z ${FEDISEER_SOURCE_CODE_LINK+x} ]; then
-  FEDISEER_SOURCE_CODE_LINK=https://github.com/RikudouSage/FediseerGUI
+  FEDISEER_SOURCE_CODE_LINK=https://github.com/Fediseer/FediseerGUI
 fi
 if [ -z ${FEDISEER_APP_VERSION+x} ]; then
   FEDISEER_APP_VERSION=$(grep appVersion src/environments/environment.ts | cut -c16-50 | rev | cut -c3- | rev)
