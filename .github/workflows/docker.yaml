@@ -3,10 +3,10 @@ name: Publish docker
 on:
   workflow_dispatch:
   push:
-#    branches:
-#      - master
-#    tags:
-#      - v*
+    branches:
+      - master
+    tags:
+      - v*
 
 jobs:
   publish:
