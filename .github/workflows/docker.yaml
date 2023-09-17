@@ -44,5 +44,5 @@ jobs:
         env:
           VERSION: ${{ steps.extract_version.outputs.result }}
         run: |
-          docker tag ghcr.io/fediseer/fediseer-gui:$VERSION ghcr.io/rikudousage/fediseer-gui:latest
+          docker tag ghcr.io/fediseer/fediseer-gui:$VERSION ghcr.io/fediseer/fediseer-gui:latest
           docker push ghcr.io/fediseer/fediseer-gui:latest
