@@ -7,6 +7,7 @@ import {InstanceDetailResponse} from "../../../response/instance-detail.response
 import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
 import {Instance} from "../../../user/instance";
 import {MessageService, MessageType} from "../../../services/message.service";
+import {SolicitationInstanceDetailResponse} from "../../../response/solicitation-instance-detail.response";
 
 @Component({
   selector: 'app-list-solicitations',
@@ -15,7 +16,7 @@ import {MessageService, MessageType} from "../../../services/message.service";
 })
 export class ListSolicitationsComponent implements OnInit {
   public loading: boolean = true;
-  public instances: InstanceDetailResponse[] = [];
+  public instances: SolicitationInstanceDetailResponse[] = [];
   public currentInstance: Instance = this.authManager.currentInstanceSnapshot;
   public currentInstanceDetail: InstanceDetailResponse | null = null;
 
