@@ -10,6 +10,7 @@ on:
 
 jobs:
   publish:
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Extract Version Name
