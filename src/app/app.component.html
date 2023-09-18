@@ -185,13 +185,20 @@
               </p>
             </a>
           </li>
-          <li>
-            <hr></li>
-          <li class="nav-item" *ngIf="!instance.anonymous">
+          <li><hr></li>
+          <li class="nav-item">
             <a href="{{sourceCodeLink}}/releases" class="nav-link">
               <i class="nav-icon fas fa-history"></i>
               <p>
                 {{ "Changelog" }}
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{donateLink}}" class="nav-link">
+              <i class="nav-icon fas fa-donate"></i>
+              <p>
+                {{ "Donate" }}
               </p>
             </a>
           </li>
