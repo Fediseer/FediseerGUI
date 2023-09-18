@@ -16,7 +16,7 @@
             This instance is guaranteed by <strong><a routerLink="/instances/detail/{{guarantor}}">{{guarantor}}</a></strong>.
           </p>
           <p *ngIf="guarantor">
-            If you no longer wish to be guaranteed by it, you can
+            If you no longer wish to be guaranteed by {{guarantor}}, you can
             <a (click)="cancelGuarantee(instance.name)" class="text-danger" href="javascript:void(0)">
               cancel by clickling here</a>.
             <strong>Note that there's no confirmation, once you click the link, you will not be guaranteed by anyone.</strong>
