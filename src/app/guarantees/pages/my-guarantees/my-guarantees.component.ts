@@ -17,7 +17,7 @@ import {toPromise} from "../../../types/resolvable";
 export class MyGuaranteesComponent implements OnInit {
   public guarantor: string = '';
   public instancesGuaranteedByMe: InstanceDetailResponse[] = [];
-  public instance: Observable<Instance> = this.authManager.currentInstance;
+  public instance: Instance = this.authManager.currentInstanceSnapshot;
   public loading: boolean = true;
 
   constructor(
@@ -57,6 +57,9 @@ export class MyGuaranteesComponent implements OnInit {
         return;
       }
 
+      if (instance === this.instance.name) {
+        this.guarantor = '';
+      }
       this.instancesGuaranteedByMe = this.instancesGuaranteedByMe.filter(
         guaranteedInstance => guaranteedInstance.domain !== instance,
       );
