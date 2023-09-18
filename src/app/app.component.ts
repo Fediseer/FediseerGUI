@@ -23,6 +23,7 @@ export class AppComponent implements OnInit {
   protected readonly maintainer: string = environment.maintainer!;
   protected readonly appVersion: string = environment.appVersion;
   protected readonly sourceCodeLink: string = environment.sourceCodeLink;
+  protected readonly donateLink: string = environment.donateLink;
 
   @ViewChild('sideMenu') private sideMenu: ElementRef<HTMLElement> | null = null;
   @ViewChild('sideMenuToggle') private sideMenuToggle: ElementRef<HTMLAnchorElement> | null = null;

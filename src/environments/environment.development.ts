@@ -8,4 +8,5 @@ export const environment = {
   maintainer: '@rikudou@lemmings.world',
   defaultCensuresListInstanceFilter: [FilterSpecialValueAllInstances],
   sourceCodeLink: 'https://github.com/Fediseer/FediseerGUI',
+  donateLink: 'https://liberapay.com/Fediseer/'
 };
