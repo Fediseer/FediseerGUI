@@ -82,9 +82,9 @@ export class InstanceDetailComponent implements OnInit {
       this.hesitationsReceived = responses[6].successResponse!.instances.map(
         instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance),
       );
-      this.hesitationsGiven = responses[7].successResponse!.instances.map(
+      this.hesitationsGiven = responses[7].successResponse?.instances.map(
         instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance),
-      );
+      ) ?? null;
 
       this.loading = false;
     });
