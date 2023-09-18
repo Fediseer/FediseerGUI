@@ -19,7 +19,8 @@
               </a>
             </td>
             <td>
-              <a routerLink="/instances/detail/{{item.target_domain}}">
+              <ng-container *ngIf="item.target_domain === '[REDACTED]'">{{item.target_domain}}</ng-container>
+              <a *ngIf="item.target_domain !== '[REDACTED]'" routerLink="/instances/detail/{{item.target_domain}}">
                 {{item.target_domain}}
               </a>
             </td>

@@ -17,6 +17,23 @@
             <input class="form-control" type="number" min="0" step="1" id="inputModerators" formControlName="moderators" />
           </div>
 
+          <ng-template #visibilitySelect let-formControlName="formControlName" let-type="type">
+            <div class="form-group">
+              <label for="inputVisibility{{type}}">
+                Who, other than you, can see your <strong>{{type}}</strong>?
+              </label>
+              <select id="inputVisibility{{type}}" class="form-control" formControlName="{{formControlName}}">
+                <option [value]="ListVisibility.Open">Everyone</option>
+                <option [value]="ListVisibility.Endorsed">Endorsed instances</option>
+                <option [value]="ListVisibility.Private">No one</option>
+              </select>
+            </div>
+          </ng-template>
+
+          <ng-container *ngTemplateOutlet="visibilitySelect; context: {formControlName: 'censuresVisibility', type: 'censures'}" />
+          <ng-container *ngTemplateOutlet="visibilitySelect; context: {formControlName: 'hesitationsVisibility', type: 'hesitations'}" />
+          <ng-container *ngTemplateOutlet="visibilitySelect; context: {formControlName: 'endorsementsVisibility', type: 'endorsements'}" />
+
           <button type="submit" [disabled]="!form.valid" class="btn btn-primary">Save</button>
         </form>
       </div>
