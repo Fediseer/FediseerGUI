@@ -3,6 +3,63 @@
 <ng-template #content>
   <div class="col-md-12">
     <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Filter</h3>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="form" (submit)="filterLog()">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label for="inputType">Type</label>
+                <select class="form-control" id="inputType" formControlName="type">
+                  <option [value]="null">---</option>
+                  <option [value]="ActionLogReportType.Censure">Censure</option>
+                  <option [value]="ActionLogReportType.Endorsement">Endorsement</option>
+                  <option [value]="ActionLogReportType.Hesitation">Hesitation</option>
+                  <option [value]="ActionLogReportType.Guarantee">Guarantee</option>
+                  <option [value]="ActionLogReportType.Claim">Instance claim</option>
+                  <option [value]="ActionLogReportType.Solicitation">Guarantee solicitation</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="inputActivity">Activity</label>
+                <select class="form-control" id="inputActivity" formControlName="activity">
+                  <option [value]="null">---</option>
+                  <option [value]="ActionLogReportActivity.Added">Created</option>
+                  <option [value]="ActionLogReportActivity.Deleted">Removed</option>
+                  <option [value]="ActionLogReportActivity.Modified">Modified</option>
+                </select>
+              </div>
+              <div class="form-group" *ngIf="whitelistedDomains">
+                <label for="inputSourceDomains">Source domains</label>
+                <select id="inputSourceDomains" formControlName="sourceDomains" multiple tom-select [maxItems]="null" [create]="true">
+                  <option *ngFor="let option of whitelistedDomains" [value]="option">{{option}}</option>
+                </select>
+              </div>
+              <div class="form-group" *ngIf="whitelistedDomains && blacklistedDomains">
+                <label for="inputTargetDomains">Target domains</label>
+                <select id="inputTargetDomains" formControlName="targetDomains" multiple tom-select [maxItems]="null" [create]="true">
+                  <option *ngFor="let option of blacklistedDomains" [value]="option">{{option}}</option>
+                  <option *ngFor="let option of whitelistedDomains" [value]="option">{{option}}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <button type="submit" class="btn btn-primary">Filter</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Action log</h3>
+      </div>
       <div class="card-body">
         <table class="table table-bordered">
           <tr>
