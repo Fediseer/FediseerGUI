@@ -7,6 +7,7 @@ import {ApiResponseHelperService} from "../../../services/api-response-helper.se
 import {MessageService} from "../../../services/message.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {int} from "../../../types/number";
+import {range} from "../../../shared/helper/range";
 
 @Component({
   selector: 'app-action-log',
@@ -22,7 +23,7 @@ export class ActionLogComponent implements OnInit {
   public loading: boolean = true;
   public actionLog: ActionLogResponse | null = null;
 
-  public pages: int[] = [1, 2, 3, 4, 5];
+  public pages: int[] = range(15);
   public currentPage: int = 1;
   public lastPageReached: boolean = false;
 
