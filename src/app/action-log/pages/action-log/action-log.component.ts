@@ -86,8 +86,8 @@ export class ActionLogComponent implements OnInit {
       this.form.patchValue({
         sourceDomains: params['sourceDomains'] ? params['sourceDomains'].split(',') : [],
         targetDomains: params['targetDomains'] ? params['targetDomains'].split(',') : [],
-        activity: params['activity'] ?? null,
-        type: params['type'] ?? null,
+        activity: (params['activity'] === 'null' ? null : params['activity']) ?? null,
+        type: (params['type'] === 'null' ? null : params['type']) ?? null,
       });
 
       const pageStart = ((this.currentPage - 1) * this.apiPagesPerPage) + 1;
