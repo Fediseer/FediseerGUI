@@ -12,6 +12,8 @@ import {DOCUMENT} from "@angular/common";
 import {environment} from "../environments/environment";
 import {ApiResponseHelperService} from "./services/api-response-helper.service";
 import * as url from "url";
+import {SUPPORTED_LANGUAGES} from "./shared/injection/injection-tokens";
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-root',
@@ -49,11 +51,22 @@ export class AppComponent implements OnInit {
     private readonly router: Router,
     private readonly api: FediseerApiService,
     private readonly apiResponseHelper: ApiResponseHelperService,
+    private readonly translator: TranslateService,
     @Inject(DOCUMENT) private readonly document: Document,
+    @Inject(SUPPORTED_LANGUAGES) private readonly appLanguages: string[],
   ) {
   }
 
   public async ngOnInit(): Promise<void> {
+    const browserLanguages = navigator.languages.map(locale => locale.split("-")[0]);
+    browserLanguages.push("en");
+    for (const language of browserLanguages) {
+      if (browserLanguages.includes(language)) {
+        this.translator.use(language);
+        break;
+      }
+    }
+
     this.titleService.titleChanged.subscribe(title => this.title = title);
 
     this.createMaintainerLink();

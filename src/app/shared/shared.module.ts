@@ -10,8 +10,14 @@ import {NgbTooltip} from "@ng-bootstrap/ng-bootstrap";
 import { FormatDatetimePipe } from './pipes/format-date.pipe';
 import { FormatPercentagePipe } from './pipes/format-percentage.pipe';
 import { FormatNumberPipe } from './pipes/format-number.pipe';
+import {TranslateHttpLoader} from "@ngx-translate/http-loader";
+import {HttpClient} from "@angular/common/http";
+import {TranslateModule} from "@ngx-translate/core";
+import { TranslateCutPipe } from './pipes/translate-cut.pipe';
 
-
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, `./assets/translations/`, '.json');
+}
 
 @NgModule({
   declarations: [
@@ -24,6 +30,7 @@ import { FormatNumberPipe } from './pipes/format-number.pipe';
     FormatDatetimePipe,
     FormatPercentagePipe,
     FormatNumberPipe,
+    TranslateCutPipe,
   ],
   exports: [
     ToObservablePipe,
@@ -34,11 +41,14 @@ import { FormatNumberPipe } from './pipes/format-number.pipe';
     TooltipComponent,
     FormatDatetimePipe,
     FormatPercentagePipe,
-    FormatNumberPipe
+    FormatNumberPipe,
+    TranslateModule,
+    TranslateCutPipe,
   ],
   imports: [
     CommonModule,
-    NgbTooltip
+    NgbTooltip,
+    TranslateModule,
   ]
 })
 export class SharedModule { }
