@@ -9,7 +9,7 @@
         </a>
       </li>
       <li class="nav-item d-none d-sm-inline-block">
-        <a routerLink="/" class="nav-link">{{ "Home" }}</a>
+        <a routerLink="/" class="nav-link">{{ "app.home" | transloco }}</a>
       </li>
     </ul>
   </nav>
@@ -19,7 +19,7 @@
   <aside class="main-sidebar sidebar-dark-primary elevation-4" #sideMenu>
     <!-- Brand Logo -->
     <a routerLink="/" class="brand-link">
-      <span class="brand-text font-weight-light">Fediseer <small class="tiny">GUI version {{appVersion}}</small></span>
+      <span class="brand-text font-weight-light">Fediseer <small class="tiny">{{"app.gui.version" | transloco:{appVersion: appVersion} }}</small></span>
     </a>
 
     <!-- Sidebar -->
@@ -29,13 +29,13 @@
         <div class="info">
           <ng-template #badges>
             <div *ngIf="!instance.anonymous">
-              <a routerLink="/guarantees/my" title="My guarantees">
+              <a routerLink="/guarantees/my" title="{{'app.sidebar.guarantor_badge.title' | transloco}}">
                 <img *ngIf="guaranteesBadgeUrl" class="fediseer-badge" src="{{guaranteesBadgeUrl}}"
-                     alt="Guarantees badge"/>
+                     alt="{{'app.sidebar.guarantor_badge.alt_text' | transloco}}"/>
               </a>
-              <a routerLink="/endorsements/my" title="My endorsements">
+              <a routerLink="/endorsements/my" title="{{'app.sidebar.endorsements_badge.title' | transloco}}">
                 <img *ngIf="endorsementsBadgeUrl" class="fediseer-badge" src="{{endorsementsBadgeUrl}}"
-                     alt="Endorsements badge"/>
+                     alt="{{'app.sidebar.endorsements_badge.alt_text' | transloco}}"/>
               </a>
             </div>
           </ng-template>
@@ -60,7 +60,7 @@
               <a routerLink="/auth/login" class="nav-link">
                 <i class="nav-icon fas fa-sign-in-alt"></i>
                 <p>
-                  {{ "Log in" }}
+                  {{ "app.sidebar.login" | transloco }}
                 </p>
               </a>
             </li>
@@ -68,7 +68,7 @@
               <a routerLink="/auth/claim-instance" class="nav-link">
                 <i class="nav-icon fas fa-user-plus"></i>
                 <p>
-                  {{ "Claim an instance" }}
+                  {{ "app.sidebar.claim_instance" | transloco }}
                 </p>
               </a>
             </li>
@@ -77,7 +77,7 @@
             <a routerLink="/endorsements/my" class="nav-link">
               <i class="nav-icon fas fa-thumbs-up"></i>
               <p>
-                {{ "Endorsements" }}
+                {{ "app.sidebar.endorsements" | transloco }}
               </p>
             </a>
           </li>
@@ -85,7 +85,7 @@
             <a routerLink="/guarantees/my" class="nav-link">
               <i class="nav-icon fas fa-handshake"></i>
               <p>
-                {{ "Guarantees" }}
+                {{ "app.sidebar.guarantees" | transloco }}
               </p>
             </a>
           </li>
@@ -93,7 +93,7 @@
             <a routerLink="/censures/my" class="nav-link">
               <i class="nav-icon fas fa-lock"></i>
               <p>
-                {{ "Censures" }}
+                {{ "app.sidebar.censures" | transloco }}
               </p>
             </a>
           </li>
@@ -101,7 +101,7 @@
             <a routerLink="/hesitations/my" class="nav-link">
               <i class="nav-icon fas fa-exclamation"></i>
               <p>
-                {{ "Hesitations" }}
+                {{ "app.sidebar.hesitations" | transloco }}
               </p>
             </a>
           </li>
@@ -109,7 +109,7 @@
             <a routerLink="/synchronize/lemmy" class="nav-link">
               <i class="nav-icon fas fa-sync"></i>
               <p>
-                {{ "Synchronize" }}
+                {{ "app.sidebar.synchronize" | transloco }}
               </p>
             </a>
           </li>
@@ -117,7 +117,7 @@
             <a routerLink="/synchronize/mastodon" class="nav-link">
               <i class="nav-icon fas fa-sync"></i>
               <p>
-                {{ "Synchronize" }}
+                {{ "app.sidebar.synchronize" | transloco }}
               </p>
             </a>
           </li>
@@ -125,7 +125,7 @@
             <a routerLink="/instances/whitelisted" class="nav-link">
               <i class="nav-icon fas fa-thumbs-up"></i>
               <p>
-                {{ "Whitelisted instances" }}
+                {{ "app.sidebar.guaranteed_instances" | transloco }}
               </p>
             </a>
           </li>
@@ -133,7 +133,7 @@
             <a routerLink="/instances/censured" class="nav-link">
               <i class="nav-icon fas fa-ban"></i>
               <p>
-                {{ "Censured instances" }}
+                {{ "app.sidebar.censured_instances" | transloco }}
               </p>
             </a>
           </li>
@@ -141,7 +141,7 @@
             <a routerLink="/instances/hesitated" class="nav-link">
               <i class="nav-icon fas fa-exclamation-triangle"></i>
               <p>
-                Hesitated instances
+                {{"app.sidebar.hesitated_instances" | transloco}}
               </p>
             </a>
           </li>
@@ -149,7 +149,7 @@
             <a routerLink="/instances/suspicious" class="nav-link">
               <i class="nav-icon fas fa-thumbs-down"></i>
               <p>
-                {{ "Suspicious instances" }}
+                {{ "app.sidebar.suspicious_instances" | transloco }}
               </p>
             </a>
           </li>
@@ -157,7 +157,7 @@
             <a routerLink="/action-log/log" class="nav-link">
               <i class="nav-icon fas fa-stream"></i>
               <p>
-                Action log
+                {{"app.sidebar.action_log" | transloco}}
               </p>
             </a>
           </li>
@@ -165,7 +165,7 @@
             <a routerLink="/solicitations" class="nav-link">
               <i class="nav-icon fas fa-handshake"></i>
               <p>
-                Solicitations
+                {{"app.sidebar.solicitations" | transloco}}
               </p>
             </a>
           </li>
@@ -173,7 +173,7 @@
             <a routerLink="/glossary" class="nav-link">
               <i class="nav-icon fas fa-book-open"></i>
               <p>
-                {{ "Glossary" }}
+                {{ "app.sidebar.glossary" | transloco }}
               </p>
             </a>
           </li>
@@ -181,7 +181,7 @@
             <a href="javascript:void(0)" (click)="logout()" class="nav-link">
               <i class="nav-icon fas fa-sign-out-alt"></i>
               <p>
-                {{ "Logout" }}
+                {{ "app.sidebar.logout" | transloco }}
               </p>
             </a>
           </li>
@@ -190,7 +190,7 @@
             <a href="{{sourceCodeLink}}/releases" class="nav-link">
               <i class="nav-icon fas fa-history"></i>
               <p>
-                {{ "Changelog" }}
+                {{ "app.sidebar.changelog" | transloco }}
               </p>
             </a>
           </li>
@@ -198,7 +198,7 @@
             <a href="{{donateLink}}" class="nav-link">
               <i class="nav-icon fas fa-donate"></i>
               <p>
-                {{ "Donate" }}
+                {{ "app.sidebar.donate" | transloco }}
               </p>
             </a>
           </li>
@@ -257,14 +257,14 @@
     </div>
     <strong>
       <ng-container *ngIf="maintainer === '@rikudou@lemmings.world' else splitMaintainerAuthor">
-        Created and maintained by <a href="https://lemmings.world/u/rikudou">@rikudou@lemmings.world</a>.
+        <transloco [key]="'app.footer.created_and_maintained_by'" [params]="{authorUrl: 'https://lemmings.world/u/rikudou', author: '@rikudou@lemmings.world'}" />
       </ng-container>
       <ng-template #splitMaintainerAuthor>
-        Created by <a href="https://lemmings.world/u/rikudou">@rikudou@lemmings.world</a>.
-        Maintained by <a href="{{maintainerLink}}">{{maintainer}}</a>.
+        <transloco [key]="'app.footer.created_by'" [params]="{authorUrl: 'https://lemmings.world/u/rikudou', author: '@rikudou@lemmings.world'}" />
+        <transloco [key]="'app.footer.maintained_by'" [params]="{maintainerLink: maintainerLink, maintainer: maintainer}" />
       </ng-template>
-      See the GUI's <a href="{{sourceCodeLink}}">source code</a>.
-      Visit the <a href="https://lemmyverse.link/c/fediseer@lemmy.dbzer0.com" target="_blank">!fediseer@lemmy.dbzer0.com</a> community.
+      <transloco [key]="'app.footer.source_link'" [params]="{sourceCodeLink: sourceCodeLink}" />
+      <transloco [key]="'app.footer.community_link'" [params]="{communityLink: 'https://lemmyverse.link/c/fediseer@lemmy.dbzer0.com', community: '!fediseer@lemmy.dbzer0.com'}" />
     </strong>
   </footer>
 </div>

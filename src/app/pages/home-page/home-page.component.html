@@ -4,23 +4,30 @@
       <h3 class="card-title">Fediseer</h3>
     </div>
     <div class="card-body">
-      <p>Welcome to the Fediseer GUI!</p>
-      <p>If you don't know what this is, you might start at the <a routerLink="/glossary">Glossary</a>.</p>
+      <p>{{'app.home.short_welcome' | transloco}}</p>
+      <p>
+        <transloco [key]="'app.home.glossary_link'" [params]="{'link': {route: ['glossary']}}"></transloco>
+      </p>
       <p *ngIf="currentInstance.anonymous">
-        You can view <a routerLink="/instances/whitelisted">whitelisted</a> and <a routerLink="/instances/censured">censured</a>
-        instances without having an account, but you can also <a routerLink="/auth/login">log in</a> (or <a
-        routerLink="/auth/claim-instance">register your instance</a>) to manage your own endorsements, censures and
-        guarantees.
+        <transloco [key]="'app.home.info_text.anonymous'" [params]="{
+          guaranteedLink: {route: ['instances/whitelisted']},
+          censuredLink: {route: ['instances/censured']},
+          loginLink: {route: ['auth/login']},
+          claimLink: {route: ['/auth/claim-instance']}
+        }" />
       </p>
-      <p *ngIf="!currentInstance.anonymous && currentInstanceDetail!.guarantor">
-        You can view <a routerLink="/instances/whitelisted">whitelisted</a> and <a routerLink="/instances/censured">censured</a>
-        instances or manage your <a routerLink="/endorsements/my">endorsements</a>, <a routerLink="/guarantees/my">guarantees</a>
-        and <a routerLink="/censures/my">censures</a>.
+      <p *ngIf="!currentInstance.anonymous && currentInstanceDetail?.guarantor">
+        <transloco [key]="'app.home.info_text.logged_in.with_guarantor'" [params]="{
+          guaranteedLink: {route: ['instances/whitelisted']},
+          censuredLink: {route: ['instances/censured']},
+          myEndorsements: {route: ['endorsements/my']},
+          myGuarantees: {route: ['guarantees/my']},
+          myCensures: {route: ['censures/my']}
+        }" />
       </p>
-      <p *ngIf="!currentInstance.anonymous && !currentInstanceDetail!.guarantor">
+      <p *ngIf="!currentInstance.anonymous && !currentInstanceDetail?.guarantor">
         <strong>
-          Your instance isn't currently guaranteed, you may go to <a routerLink="/solicitations">Solicitations</a> to
-          ask for a guarantee.
+          <transloco [key]="'app.home.info_text.logged_in.without_guarantor'" [params]="{solicitations: {route: ['solicitations']}}" />
         </strong>
       </p>
     </div>
