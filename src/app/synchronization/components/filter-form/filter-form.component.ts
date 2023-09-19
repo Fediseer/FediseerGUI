@@ -261,6 +261,14 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
 
       return [...censures, ...hesitations];
     })();
+    this.cache[`endorsed:${myInstance}`] ??= await (async () => {
+      const response = await toPromise(this.api.getEndorsementsByInstance([myInstance]));
+      if (this.apiResponseHelper.handleErrors([response])) {
+        return [];
+      }
+
+      return response.successResponse!.instances;
+    })();
     this.cache[cacheKey] ??= await (async () => {
       let sourceFrom: string[];
       switch (mode) {
@@ -306,10 +314,14 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
         }
       }
 
+      const myEndorsed = this.cache[`endorsed:${myInstance}`]!.map(instance => instance.domain);
       const result = [...this.cache[myInstanceCacheKey]!, ...foreignInstanceBlacklist];
       const handled: string[] = [];
 
       return result.filter(instance => {
+        if (myEndorsed.includes(instance.domain)) {
+          return false;
+        }
         if (handled.includes(instance.domain)) {
           return false;
         }
