@@ -201,7 +201,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   }
 
   private async loadCustomInstancesSelect(mode: SynchronizationMode) {
-    if (mode === SynchronizationMode.CustomInstances && this.whitelistedInstancesList === null) {
+    if (this.whitelistedInstancesList === null) {
       this.loadingWhitelistedInstances = true;
       const responses = await Promise.all([
         toPromise(this.api.getWhitelistedInstances()),
