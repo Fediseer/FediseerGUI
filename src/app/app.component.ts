@@ -30,6 +30,7 @@ export class AppComponent implements OnInit {
 
   private autoCollapse = 992;
 
+  public darkModeEnabled: boolean = false
   public title: string = 'Fediseer';
   public loggedInInstance: Observable<Instance> = this.authenticationManager.currentInstance;
 
@@ -62,6 +63,7 @@ export class AppComponent implements OnInit {
     } else {
       this.document.body.classList.remove('dark-mode');
     }
+    this.darkModeEnabled = darkModeDetected;
 
     this.createMaintainerLink();
 
