@@ -4,7 +4,7 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Filter</h3>
+        <h3 class="card-title">{{"app.filter.title" | transloco}}</h3>
       </div>
       <div class="card-body">
         <form [formGroup]="form" (submit)="filterLog()">
@@ -14,31 +14,31 @@
                 <label for="inputType">Type</label>
                 <select class="form-control" id="inputType" formControlName="type">
                   <option [value]="null">---</option>
-                  <option [value]="ActionLogReportType.Censure">Censure</option>
-                  <option [value]="ActionLogReportType.Endorsement">Endorsement</option>
-                  <option [value]="ActionLogReportType.Hesitation">Hesitation</option>
-                  <option [value]="ActionLogReportType.Guarantee">Guarantee</option>
-                  <option [value]="ActionLogReportType.Claim">Instance claim</option>
-                  <option [value]="ActionLogReportType.Solicitation">Guarantee solicitation</option>
+                  <option [value]="ActionLogReportType.Censure">{{"app.censure" | transloco}}</option>
+                  <option [value]="ActionLogReportType.Endorsement">{{"app.endorsement" | transloco}}</option>
+                  <option [value]="ActionLogReportType.Hesitation">{{"app.hesitation" | transloco}}</option>
+                  <option [value]="ActionLogReportType.Guarantee">{{"app.guarantee" | transloco}}</option>
+                  <option [value]="ActionLogReportType.Claim">{{"app.instance_claim" | transloco}}</option>
+                  <option [value]="ActionLogReportType.Solicitation">{{"app.solicitation" | transloco}}</option>
                 </select>
               </div>
               <div class="form-group">
-                <label for="inputActivity">Activity</label>
+                <label for="inputActivity">{{"app.action_log.activity" | transloco}}</label>
                 <select class="form-control" id="inputActivity" formControlName="activity">
                   <option [value]="null">---</option>
-                  <option [value]="ActionLogReportActivity.Added">Created</option>
-                  <option [value]="ActionLogReportActivity.Deleted">Removed</option>
-                  <option [value]="ActionLogReportActivity.Modified">Modified</option>
+                  <option [value]="ActionLogReportActivity.Added">{{"app.action_log.activity.created" | transloco}}</option>
+                  <option [value]="ActionLogReportActivity.Deleted">{{"app.action_log.activity.deleted" | transloco}}</option>
+                  <option [value]="ActionLogReportActivity.Modified">{{"app.action_log.activity.modified" | transloco}}</option>
                 </select>
               </div>
               <div class="form-group" *ngIf="whitelistedDomains">
-                <label for="inputSourceDomains">Source domains</label>
+                <label for="inputSourceDomains">{{"app.source_domains" | transloco}}</label>
                 <select id="inputSourceDomains" formControlName="sourceDomains" multiple tom-select [maxItems]="null" [create]="true">
                   <option *ngFor="let option of whitelistedDomains" [value]="option">{{option}}</option>
                 </select>
               </div>
               <div class="form-group" *ngIf="whitelistedDomains && blacklistedDomains">
-                <label for="inputTargetDomains">Target domains</label>
+                <label for="inputTargetDomains">{{"app.target_domains" | transloco}}</label>
                 <select id="inputTargetDomains" formControlName="targetDomains" multiple tom-select [maxItems]="null" [create]="true">
                   <option *ngFor="let option of blacklistedDomains" [value]="option">{{option}}</option>
                   <option *ngFor="let option of whitelistedDomains" [value]="option">{{option}}</option>
@@ -49,7 +49,7 @@
           <div class="row">
             <div class="col-md-12">
               <div class="form-group">
-                <button type="submit" class="btn btn-primary">Filter</button>
+                <button type="submit" class="btn btn-primary">{{"app.filter.submit" | transloco}}</button>
               </div>
             </div>
           </div>
@@ -58,16 +58,16 @@
     </div>
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Action log</h3>
+        <h3 class="card-title">{{"app.action_log" | transloco}}</h3>
       </div>
       <div class="card-body">
         <table class="table table-bordered">
           <tr>
-            <th>Source</th>
-            <th>Target</th>
-            <th>Type</th>
-            <th>Activity</th>
-            <th>Date & time</th>
+            <th>{{"app.action_log.source" | transloco}}</th>
+            <th>{{"app.action_log.target" | transloco}}</th>
+            <th>{{"app.action_log.type" | transloco}}</th>
+            <th>{{"app.action_log.activity" | transloco}}</th>
+            <th>{{"app.action_log.datetime" | transloco}}</th>
           </tr>
           <tr *ngFor="let item of actionLog">
             <td>
@@ -82,17 +82,17 @@
               </a>
             </td>
             <td>
-              <ng-container *ngIf="item.report_type === ActionLogReportType.Censure">Censure</ng-container>
-              <ng-container *ngIf="item.report_type === ActionLogReportType.Endorsement">Endorsement</ng-container>
-              <ng-container *ngIf="item.report_type === ActionLogReportType.Hesitation">Hesitation</ng-container>
-              <ng-container *ngIf="item.report_type === ActionLogReportType.Guarantee">Guarantee</ng-container>
-              <ng-container *ngIf="item.report_type === ActionLogReportType.Solicitation">Guarantee solicitation</ng-container>
-              <ng-container *ngIf="item.report_type === ActionLogReportType.Claim">Instance claim</ng-container>
+              <ng-container *ngIf="item.report_type === ActionLogReportType.Censure">{{"app.censure" | transloco}}</ng-container>
+              <ng-container *ngIf="item.report_type === ActionLogReportType.Endorsement">{{"app.endorsement" | transloco}}</ng-container>
+              <ng-container *ngIf="item.report_type === ActionLogReportType.Hesitation">{{"app.hesitation" | transloco}}</ng-container>
+              <ng-container *ngIf="item.report_type === ActionLogReportType.Guarantee">{{"app.guarantee" | transloco}}</ng-container>
+              <ng-container *ngIf="item.report_type === ActionLogReportType.Solicitation">{{"app.solicitation" | transloco}}</ng-container>
+              <ng-container *ngIf="item.report_type === ActionLogReportType.Claim">{{"app.instance_claim" | transloco}}</ng-container>
             </td>
             <td>
-              <ng-container *ngIf="item.report_activity === ActionLogReportActivity.Added">Created</ng-container>
-              <ng-container *ngIf="item.report_activity === ActionLogReportActivity.Deleted">Removed</ng-container>
-              <ng-container *ngIf="item.report_activity === ActionLogReportActivity.Modified">Modified</ng-container>
+              <ng-container *ngIf="item.report_activity === ActionLogReportActivity.Added">{{"app.action_log.activity.created" | transloco}}</ng-container>
+              <ng-container *ngIf="item.report_activity === ActionLogReportActivity.Deleted">{{"app.action_log.activity.deleted" | transloco}}</ng-container>
+              <ng-container *ngIf="item.report_activity === ActionLogReportActivity.Modified">{{"app.action_log.activity.modified" | transloco}}</ng-container>
             </td>
             <td>{{item.created | formatDatetime}}</td>
           </tr>
@@ -102,7 +102,7 @@
         <ul class="pagination text-center">
           <li class="paginate_button page-item previous" [class.disabled]="currentPage <= 1">
             <a href="javascript:void(0)" class="page-link" (click)="goToPage(currentPage - 1)">
-              Previous
+              {{"app.pagination.previous" | transloco}}
             </a>
           </li>
           <li *ngFor="let page of pages" class="paginate_button page-item" [class.active]="currentPage === page">
@@ -110,7 +110,7 @@
           </li>
           <li class="paginate_button page-item next" [class.disabled]="currentPage === pages[pages.length - 1]">
             <a href="javascript:void(0)" class="page-link" (click)="goToPage(currentPage + 1)">
-              Next
+              {{"app.pagination.next" | transloco}}
             </a>
           </li>
         </ul>
