@@ -1,7 +1,9 @@
 import {Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {InstanceDetailResponse} from "../../../response/instance-detail.response";
+import {Resolvable} from "../../../types/resolvable";
 
 export type OriginalToStringCallback<T> = ((instance: T) => string);
+export type NewToStringCallback<T> = ((instance: T) => string);
 
 @Component({
   selector: 'app-blacklist-diff',
@@ -16,7 +18,10 @@ export class BlacklistDiffComponent<TOriginalInstance, TNewInstance> implements 
   @Input() purgeMode: boolean = false;
 
   @Input() originalToStringCallback: OriginalToStringCallback<TOriginalInstance> = instance => <string>instance;
-  @Input() newToStringCallback: ((instance: TNewInstance) => string) = (instance) => (<InstanceDetailResponse>instance).domain;
+  @Input() newToStringCallback: NewToStringCallback<TNewInstance> = (instance) => (<InstanceDetailResponse>instance).domain;
+
+  @Input() addedText: Resolvable<string> = 'This instance is only on Fediseer and not synchronized to your instance.';
+  @Input() highlightRemoved: boolean = true;
 
   public added: string[] = [];
   public removed: string[] = [];
