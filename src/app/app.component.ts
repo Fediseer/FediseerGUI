@@ -56,6 +56,13 @@ export class AppComponent implements OnInit {
   public async ngOnInit(): Promise<void> {
     this.titleService.titleChanged.subscribe(title => this.title = title);
 
+    const darkModeDetected = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (darkModeDetected) {
+      this.document.body.classList.add('dark-mode');
+    } else {
+      this.document.body.classList.remove('dark-mode');
+    }
+
     this.createMaintainerLink();
 
     if (typeof window !== 'undefined' && window.outerWidth <= this.autoCollapse) {
