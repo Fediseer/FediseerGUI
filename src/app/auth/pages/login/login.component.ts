@@ -6,6 +6,7 @@ import {FediseerApiService} from "../../../services/fediseer-api.service";
 import {MessageService} from "../../../services/message.service";
 import {AuthenticatedInstance} from "../../../user/authenticated-instance";
 import {Router} from "@angular/router";
+import {DatabaseService} from "../../../services/database.service";
 
 @Component({
   selector: 'app-login',
@@ -24,6 +25,7 @@ export class LoginComponent implements OnInit {
     private readonly api: FediseerApiService,
     private readonly messageService: MessageService,
     private readonly router: Router,
+    private readonly database: DatabaseService,
   ) {
   }
 
@@ -50,6 +52,7 @@ export class LoginComponent implements OnInit {
           response.successResponse!.domain,
           apiKey,
         );
+        this.database.addAvailableAccount(this.authenticationManager.currentInstanceSnapshot);
 
         this.router.navigateByUrl('/').then(() => {
           this.messageService.createSuccess('Successfully logged in.');

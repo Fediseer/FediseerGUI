@@ -6,7 +6,7 @@ import { YesNoComponent } from './components/yes-no/yes-no.component';
 import { IterableEnumPipe } from './pipes/iterable-enum.pipe';
 import { TomSelectDirective } from './directives/tom-select.directive';
 import { TooltipComponent } from './components/tooltip/tooltip.component';
-import {NgbTooltip} from "@ng-bootstrap/ng-bootstrap";
+import {NgbModule, NgbTooltip} from "@ng-bootstrap/ng-bootstrap";
 import { FormatDatetimePipe } from './pipes/format-date.pipe';
 import { FormatPercentagePipe } from './pipes/format-percentage.pipe';
 import { FormatNumberPipe } from './pipes/format-number.pipe';
@@ -34,11 +34,13 @@ import { FormatNumberPipe } from './pipes/format-number.pipe';
     TooltipComponent,
     FormatDatetimePipe,
     FormatPercentagePipe,
-    FormatNumberPipe
+    FormatNumberPipe,
+    NgbModule,
   ],
   imports: [
     CommonModule,
-    NgbTooltip
+    NgbTooltip,
+    NgbModule,
   ]
 })
 export class SharedModule { }

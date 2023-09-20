@@ -1,4 +1,4 @@
-import {Component, ElementRef, HostListener, Inject, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, HostListener, Inject, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {TitleService} from "./services/title.service";
 import {AuthenticationManagerService} from "./services/authentication-manager.service";
 import {BehaviorSubject, Observable} from "rxjs";
@@ -12,6 +12,8 @@ import {DOCUMENT} from "@angular/common";
 import {environment} from "../environments/environment";
 import {ApiResponseHelperService} from "./services/api-response-helper.service";
 import * as url from "url";
+import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
+import {DatabaseService} from "./services/database.service";
 
 @Component({
   selector: 'app-root',
@@ -28,6 +30,8 @@ export class AppComponent implements OnInit {
   @ViewChild('sideMenu') private sideMenu: ElementRef<HTMLElement> | null = null;
   @ViewChild('sideMenuToggle') private sideMenuToggle: ElementRef<HTMLAnchorElement> | null = null;
 
+  private switchAccountModal: NgbModalRef | null = null;
+
   private autoCollapse = 992;
 
   public title: string = 'Fediseer';
@@ -41,6 +45,7 @@ export class AppComponent implements OnInit {
   public guaranteesBadgeUrl: string | null = null;
   public software: string | null = null;
   public maintainerLink: string | null = null;
+  public availableAccounts: Observable<Instance[]> = this.database.availableAccountsObservable;
 
   constructor(
     private readonly titleService: TitleService,
@@ -49,6 +54,8 @@ export class AppComponent implements OnInit {
     private readonly router: Router,
     private readonly api: FediseerApiService,
     private readonly apiResponseHelper: ApiResponseHelperService,
+    private readonly modalService: NgbModal,
+    private readonly database: DatabaseService,
     @Inject(DOCUMENT) private readonly document: Document,
   ) {
   }
@@ -104,8 +111,12 @@ export class AppComponent implements OnInit {
     });
   }
 
-  public async logout(): Promise<void> {
+  public async logout(removeFromAccounts: boolean = true): Promise<void> {
+    if (removeFromAccounts) {
+      this.database.removeAvailableAccount(this.authenticationManager.currentInstanceSnapshot);
+    }
     this.authenticationManager.logout();
+    this.switchAccountModal?.close();
     await this.router.navigateByUrl('/auth/login');
   }
 
@@ -151,5 +162,29 @@ export class AppComponent implements OnInit {
     const host = urlized.host;
 
     this.maintainerLink = `https://${host}/u/${username}`;
+  }
+
+  public async openSwitchAccountModal(modal: TemplateRef<any>) {
+    try {
+      this.switchAccountModal = this.modalService.open(modal, {ariaLabelledBy: 'modal-basic-title', windowClass: 'switchAccountModal'});
+      await this.switchAccountModal.result;
+      this.switchAccountModal = null;
+    } catch (e) {
+      // ignore, the exception is thrown when modal is dismissed
+      this.switchAccountModal = null;
+    }
+  }
+
+  public switchToInstance(instance: Instance): void {
+    this.authenticationManager.currentInstance = instance;
+    this.switchAccountModal?.close();
+    this.router.navigateByUrl('/');
+  }
+
+  public logoutFrom(instance: Instance) {
+    this.database.removeAvailableAccount(instance);
+    if (instance.name === this.authenticationManager.currentInstanceSnapshot.name) {
+      this.logout();
+    }
   }
 }
