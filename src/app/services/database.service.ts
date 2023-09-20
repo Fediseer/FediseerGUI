@@ -1,10 +1,11 @@
-import {Injectable} from '@angular/core';
+import {EventEmitter, Injectable} from '@angular/core';
 import {Instance} from "../user/instance";
 import {LemmySynchronizationSettings} from "../types/lemmy-synchronization-settings";
 import {CensureListFilters} from "../types/censure-list-filters";
 import {SynchronizationMode} from "../types/synchronization-mode";
 import {MastodonSynchronizationSettings} from "../types/mastodon-synchronization-settings";
 import {MastodonBlacklistSeverity} from "../response/mastodon-blacklist.response";
+import {BehaviorSubject, Observable} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,48 @@ export class DatabaseService {
   private readonly mastodonSynchronizationSettingsKey = 'sync_settings_mstdn';
   private readonly lemmyPasswordKey = 'lemmy_password';
   private readonly censureListFiltersKey = 'censure_list_filters';
+  private readonly availableAccountsKey = 'available_accounts';
+
+  private readonly _availableAccountsObservable = new BehaviorSubject<Instance[]>(this.availableAccounts);
+
+  public get availableAccountsObservable(): Observable<Instance[]> {
+    return this._availableAccountsObservable;
+  }
+
+  public get availableAccounts(): Instance[] {
+    if (typeof localStorage === 'undefined') {
+      return [];
+    }
+    const stored = localStorage.getItem(this.availableAccountsKey);
+    if (stored === null) {
+      const currentInstance = this.getStoredInstance();
+      if (currentInstance!.anonymous) {
+        return [];
+      }
+      this.availableAccounts = [this.getStoredInstance()!];
+      return [this.getStoredInstance()!];
+    }
+
+    return JSON.parse(stored);
+  }
+
+  public set availableAccounts(instances: Instance[]) {
+    localStorage.setItem(this.availableAccountsKey, JSON.stringify(instances));
+    this._availableAccountsObservable.next(instances);
+  }
+
+  public addAvailableAccount(instance: Instance): void {
+    const availableAccounts = this.availableAccounts;
+    availableAccounts.push(instance);
+    this.availableAccounts = availableAccounts;
+  }
+
+  public removeAvailableAccount(instance: Instance | string): void {
+    if (typeof instance !== 'string') {
+      instance = instance.name;
+    }
+    this.availableAccounts = this.availableAccounts.filter(storedAccount => storedAccount.name !== instance);
+  }
 
   public getStoredInstance(): Instance | null {
     if (typeof localStorage === 'undefined') {
