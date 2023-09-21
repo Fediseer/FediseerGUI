@@ -1,7 +1,7 @@
 import {Component, ElementRef, HostListener, Inject, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {TitleService} from "./services/title.service";
 import {AuthenticationManagerService} from "./services/authentication-manager.service";
-import {BehaviorSubject, Observable} from "rxjs";
+import {Observable} from "rxjs";
 import {Instance} from "./user/instance";
 import {Resolvable} from "./types/resolvable";
 import {MessageService, MessageType} from "./services/message.service";
@@ -11,7 +11,6 @@ import {FediseerApiService} from "./services/fediseer-api.service";
 import {DOCUMENT} from "@angular/common";
 import {environment} from "../environments/environment";
 import {ApiResponseHelperService} from "./services/api-response-helper.service";
-import * as url from "url";
 import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 import {DatabaseService} from "./services/database.service";
 import {TranslocoService} from "@ngneat/transloco";
@@ -58,7 +57,7 @@ export class AppComponent implements OnInit {
     private readonly apiResponseHelper: ApiResponseHelperService,
     private readonly modalService: NgbModal,
     private readonly database: DatabaseService,
-    private readonly translator: TranslocoService,
+    private readonly transloco: TranslocoService,
     @Inject(DOCUMENT) private readonly document: Document,
   ) {
   }
@@ -66,10 +65,10 @@ export class AppComponent implements OnInit {
   public async ngOnInit(): Promise<void> {
     this.titleService.titleChanged.subscribe(title => this.title = title);
 
-    const availableLanguages = this.translator.getAvailableLangs().map(value => typeof value === 'string' ? value : value.id);
+    const availableLanguages = this.transloco.getAvailableLangs().map(value => typeof value === 'string' ? value : value.id);
     for (const language of navigator.languages.map(language => language.split("-")[0])) {
       if (availableLanguages.includes(language)) {
-        this.translator.setActiveLang(language);
+        this.transloco.setActiveLang(language);
         break;
       }
     }

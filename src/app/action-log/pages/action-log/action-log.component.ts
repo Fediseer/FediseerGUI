@@ -9,10 +9,8 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {int} from "../../../types/number";
 import {range} from "../../../shared/helper/range";
 import {FormControl, FormGroup} from "@angular/forms";
-import {DatabaseService} from "../../../services/database.service";
-import {FilterSpecialValueAllInstances} from "../../../shared/constants";
 import {map} from "rxjs";
-import {response} from "express";
+import {TranslatorService} from "../../../services/translator.service";
 
 @Component({
   selector: 'app-action-log',
@@ -49,11 +47,12 @@ export class ActionLogComponent implements OnInit {
     private readonly activatedRoute: ActivatedRoute,
     private readonly router: Router,
     private readonly apiResponseHelper: ApiResponseHelperService,
+    private readonly translator: TranslatorService,
   ) {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.titleService.title = 'Action log';
+    this.titleService.title = this.translator.get('app.action_log');
 
     const responses = await Promise.all([
       toPromise(this.api.getWhitelistedInstances().pipe(
@@ -100,13 +99,13 @@ export class ActionLogComponent implements OnInit {
         type: this.form.controls.type.value ?? undefined,
       }));
       if (response === null) {
-        this.messageService.createError('Failed getting list of actions');
+        this.messageService.createError(this.translator.get('error.action_log.failed_getting'));
         this.loading = false;
         return;
       }
       this.actionLog = response;
       if (!this.actionLog.length) {
-        this.messageService.createWarning('No more pages available');
+        this.messageService.createWarning(this.translator.get('error.pagination.no_more_pages'));
         this.lastPageReached = true;
         if (this.currentPage !== 1) {
           this.goToPage(this.currentPage - 1);
