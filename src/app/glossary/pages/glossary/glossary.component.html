@@ -1,10 +1,10 @@
 <div class="col-md-12">
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title">Glossary</h3>
+      <h3 class="card-title">{{'app.glossary' | transloco}}</h3>
     </div>
     <div class="card-body">
-      <p>In this glossary you will find definitions for various terms used throughout this application.</p>
+      <p>{{'app.glossary.intro_text' | transloco}}</p>
     </div>
   </div>
 
@@ -14,161 +14,129 @@
     </div>
     <div class="card-body">
       <p>
-        The <a href="https://fediseer.com">Fediseer</a> is a service for the Fediverse which attempts to provide a
-        crowd-sourced human-curated spam/ham classification of Fediverse instances as well as provide a public space to
-        specify approval/disapproval of other instances.
-        <a href="https://dbzer0.com/blog/overseer-a-fediverse-chain-of-trust/">
-          Here you can find the blog post announcing Fediseer.
-        </a>
+        <transloco key="app.glossary.fediseer.paragraph_1" [params]="{fediseerHome: 'https://fediseer.com', announcementLink: 'https://dbzer0.com/blog/overseer-a-fediverse-chain-of-trust/'}" />
       </p>
       <p>
-        In simple terms, using the Fediseer, we attempt to figure out whether an instance is spam or not, through a
-        human-driven system called the "chain of trust".
+        {{'app.glossary.fediseer.paragraph_2' | transloco}}
       </p>
       <p>
-        The three main concepts used in Fediseer are guarantees, endorsements and censures.
+        {{'app.glossary.fediseer.paragraph_3' | transloco}}
       </p>
       <p>
-        The Fediseer provides a machine readable API to consume the data contained within.
-      </p>
-      <p>
-        You can use Fediseer easily through the app you're viewing this Glossary in right now.
+        {{'app.glossary.fediseer.paragraph_4' | transloco}}
       </p>
     </div>
   </div>
 
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title">Instance claim</h3>
+      <h3 class="card-title">{{'app.instance_claim' | transloco}}</h3>
     </div>
     <div class="card-body">
       <p>
-        A claimed instance is an instance whose admin has requested an API key from Fediseer.
+        {{'app.glossary.instance_claim.paragraph_1' | transloco}}
       </p>
       <p>
-        Fediseer has no users. Instead it's driven by instance admins only. Instance admins likewise only act as their
-        instances.
+        {{'app.glossary.instance_claim.paragraph_2' | transloco}}
       </p>
       <p *ngIf="currentInstance.anonymous">
-        You can claim an instance by going to the <a routerLink="/auth/claim-instance">Claim instance</a> page. You will
-        then receive an API key in a private message, which you can afterwards use to represent your instance on the
-        Fediseer.
+        <transloco key="app.glossary.instance_claim.paragraph_3" [params]="{
+          claimInstanceLink: {route: ['/auth/claim-instance']},
+          claimInstanceTitle: 'app.auth.claim_instance.title' | transloco,
+        }" />
       </p>
     </div>
   </div>
 
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title">Guarantee</h3>
+      <h3 class="card-title">{{'app.guarantee' | transloco}}</h3>
     </div>
     <div class="card-body">
       <p>
-        Any guaranteed instance is known as definitely "not spam" (AKA "ham"). That doesn't mean any non-guaranteed
-        instance is spam. Rather it means the status is "unknown". The purpose of guaranteeing for an instance is to let
-        others know whether it's a spam or a ham instance. The objective here being to prevent malicious actors from
-        spawning an infinite amount of new instances on the Fediverse to send spam.
+        {{'app.glossary.guarantee.paragraph_1' | transloco}}
       </p>
       <p>
-        Each instance can be guaranteed by an instance and can guarantee other instances. This is called the "chain of
-        trust".
+        {{'app.glossary.guarantee.paragraph_2' | transloco}}
       </p>
       <p>
-        Guarantees are community driven. While the Fediseer can guarantee at the top level as well, we hope that
-        instance admins will guarantee the instances they know of and help ensure the health of the network.
+        {{'app.glossary.guarantee.paragraph_3' | transloco}}
       </p>
     </div>
   </div>
 
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title">Chain of trust</h3>
+      <h3 class="card-title">{{'app.chain_of_trust' | transloco}}</h3>
     </div>
     <div class="card-body">
       <p>
-        Because each instance on the Fediseer can guarantee and be guaranteed by other instances, this causes a chain to
-        form, starting from the Fediseer itself. Any instance guaranteed by such an unbroken chain is considered as ham.
-        If the guarantee for any instance in this chain is revoked, the chain of trust is broken and any instances below
-        are considered non-guaranteed.
+        {{'app.glossary.chain_of_trust.paragraph_1' | transloco}}
       </p>
       <p>
-        This allows the Fediseer to quickly deal with spam instances that sneaked into the Fediseer and then guaranteed
-        a bunch more of the spammy friends. As the chain can be revoked higher up, even a whole spam network can be
-        countered by revoking the guarantee from the first spammer guaranteed.
+        {{'app.glossary.chain_of_trust.paragraph_2' | transloco}}
       </p>
     </div>
   </div>
 
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title">Endorsement</h3>
+      <h3 class="card-title">{{'app.endorsement' | transloco}}</h3>
     </div>
     <div class="card-body">
       <p>
-        An endorsement is a completely subjective positive judgement from one instance to another. Effectively
-        signifying that instance A "approves" of instance B. The reason for this can be anything.
+        {{'app.glossary.endorsement.paragraph_1' | transloco}}
       </p>
       <p>
-        An instance can be approve of any number of instances and be endorsed by any number of instances. One can even
-        get an autogenerated badge with the amount of endorsements they've received to display.
+        {{'app.glossary.endorsement.paragraph_2' | transloco}}
         <ng-container *ngIf="currentInstance.anonymous">
-          After logging in you can see the badge in the left menu under your instance name.
+          {{'app.glossary.endorsement.paragraph_2a' | transloco}}
         </ng-container>
         <ng-container *ngIf="!currentInstance.anonymous">
-          You can see the badge in the left menu under your instance name.
+          {{'app.glossary.endorsement.paragraph_2b' | transloco}}
         </ng-container>
-      </p>
-      <p>
-        When looking at the instance whitelist, one can also filter by amount of endorsements. Likewise one can also
-        export the list of instances endorsed by a subset of instances.
       </p>
     </div>
   </div>
 
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title">Censure</h3>
+      <h3 class="card-title">{{'app.censure' | transloco}}</h3>
     </div>
     <div class="card-body">
       <p>
-        A censure is a completely subjective negative judgement from one instance to another. Effectively signifying
-        that instance A "disapproves" of instance B. The reason for this can be anything.
+        {{'app.glossary.censure.paragraph_1' | transloco}}
       </p>
       <p>
-        An instance can censure any number of instances and be censured by any number of instances.
-      </p>
-      <p>
-        One can export the list of instances censured by a subset of instances.
+        {{'app.glossary.censure.paragraph_2' | transloco}}
       </p>
     </div>
   </div>
 
   <div class="card" id="hesitations">
     <div class="card-header">
-      <h3 class="card-title">Hesitation</h3>
+      <h3 class="card-title">{{'app.hesitation' | transloco}}</h3>
     </div>
     <div class="card-body">
       <p>
-        A hesitation is the same thing as a censure, except not as severe. It could be classified as a mistrust
-        instead of disapproval.
+        {{'app.glossary.hesitation.paragraph_1' | transloco}}
       </p>
       <p>
-        An instance can hesitate on any number of instances and be hesitated on by any number of instances.
+        {{'app.glossary.hesitation.paragraph_2' | transloco}}
       </p>
     </div>
   </div>
 
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title">Suspicious instance</h3>
+      <h3 class="card-title">{{"app.suspicious_instance" | transloco}}</h3>
     </div>
     <div class="card-body">
       <p>
-        A suspicious instance is one that's algorithmically determined to be suspicious due to the ratio of active users
-        count and the amount of posts.
+        {{'app.glossary.suspicious_instance.paragraph_1' | transloco}}
       </p>
       <p>
-        The api allows tweaking the parameters to report those instances, support for this feature is coming to this GUI
-        at a later time.
+        {{'app.glossary.suspicious_instance.paragraph_2' | transloco}}
       </p>
     </div>
   </div>
