@@ -14,6 +14,7 @@ import {ApiResponseHelperService} from "./services/api-response-helper.service";
 import * as url from "url";
 import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 import {DatabaseService} from "./services/database.service";
+import {TranslocoService} from "@ngneat/transloco";
 
 @Component({
   selector: 'app-root',
@@ -57,12 +58,21 @@ export class AppComponent implements OnInit {
     private readonly apiResponseHelper: ApiResponseHelperService,
     private readonly modalService: NgbModal,
     private readonly database: DatabaseService,
+    private readonly translator: TranslocoService,
     @Inject(DOCUMENT) private readonly document: Document,
   ) {
   }
 
   public async ngOnInit(): Promise<void> {
     this.titleService.titleChanged.subscribe(title => this.title = title);
+
+    const availableLanguages = this.translator.getAvailableLangs().map(value => typeof value === 'string' ? value : value.id);
+    for (const language of navigator.languages.map(language => language.split("-")[0])) {
+      if (availableLanguages.includes(language)) {
+        this.translator.setActiveLang(language);
+        break;
+      }
+    }
 
     const darkModeDetected = window.matchMedia('(prefers-color-scheme: dark)').matches;
     if (darkModeDetected) {

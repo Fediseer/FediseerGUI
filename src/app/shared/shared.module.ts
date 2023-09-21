@@ -10,6 +10,7 @@ import {NgbModule, NgbTooltip} from "@ng-bootstrap/ng-bootstrap";
 import { FormatDatetimePipe } from './pipes/format-date.pipe';
 import { FormatPercentagePipe } from './pipes/format-percentage.pipe';
 import { FormatNumberPipe } from './pipes/format-number.pipe';
+import {TranslocoModule} from "@ngneat/transloco";
 
 
 
@@ -35,11 +36,13 @@ import { FormatNumberPipe } from './pipes/format-number.pipe';
     FormatDatetimePipe,
     FormatPercentagePipe,
     FormatNumberPipe,
+    TranslocoModule,
     NgbModule,
   ],
   imports: [
     CommonModule,
     NgbTooltip,
+    TranslocoModule,
     NgbModule,
   ]
 })
