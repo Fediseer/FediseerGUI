@@ -31,10 +31,10 @@ export class DatabaseService {
     const stored = localStorage.getItem(this.availableAccountsKey);
     if (stored === null) {
       const currentInstance = this.getStoredInstance();
-      if (currentInstance?.anonymous) {
+      if (currentInstance === null || currentInstance.anonymous) {
         return [];
       }
-      this.availableAccounts = [this.getStoredInstance()!];
+      this.availableAccounts = [currentInstance];
       return [this.getStoredInstance()!];
     }
 
@@ -42,6 +42,9 @@ export class DatabaseService {
   }
 
   public set availableAccounts(instances: Instance[]) {
+    if (typeof localStorage === 'undefined') {
+      return;
+    }
     localStorage.setItem(this.availableAccountsKey, JSON.stringify(instances));
     this._availableAccountsObservable?.next(instances);
   }
