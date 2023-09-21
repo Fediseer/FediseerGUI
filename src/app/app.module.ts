@@ -12,6 +12,7 @@ import {TranslocoRootModule} from './transloco-root.module';
 import {defaultTranslocoMarkupTranspilers, provideTranslationMarkupTranspiler} from "ngx-transloco-markup";
 import {translocoMarkupRouterLinkRenderer} from "ngx-transloco-markup-router-link";
 import {CodeTagTranspiler} from "./services/transloco-transpiler/code-tag.transpiler";
+import {NgOptimizedImage} from "@angular/common";
 
 @NgModule({
   declarations: [
@@ -19,14 +20,15 @@ import {CodeTagTranspiler} from "./services/transloco-transpiler/code-tag.transp
     NotificationComponent,
     HomePageComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    SharedModule,
-    ReactiveFormsModule,
-    TranslocoRootModule,
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule,
+        SharedModule,
+        ReactiveFormsModule,
+        TranslocoRootModule,
+        NgOptimizedImage,
+    ],
   providers: [
     provideClientHydration(),
     defaultTranslocoMarkupTranspilers(),
