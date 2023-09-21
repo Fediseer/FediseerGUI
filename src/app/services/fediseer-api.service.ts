@@ -17,6 +17,7 @@ import {int} from "../types/number";
 import {ResetApiKeyResponse} from "../response/reset-api-key.response";
 import {PrivateMessageProxy} from "../types/private-message-proxy";
 import {SolicitationInstanceDetailResponse} from "../response/solicitation-instance-detail.response";
+import {ActionLogFilter} from "../types/action-log.filter";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -279,10 +280,30 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Patch, `whitelist/${instance}`, body);
   }
 
-  public getActionLog(pageStart: int = 1, pageEnd: int = 1): Observable<ActionLogResponse|null> {
+  public getActionLog(
+    pageStart: int = 1,
+    pageEnd: int = 1,
+    filter: ActionLogFilter = {},
+  ): Observable<ActionLogResponse|null> {
+    const body: {[key: string]: string} = {};
+    if (filter.activity !== undefined) {
+      body['report_activity'] = filter.activity;
+    }
+    if (filter.type !== undefined) {
+      body['report_type'] = filter.type;
+    }
+    if (filter.sourceDomains !== undefined) {
+      body['source_domains_csv'] = filter.sourceDomains.join(',');
+    }
+    if (filter.targetDomains !== undefined) {
+      body['target_domains_csv'] = filter.targetDomains.join(',');
+    }
+
     const requests: Observable<ApiResponse<ActionLogResponse>>[] = [];
     for (let i = pageStart; i <= pageEnd; ++i) {
-      requests.push(this.sendRequest<ActionLogResponse>(HttpMethod.Get, `reports`, {page: String(i)}));
+      const localBody = {...body};
+      localBody['page'] = String(i);
+      requests.push(this.sendRequest<ActionLogResponse>(HttpMethod.Get, `reports`, localBody));
     }
     return forkJoin(requests).pipe(
       map (responses => {

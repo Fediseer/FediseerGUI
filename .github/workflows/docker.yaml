@@ -10,6 +10,7 @@ on:
 
 jobs:
   publish:
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Extract Version Name
@@ -27,7 +28,7 @@ jobs:
       - name: Build docker
         env:
           VERSION: ${{ steps.extract_version.outputs.result }}
-        run: docker build -t ghcr.io/rikudousage/fediseer-gui:$VERSION --label "org.opencontainers.image.source=https://github.com/RikudouSage/FediseerGUI" --label "org.opencontainers.image.licenses=MIT" .
+        run: docker build -t ghcr.io/fediseer/fediseer-gui:$VERSION --label "org.opencontainers.image.source=https://github.com/Fediseer/FediseerGUI" --label "org.opencontainers.image.licenses=MIT" .
       - name: Login to GHCR
         uses: docker/login-action@v2
         with:
@@ -37,11 +38,11 @@ jobs:
       - name: Push to docker
         env:
           VERSION: ${{ steps.extract_version.outputs.result }}
-        run: docker push ghcr.io/rikudousage/fediseer-gui:$VERSION
+        run: docker push ghcr.io/fediseer/fediseer-gui:$VERSION
       - name: Push latest to docker
         if: steps.extract_version.outputs.result != 'dev'
         env:
           VERSION: ${{ steps.extract_version.outputs.result }}
         run: |
-          docker tag ghcr.io/rikudousage/fediseer-gui:$VERSION ghcr.io/rikudousage/fediseer-gui:latest
-          docker push ghcr.io/rikudousage/fediseer-gui:latest
+          docker tag ghcr.io/fediseer/fediseer-gui:$VERSION ghcr.io/fediseer/fediseer-gui:latest
+          docker push ghcr.io/fediseer/fediseer-gui:latest

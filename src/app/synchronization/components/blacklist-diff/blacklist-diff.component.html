@@ -2,13 +2,13 @@
   <tr *ngFor="let instance of added" class="bg-success">
     <td>
       <a routerLink="/instances/detail/{{instance}}">{{instance}}</a>
-      <app-tooltip text="This instance is only on Fediseer and not synchronized to your instance." />
+      <app-tooltip text="{{addedText | toObservable | async}}" />
     </td>
   </tr>
   <tr
     *ngFor="let instance of originalListString"
-    [class.bg-danger]="removed.includes(instance) && purgeMode"
-    [class.bg-warning]="removed.includes(instance) && !purgeMode"
+    [class.bg-danger]="removed.includes(instance) && purgeMode && highlightRemoved"
+    [class.bg-warning]="removed.includes(instance) && !purgeMode && highlightRemoved"
   >
     <td>
       <a routerLink="/instances/detail/{{instance}}">{{instance}}</a>

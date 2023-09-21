@@ -29,7 +29,7 @@
 
 ## Running using Docker
 
-A ready-to-use docker image is available as [`ghcr.io/rikudousage/fediseer-gui`](https://ghcr.io/rikudousage/fediseer-gui).
+A ready-to-use docker image is available as [`ghcr.io/fediseer/fediseer-gui`](https://ghcr.io/fediseer/fediseer-gui).
 
 Configuration is done using environment variables.
 
@@ -40,8 +40,9 @@ Configuration is done using environment variables.
 | FEDISEER_APP_NAME                              | The internal app name used.                                                                                                                                                                                              | FediseerGUI                                                             |
 | FEDISEER_APP_MAINTAINER                        | The name of the maintainer in the format of @[username]@[instance]. **This variable cannot be empty**.                                                                                                                   | `none`                                                                  |
 | FEDISEER_DEFAULT_CENSURE_LIST_FILTER_INSTANCES | The default instances to use in the censure list filters. List them as a comma separated values, for example `lemmings.world,lemmy.dbzer0.com`. The special value `__all__` can be used to mean all guaranteed instances | \_\_all__                                                               |
-| FEDISEER_SOURCE_CODE_LINK                      | The URL to the source code repository. You may want to set it to your fork URL if you're not using my version.                                                                                                           | https://github.com/RikudouSage/FediseerGUI                              |
+| FEDISEER_SOURCE_CODE_LINK                      | The URL to the source code repository. You may want to set it to your fork URL if you're not using my version.                                                                                                           | https://github.com/Fediseer/FediseerGUI                                 |
 | FEDISEER_APP_VERSION                           | The current version of the Fediseer GUI.                                                                                                                                                                                 | gets the default from [environment.ts](src/environments/environment.ts) |
 | FEDISEER_ENABLE_SSR                            | Set to any value to enable server-side rendering                                                                                                                                                                         | `none`                                                                  |
+| FEDISEER_DONATE_LINK                           | The link to the donation page, can be anything                                                                                                                                                                           | https://liberapay.com/Fediseer/                                         |
 
 The app is running on port 80 inside the container.
