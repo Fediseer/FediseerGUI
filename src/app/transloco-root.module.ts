@@ -6,14 +6,13 @@ import { NgModule } from '@angular/core';
 import { TranslocoHttpLoader } from './shared/helper/transloco-loader';
 import {environment} from "../environments/environment";
 
-export const AVAILABLE_LANGUAGES = ['cs', 'en'];
 
 @NgModule({
   exports: [ TranslocoModule ],
   providers: [
       provideTransloco({
         config: {
-          availableLangs: AVAILABLE_LANGUAGES,
+          availableLangs: ['cs', 'de', 'en'],
           defaultLang: 'en',
           reRenderOnLangChange: false,
           prodMode: environment.production,
