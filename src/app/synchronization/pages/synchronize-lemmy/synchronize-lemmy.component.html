@@ -24,28 +24,28 @@
 
     <div class="card">
       <div class="card-header">
-        <h3 class="card-title">Synchronization</h3>
+        <h3 class="card-title">Synchronization from Fediseer to Lemmy</h3>
       </div>
       <div class="card-body">
         <form [formGroup]="form">
           <div class="form-group">
             <label for="inputUsername">Username</label>
-            <input type="text" id="inputUsername" formControlName="username" class="form-control" />
+            <input type="text" id="inputUsername" formControlName="username" class="form-control" [value]="form.value.username" />
           </div>
           <div class="form-group">
             <label for="inputPassword">Password</label>
-            <input type="password" id="inputPassword" formControlName="password" class="form-control" />
+            <input type="password" id="inputPassword" formControlName="password" class="form-control" [value]="form.value.password" />
           </div>
           <div class="form-group">
             <label for="inputTotp">TOTP</label>
-            <input type="text" id="inputTotp" formControlName="totp" class="form-control" aria-describedby="inputTotpDescription" />
+            <input type="text" id="inputTotp" formControlName="totp" class="form-control" aria-describedby="inputTotpDescription" [value]="form.value.totp" />
             <small id="inputTotpDescription">Only if your account is 2FA protected.</small>
           </div>
         </form>
         <app-filter-form
           [getSettingsCallback]="getSettingsCallback"
           [saveSettingsCallback]="saveSettingsCallback"
-          (formSubmitted)="synchronize($event)"
+          (formSubmitted)="synchronizeToLemmy($event)"
           (modeChanged)="currentMode = $event"
           (instancesToBanChanged)="loadDiffs($event)"
           (instancesToBanCalculationStarted)="loadingPreview = true"
@@ -64,6 +64,56 @@
                 [originalList]="sourceBlockedInstances"
                 [newList]="instancesToBanPreview!"
                 [purgeMode]="purgeMode ?? false"
+              />
+            </ng-template>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">Synchronization from Lemmy to Fediseer</h3>
+      </div>
+      <div class="card-body">
+        <p>
+          Note that no domains will be removed from Fediseer, only domains that are present on
+          <strong>{{form.controls.instance.value}}</strong> but not here on <strong>Fediseer</strong>
+          will be added to your Fediseer censure list.
+        </p>
+        <form [formGroup]="form" (submit)="synchronizeFromLemmy()">
+          <div class="form-group">
+            <label for="inputUsername2">Username</label>
+            <input type="text" id="inputUsername2" formControlName="username" class="form-control" [value]="form.value.username" />
+          </div>
+          <div class="form-group">
+            <label for="inputPassword2">Password</label>
+            <input type="password" id="inputPassword2" formControlName="password" class="form-control" [value]="form.value.password" />
+          </div>
+          <div class="form-group">
+            <label for="inputTotp2">TOTP</label>
+            <input type="text" id="inputTotp2" formControlName="totp" class="form-control" aria-describedby="inputTotpDescription2" [value]="form.value.totp" />
+            <small id="inputTotpDescription2">Only if your account is 2FA protected.</small>
+          </div>
+
+          <button type="submit" class="btn-primary btn">Synchronize</button>
+        </form>
+
+        <div class="row mt-4">
+          <div class="col-md-12 minimum-height">
+            <h3>Preview</h3>
+
+            <div class="position-relative">
+              <app-loader *ngIf="loadingPreviewLemmyToFediseer else previewLemmyToFediseer" />
+            </div>
+
+            <ng-template #previewLemmyToFediseer>
+              <app-blacklist-diff
+                [originalList]="myCensuredInstances"
+                [newList]="sourceBlockedInstances"
+                [newToStringCallback]="lemmyToFediseerSyncNewListCallback"
+                [purgeMode]="false"
+                addedText="This domain is only on your instance blocklist and will be added to your Fediseer censures"
               />
             </ng-template>
           </div>

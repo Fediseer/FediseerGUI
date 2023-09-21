@@ -6,7 +6,7 @@ import {AuthenticationManagerService} from "../../../services/authentication-man
 import {LemmyApiService} from "../../../services/lemmy-api.service";
 import {toPromise} from "../../../types/resolvable";
 import {debounceTime, map} from "rxjs";
-import {FediseerApiService} from "../../../services/fediseer-api.service";
+import {ApiResponse, FediseerApiService} from "../../../services/fediseer-api.service";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {MessageService} from "../../../services/message.service";
 import {HttpErrorResponse} from "@angular/common/http";
@@ -18,6 +18,8 @@ import {
   SaveSettingsCallback
 } from "../../components/filter-form/filter-form.component";
 import {LemmySynchronizationSettings} from "../../../types/lemmy-synchronization-settings";
+import {NewToStringCallback} from "../../components/blacklist-diff/blacklist-diff.component";
+import {SuccessResponse} from "../../../response/success.response";
 
 @Component({
   selector: 'app-synchronize',
@@ -34,12 +36,16 @@ export class SynchronizeLemmyComponent implements OnInit {
 
   public loading = true;
   public loadingPreview = false;
+  public loadingPreviewLemmyToFediseer = true;
 
   public currentMode: SynchronizationMode | null = null;
   public purgeMode: boolean | null = null;
   public originallyBlockedInstances: string[] = [];
   public sourceBlockedInstances: string[] = [];
+  public myCensuredInstances: string[] = [];
   public instancesToBanPreview: InstanceDetailResponse[] | null = null;
+
+  public lemmyToFediseerSyncNewListCallback: NewToStringCallback<string>  = instance => instance;
 
   public saveSettingsCallback: SaveSettingsCallback<LemmySynchronizationSettings> = (database, settings) => {
     database.lemmySynchronizationSettings = settings;
@@ -77,6 +83,15 @@ export class SynchronizeLemmyComponent implements OnInit {
     }
     this.originallyBlockedInstances = instances;
     this.sourceBlockedInstances = instances;
+
+    const myCensures = await toPromise(this.fediseerApi.getCensuresByInstances([
+      this.authManager.currentInstanceSnapshot.name,
+    ]));
+    if (this.apiResponseHelper.handleErrors([myCensures])) {
+      return;
+    }
+    this.myCensuredInstances = myCensures.successResponse!.instances.map(instance => instance.domain);
+    this.loadingPreviewLemmyToFediseer = false;
 
     this.form.valueChanges.pipe(
       debounceTime(500),
@@ -161,7 +176,7 @@ export class SynchronizeLemmyComponent implements OnInit {
     }
   }
 
-  public async synchronize(instancesToBan: FilterFormResult): Promise<void> {
+  public async synchronizeToLemmy(instancesToBan: FilterFormResult): Promise<void> {
     try {
       if (this.purgeMode === null) {
         this.messageService.createError('There was an error with submitting the form.');
@@ -214,5 +229,46 @@ export class SynchronizeLemmyComponent implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+
+  public async synchronizeFromLemmy(): Promise<void> {
+    this.loading = true;
+
+    const myInstance = this.authManager.currentInstanceSnapshot.name;
+
+    const jwt = await this.getJwt();
+    if (jwt === null) {
+      return;
+    }
+    if (!await this.isAdmin(myInstance, jwt)) {
+      return;
+    }
+
+    const instances = this.sourceBlockedInstances.filter(
+      instance => !this.myCensuredInstances.includes(instance),
+    );
+
+    const promises: Promise<ApiResponse<SuccessResponse>>[] = [];
+    for (const instance of instances) {
+      promises.push(toPromise(this.fediseerApi.censureInstance(instance, null)));
+    }
+
+    const responses = await Promise.all(promises);
+    if (this.apiResponseHelper.handleErrors(responses)) {
+      this.loading = false;
+      return;
+    }
+
+    this.fediseerApi.getCensuresByInstances([this.authManager.currentInstanceSnapshot.name]).subscribe(response => {
+      if (!response.success) {
+        this.messageService.createWarning(`Couldn't fetch new list of your censured instances, please reload the page to get fresh data.`);
+        return;
+      }
+
+      this.myCensuredInstances = response.successResponse!.instances.map(instance => instance.domain);
+    });
+
+    this.messageService.createSuccess('Your Lemmy blocklist was successfully synchronized to Fediseer. Please add reasons to the newly imported censures to help your fellow admins.');
+    this.loading = false;
   }
 }

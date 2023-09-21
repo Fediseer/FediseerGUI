@@ -16,6 +16,7 @@ import {RuntimeCacheService} from "./cache/runtime-cache.service";
 import {int} from "../types/number";
 import {ResetApiKeyResponse} from "../response/reset-api-key.response";
 import {PrivateMessageProxy} from "../types/private-message-proxy";
+import {SolicitationInstanceDetailResponse} from "../response/solicitation-instance-detail.response";
 import {ActionLogFilter} from "../types/action-log.filter";
 
 export interface ApiResponse<T> {
@@ -326,7 +327,7 @@ export class FediseerApiService {
     });
   }
 
-  public getSolicitations(): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+  public getSolicitations(): Observable<ApiResponse<InstanceListResponse<SolicitationInstanceDetailResponse>>> {
     return this.sendRequest(HttpMethod.Get, `solicitations`);
   }
 
