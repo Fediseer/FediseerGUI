@@ -21,6 +21,7 @@
           <tr>
             <th>Domain</th>
             <th>Software</th>
+            <th>Comment</th>
             <th>Open registrations</th>
             <th>Email verification</th>
             <th *ngIf="!currentInstance.anonymous && currentInstanceDetail!.guarantor">Guarantee</th>
@@ -38,6 +39,10 @@
           <tr *ngFor="let instance of instances">
             <td>{{instance.domain}}</td>
             <td>{{instance.software}}</td>
+            <td>
+              <code *ngIf="!instance.comment">N/A</code>
+              <ng-container *ngIf="instance.comment">{{instance.comment}}</ng-container>
+            </td>
             <td>
               <app-yes-no [yes]="instance.open_registrations" [swapColors]="true" />
             </td>
