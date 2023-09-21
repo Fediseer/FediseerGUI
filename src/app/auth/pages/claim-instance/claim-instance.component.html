@@ -6,40 +6,37 @@
       <div class="card-body">
         <form [formGroup]="form" (submit)="doClaimInstance()">
           <div class="form-group">
-            <label for="inputInstance">{{ "Your instance" }}</label>
+            <label for="inputInstance">{{ "app.your_instance" | transloco }}</label>
             <input type="text" id="inputInstance" formControlName="instance" class="form-control" required aria-describedby="inputInstanceHelp" />
             <small id="inputInstanceHelp" class="form-text text-muted">
-              Add your instance without the <code>https://</code> protocol.
+              <transloco key="app.auth.your_instance.hint" />
             </small>
           </div>
           <div class="form-group">
-            <label for="inputAdmin">{{ "Admin username" }}</label>
+            <label for="inputAdmin">{{ "app.auth.admin_username" | transloco }}</label>
             <input type="text" id="inputAdmin" formControlName="admin" class="form-control" required aria-describedby="inputAdminHelp" />
             <small id="inputAdminHelp" class="form-text text-muted">
-              {{"Provide the username of the admin who will receive a private message with the api key. The user should exist on the instance you specified."}}
+              {{"app.auth.admin_username.hint" | transloco}}
             </small>
           </div>
           <div class="form-group">
-            <label for="inputPmProxy">Private message proxy</label>
+            <label for="inputPmProxy">{{"app.auth.private_message_proxy" | transloco}}</label>
             <select formControlName="pmProxy" id="inputPmProxy" class="form-control" aria-describedby="inputPmProxyDescription">
-              <option [value]="PrivateMessageProxy.None">None</option>
-              <option [value]="PrivateMessageProxy.Mastodon">Mastodon</option>
+              <option [value]="PrivateMessageProxy.None">{{'app.auth.private_message_proxy.none' | transloco}}</option>
+              <option [value]="PrivateMessageProxy.Mastodon">{{'app.auth.private_message_proxy.mastodon' | transloco}}</option>
             </select>
             <small id="inputPmProxyDescription">
               <ng-container *ngIf="form.controls.pmProxy.value === PrivateMessageProxy.None">
-                No proxy will be used and you will receive the message with the api key directly from Fediseer.com.
-                Note that this option doesn't work with many apps, if you get an error saying so, switch to the Mastodon
-                proxy.
+                {{'app.auth.private_message_proxy.none.description' | transloco}}
               </ng-container>
               <ng-container *ngIf="form.controls.pmProxy.value === PrivateMessageProxy.Mastodon">
-                A Mastodon account proxy will be used to send you the api key. This should support all Fediverse
-                software. Make sure you can receive messages from <code>botsin.space</code>.
+                <transloco key="app.auth.private_message_proxy.mastodon.description" />
               </ng-container>
             </small>
           </div>
 
           <button class="btn btn-primary" type="submit">
-            {{"Claim instance" }}
+            {{"app.auth.claim_instance.submit" | transloco}}
           </button>
         </form>
 

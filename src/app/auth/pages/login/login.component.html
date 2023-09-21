@@ -4,19 +4,21 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-body">
-        <p>To manage your account, please log in. Otherwise you may just browse the public data in the sidebar.</p>
+        <p>{{'app.auth.login.info_text' | transloco}}</p>
         <form [formGroup]="form" (submit)="doLogin()">
           <div class="form-group">
-            <label for="inputApiKey">{{ "API Key" }}</label>
+            <label for="inputApiKey">{{ "app.api_key" | transloco }}</label>
             <input type="password" id="inputApiKey" formControlName="apiKey" class="form-control" required autocomplete="off"/>
           </div>
 
           <small>
-            <p>{{"Don't have an api key yet?"}} <a routerLink="/auth/claim-instance">{{"Claim an instance here."}}</a></p>
+            <p>
+              <transloco key="app.auth.login.register_cta" [params]="{claimInstanceLink: {route: ['/auth/claim-instance']}}" />
+            </p>
           </small>
 
           <button class="btn btn-primary" type="submit">
-            Sign in
+            {{'app.auth.login.submit' | transloco}}
           </button>
         </form>
 
