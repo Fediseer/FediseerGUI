@@ -5,19 +5,21 @@
     <div class="col-md-12">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Endorsements that {{instance.name}} <strong>received</strong></h3>
+          <h3 class="card-title">
+            <transloco key="app.endorsements.my.received" [params]="{instance: instance.name}" />
+          </h3>
         </div>
         <div class="card-body">
           <table class="table table-bordered">
             <thead>
             <tr>
-              <th>{{ "Instance" }}</th>
-              <th>Reasons</th>
+              <th>{{ "app.instance" | transloco }}</th>
+              <th>{{"app.reasons" | transloco}}</th>
             </tr>
             </thead>
             <tbody>
             <tr *ngIf="!endorsementsForMyInstance.length">
-              <td colspan="2">This instance didn't receive any endorsements yet.</td>
+              <td colspan="2">{{'app.endorsements.my.received.none' | transloco}}</td>
             </tr>
             <tr *ngFor="let endorsed of endorsementsForMyInstance">
               <td><a routerLink="/instances/detail/{{endorsed.domain}}">{{endorsed.domain}}</a></td>
@@ -25,7 +27,7 @@
                 <ul *ngIf="endorsed.endorsementReasons.length">
                   <li *ngFor="let reason of endorsed.endorsementReasons">{{reason}}</li>
                 </ul>
-                <code *ngIf="!endorsed.endorsementReasons.length">N/A</code>
+                <code *ngIf="!endorsed.endorsementReasons.length">{{"app.not_applicable" | transloco}}</code>
               </td>
             </tr>
             </tbody>
@@ -35,26 +37,28 @@
 
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Endorsements that {{instance.name}} <strong>has given</strong></h3>
+          <h3 class="card-title">
+            <transloco key="app.endorsements.my.given" [params]="{instance: instance.name}" />
+          </h3>
         </div>
         <div class="card-body">
           <table class="table table-bordered">
             <thead>
             <tr>
-              <th>Instance</th>
-              <th>Reasons</th>
-              <th>Actions</th>
+              <th>{{"app.instance" | transloco}}</th>
+              <th>{{"app.reasons" | transloco}}</th>
+              <th>{{"app.actions" | transloco}}</th>
             </tr>
             </thead>
             <tbody>
             <tr *ngIf="guaranteed">
               <td colspan="3">
-                <a routerLink="/endorsements/endorse" class="btn btn-primary">Endorse an instance</a>
+                <a routerLink="/endorsements/endorse" class="btn btn-primary">{{'app.endorsements.add.title' | transloco}}</a>
               </td>
             </tr>
             <tr *ngIf="!endorsementsByMyInstance.length">
-              <td colspan="3" *ngIf="guaranteed">This instance didn't endorse anyone yet. Go on and endorse!</td>
-              <td colspan="3" *ngIf="!guaranteed">No one guaranteed for this instance, you cannot endorse others.</td>
+              <td colspan="3" *ngIf="guaranteed">{{'app.endorsements.my.given.none' | transloco}}</td>
+              <td colspan="3" *ngIf="!guaranteed">{{'app.endorsements.my.given.unguaranteed' | transloco}}</td>
             </tr>
             <tr *ngFor="let endorsed of endorsementsByMyInstance">
               <td><a routerLink="/instances/detail/{{endorsed.domain}}">{{endorsed.domain}}</a></td>
@@ -62,12 +66,12 @@
                 <ul *ngIf="endorsed.endorsementReasons.length">
                   <li *ngFor="let reason of endorsed.endorsementReasons">{{reason}}</li>
                 </ul>
-                <code *ngIf="!endorsed.endorsementReasons.length">N/A</code>
+                <code *ngIf="!endorsed.endorsementReasons.length">{{'app.not_applicable' | transloco}}</code>
               </td>
               <td>
-                <a routerLink="/endorsements/my/edit/{{endorsed.domain}}" type="button" class="btn btn-primary">Edit</a>
+                <a routerLink="/endorsements/my/edit/{{endorsed.domain}}" type="button" class="btn btn-primary">{{'app.generic_buttons.edit' | transloco}}</a>
                 &nbsp;
-                <button class="btn btn-danger" (click)="cancelEndorsement(endorsed.domain)">Cancel</button>
+                <button class="btn btn-danger" (click)="cancelEndorsement(endorsed.domain)">{{'app.generic_buttons.cancel' | transloco}}</button>
               </td>
             </tr>
             </tbody>
