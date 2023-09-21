@@ -73,5 +73,11 @@
   "app.auth.login.info_text": "To manage your account, please log in. Otherwise you may just browse the public data in the sidebar.",
   "app.auth.login.register_cta": "Don't have an api key yet? [link:claimInstanceLink]Claim an instance here.[/link]",
   "app.auth.login.submit": "Sign in",
-  "app.auth.login.success_message": "Successfully logged in."
+  "app.auth.login.success_message": "Successfully logged in.",
+  "app.sidebar.switch_account": "Switch account",
+  "app.switch_account.title": "Switch account",
+  "app.switch_account.already_on_this_account": "You're already on this account",
+  "app.switch_account.switch_button": "Switch",
+  "app.logout": "Logout",
+  "app.switch_account.add_account": "Add new account"
 }
