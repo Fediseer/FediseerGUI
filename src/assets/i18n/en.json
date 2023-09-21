@@ -53,5 +53,7 @@
   "app.action_log.type": "Type",
   "app.action_log.datetime": "Date & time",
   "app.pagination.previous": "Previous",
-  "app.pagination.next": "Next"
+  "app.pagination.next": "Next",
+  "error.action_log.failed_getting": "Failed getting the action log, please try refreshing your browser.",
+  "error.pagination.no_more_pages": "No more pages available"
 }

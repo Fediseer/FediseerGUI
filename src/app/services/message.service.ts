@@ -19,22 +19,22 @@ export interface Message {
 export class MessageService {
   private emitter: EventEmitter<Message> = new EventEmitter<Message>();
 
-  public create(message: string, type: MessageType): void {
+  public create(message: Resolvable<string>, type: MessageType): void {
     this.emitter.next({
       message: message,
       type: type,
     });
   }
 
-  public createError(message: string): void {
+  public createError(message: Resolvable<string>): void {
     this.create(message, MessageType.Error);
   }
 
-  public createSuccess(message: string): void {
+  public createSuccess(message: Resolvable<string>): void {
     this.create(message, MessageType.Success);
   }
 
-  public createWarning(message: string): void {
+  public createWarning(message: Resolvable<string>): void {
     this.create(message, MessageType.Warning);
   }
 
