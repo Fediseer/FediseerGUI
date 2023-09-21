@@ -130,5 +130,6 @@
   "app.endorsements.my.given.unguaranteed": "No one guaranteed for this instance, you cannot endorse others.",
   "app.generic_buttons.edit": "Edit",
   "app.generic_buttons.cancel": "Cancel",
-  "app.endorsements.my": "My endorsements"
+  "app.endorsements.my": "My endorsements",
+  "app.logo.alt": "{{fediseer}} logo"
 }
