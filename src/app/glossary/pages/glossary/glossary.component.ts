@@ -3,6 +3,7 @@ import {TitleService} from "../../../services/title.service";
 import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
 import {Instance} from "../../../user/instance";
 import {ActivatedRoute} from "@angular/router";
+import {TranslatorService} from "../../../services/translator.service";
 
 @Component({
   selector: 'app-glossary',
@@ -18,11 +19,12 @@ export class GlossaryComponent implements OnInit, AfterViewInit {
     private readonly titleService: TitleService,
     private readonly authManager: AuthenticationManagerService,
     private readonly route: ActivatedRoute,
+    private readonly translator: TranslatorService,
   ) {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.titleService.title = 'Glossary';
+    this.titleService.title = this.translator.get('app.glossary');
     this.route.fragment.subscribe(fragment => { this.fragment = fragment; });
   }
 
