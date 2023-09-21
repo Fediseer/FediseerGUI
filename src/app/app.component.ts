@@ -34,6 +34,7 @@ export class AppComponent implements OnInit {
 
   private autoCollapse = 992;
 
+  public darkModeEnabled: boolean = false;
   public title: string = 'Fediseer';
   public loggedInInstance: Observable<Instance> = this.authenticationManager.currentInstance;
 
@@ -62,6 +63,14 @@ export class AppComponent implements OnInit {
 
   public async ngOnInit(): Promise<void> {
     this.titleService.titleChanged.subscribe(title => this.title = title);
+
+    const darkModeDetected = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (darkModeDetected) {
+      this.document.body.classList.add('dark-mode');
+    } else {
+      this.document.body.classList.remove('dark-mode');
+    }
+    this.darkModeEnabled = darkModeDetected;
 
     this.createMaintainerLink();
 
