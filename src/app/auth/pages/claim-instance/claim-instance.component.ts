@@ -5,6 +5,8 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MessageService} from "../../../services/message.service";
 import {Router} from "@angular/router";
 import {PrivateMessageProxy} from "../../../types/private-message-proxy";
+import {TranslatorService} from "../../../services/translator.service";
+import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 
 @Component({
   selector: 'app-claim-instance',
@@ -26,16 +28,18 @@ export class ClaimInstanceComponent implements OnInit {
     private readonly api: FediseerApiService,
     private readonly messageService: MessageService,
     private readonly router: Router,
+    private readonly translator: TranslatorService,
+    private readonly apiResponseHelper: ApiResponseHelperService,
   ) {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.titleService.title = 'Claim an instance';
+    this.titleService.title = this.translator.get('app.auth.claim_instance.title');
   }
 
   public async doClaimInstance(): Promise<void> {
     if (!this.form.valid) {
-      this.messageService.createError("The form is not valid, please make sure all fields are filled correctly.");
+      this.messageService.createError(this.translator.get('error.form_invalid.generic'));
       return;
     }
 
@@ -45,14 +49,13 @@ export class ClaimInstanceComponent implements OnInit {
       this.form.controls.admin.value!,
       this.form.controls.pmProxy.value!,
     ).subscribe(response => {
-      if (!response.success) {
-        this.messageService.createError(`The api returned this error: ${response.errorResponse!.message}`);
+      if (this.apiResponseHelper.handleErrors([response])) {
         this.loading = false;
         return;
       }
 
       this.router.navigateByUrl('/auth/login').then(() => {
-        this.messageService.createSuccess('Done! You should soon receive a private message with the api key.');
+        this.messageService.createSuccess(this.translator.get('app.auth.claim_instance.success_message'));
       });
     });
   }
