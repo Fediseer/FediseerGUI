@@ -4,8 +4,9 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MessageService} from "../../../services/message.service";
 import {FediseerApiService} from "../../../services/fediseer-api.service";
 import {Router} from "@angular/router";
-import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {toPromise} from "../../../types/resolvable";
+import {TranslatorService} from "../../../services/translator.service";
+import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 
 @Component({
   selector: 'app-endorse-instance',
@@ -25,14 +26,16 @@ export class EndorseInstanceComponent implements OnInit {
     private readonly messageService: MessageService,
     private readonly api: FediseerApiService,
     private readonly router: Router,
+    private readonly translator: TranslatorService,
+    private readonly apiResponseHelper: ApiResponseHelperService,
   ) {
   }
   public async ngOnInit(): Promise<void> {
-    this.titleService.title = 'Endorse an instance';
+    this.titleService.title = this.translator.get('app.endorsements.add.title');
 
     const reasons = await toPromise(this.api.usedEndorsementReasons);
     if (reasons === null) {
-      this.messageService.createWarning('Getting list of reasons failed, there will not be any autocompletion.');
+      this.messageService.createWarning(this.translator.get('error.reasons.autocompletion.fetch'));
     } else {
       this.availableReasons = reasons;
     }
@@ -42,7 +45,7 @@ export class EndorseInstanceComponent implements OnInit {
 
   public async doEndorse(): Promise<void> {
     if (!this.form.valid) {
-      this.messageService.createError("The form is not valid, please make sure all fields are filled correctly.");
+      this.messageService.createError(this.translator.get('error.form_invalid.generic'));
       return;
     }
 
@@ -51,15 +54,14 @@ export class EndorseInstanceComponent implements OnInit {
       this.form.controls.instance.value!,
       this.form.controls.reasons.value ? this.form.controls.reasons.value!.join(',') : null,
     ).subscribe(response => {
-      if (!response.success) {
-        this.messageService.createError(`There was an api error: ${response.errorResponse!.message}`);
+      if (this.apiResponseHelper.handleErrors([response])) {
         this.loading = false;
         return;
       }
 
       this.loading = false;
       this.router.navigateByUrl('/endorsements/my').then(() => {
-        this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully endorsed!`);
+        this.messageService.createSuccess(this.translator.get('app.endorsements.success.create'));
       });
     });
   }

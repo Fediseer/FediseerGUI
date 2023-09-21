@@ -9,6 +9,7 @@ import {ApiResponseHelperService} from "../../../services/api-response-helper.se
 import {toPromise} from "../../../types/resolvable";
 import {map} from "rxjs";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
+import {TranslatorService} from "../../../services/translator.service";
 
 @Component({
   selector: 'app-edit-endorsement-reasons',
@@ -31,17 +32,18 @@ export class EditEndorsementReasonsComponent implements OnInit {
     private readonly activatedRoute: ActivatedRoute,
     private readonly authManager: AuthenticationManagerService,
     private readonly apiResponseHelper: ApiResponseHelperService,
+    private readonly translator: TranslatorService,
   ) {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.titleService.title = 'Update endorsement reasons';
+    this.titleService.title = this.translator.get('app.endorsements.edit_reasons.title');
 
     this.activatedRoute.params.subscribe(async params => {
       const targetInstance = params['instance'] as string;
       let availableReasons = await toPromise(this.api.usedEndorsementReasons);
       if (availableReasons === null) {
-        this.messageService.createWarning(`Couldn't get list of reasons that were used previously, autocompletion won't work.`);
+        this.messageService.createWarning(this.translator.get('error.reasons.autocompletion.fetch'));
         availableReasons = [];
       }
       this.availableReasons = availableReasons;
@@ -57,7 +59,7 @@ export class EditEndorsementReasonsComponent implements OnInit {
               instance => instance.domain === targetInstance,
             );
             if (!instance.length) {
-              this.messageService.createError(`Couldn't find this instance amongst your endorsements. Are you sure you've endorsed it?`);
+              this.messageService.createError(this.translator.get('error.endorsements.instance_not_endorsed'));
               return null;
             }
 
@@ -81,7 +83,7 @@ export class EditEndorsementReasonsComponent implements OnInit {
 
   public async updateReasons(): Promise<void> {
     if (!this.form.valid) {
-      this.messageService.createError("The form is not valid, please make sure all fields are filled correctly.");
+      this.messageService.createError(this.translator.get('error.form_invalid.generic'));
       return;
     }
 
@@ -97,7 +99,7 @@ export class EditEndorsementReasonsComponent implements OnInit {
 
       this.loading = false;
       this.router.navigateByUrl('/endorsements/my').then(() => {
-        this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully updated!`);
+        this.messageService.createSuccess(this.translator.get('app.endorsements.success.update'));
       });
     });
   }

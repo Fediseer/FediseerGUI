@@ -4,20 +4,25 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-body">
-        <p>Endorsing means that you approve of an instance. For more information visit the <a routerLink="/glossary">Glossary</a>.</p>
-        <p><strong>You can do this only if your instance is guaranteed by some other instance.</strong></p>
+        <p>
+          <transloco key="app.endorsements.intro" [params]="{
+            glossaryLink: {route: ['/glossary']},
+            glossary: 'app.glossary' | transloco
+          }" />
+        </p>
+        <p><strong>{{'app.guarantee_restricted.info' | transloco}}</strong></p>
         <form [formGroup]="form" (submit)="updateReasons()">
           <div class="form-group">
-            <label for="inputInstance">Instance to endorse</label>
+            <label for="inputInstance">{{'app.endorsements.target_instance' | transloco}}</label>
             <input class="form-control" type="text" id="inputInstance" formControlName="instance" />
           </div>
           <div class="form-group">
-            <label for="inputReason">Reasons</label>
+            <label for="inputReason">{{'app.reasons' | transloco}}</label>
             <select formControlName="reasons" id="inputReason" multiple tom-select [maxItems]="null" [create]="true">
               <option *ngFor="let option of availableReasons" [value]="option">{{option}}</option>
             </select>
           </div>
-          <button type="submit" class="btn btn-primary">Update</button>
+          <button type="submit" class="btn btn-primary">{{'app.generic_button.update' | transloco}}</button>
         </form>
       </div>
     </div>

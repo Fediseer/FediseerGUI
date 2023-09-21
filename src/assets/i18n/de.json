@@ -8,7 +8,6 @@
   "app.gui.version": "GUI version {{appVersion}}",
   "app.sidebar.guarantor_badge.title": "Meine Bürgschaften",
   "app.sidebar.guarantor_badge.alt_text": "Bürgschaftsabzeichen",
-  "app.sidebar.endorsements_badge.title": "Meine Empfehlungen",
   "app.sidebar.endorsements_badge.alt_text": "Empfehlungensabzeichen",
   "app.sidebar.login": "Anmelden",
   "app.sidebar.claim_instance": "Eine Instanz beanspruchen",
@@ -105,5 +104,6 @@
   "app.glossary.hesitation.paragraph_2": "Eine Instanz kann beliebig viele Instanzen tadeln sowie von beliebig vielen getadelt werden. Auch hierfür kann es vielerlei Gründe geben, welche ebenfalls angegeben werden können.",
   "app.suspicious_instance": "Verdächtige Instanzen",
   "app.glossary.suspicious_instance.paragraph_1": "Eine verdächtige Instanz ist eine, die aufgrund des Verhältnisses zwischen der Anzahl der aktiven Nutzer und der Anzahl der Beiträge algorithmisch als verdächtig eingestuft wird.",
-  "app.glossary.suspicious_instance.paragraph_2": "Die API erlaubt die Anpassung der Parameter, um diese Instanzen zu melden. Die Unterstützung für diese Funktion wird zu einem späteren Zeitpunkt in diese GUI integriert."
+  "app.glossary.suspicious_instance.paragraph_2": "Die API erlaubt die Anpassung der Parameter, um diese Instanzen zu melden. Die Unterstützung für diese Funktion wird zu einem späteren Zeitpunkt in diese GUI integriert.",
+  "app.endorsements.my": "Meine Empfehlungen"
 }
