@@ -105,5 +105,8 @@
   "app.glossary.hesitation.paragraph_2": "An instance can hesitate on any number of instances and be hesitated on by any number of instances.",
   "app.suspicious_instance": "Suspicious instance",
   "app.glossary.suspicious_instance.paragraph_1": "A suspicious instance is one that's algorithmically determined to be suspicious due to the ratio of active users count and the amount of posts.",
-  "app.glossary.suspicious_instance.paragraph_2": "The api allows tweaking the parameters to report those instances, support for this feature is coming to this GUI at a later time."
+  "app.glossary.suspicious_instance.paragraph_2": "The api allows tweaking the parameters to report those instances, support for this feature is coming to this GUI at a later time.",
+  "notification.error": "Error",
+  "notification.success": "Success",
+  "notification.warning": "Warning"
 }

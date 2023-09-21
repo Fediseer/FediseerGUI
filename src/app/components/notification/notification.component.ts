@@ -1,5 +1,6 @@
 import {Component, EventEmitter, Input, Output} from '@angular/core';
-import {Observable, of} from "rxjs";
+import {Observable} from "rxjs";
+import {TranslatorService} from "../../services/translator.service";
 
 export enum NotificationType {
   Error,
@@ -22,6 +23,11 @@ export class NotificationComponent {
 
   @Output() deleted: Observable<void> = new EventEmitter<void>();
 
+  constructor(
+    private readonly translator: TranslatorService,
+  ) {
+  }
+
 
   public async remove(): Promise<void> {
     this.isDeleted = true;
@@ -31,11 +37,11 @@ export class NotificationComponent {
   public get title(): Observable<string> {
     switch (this.kind) {
       case NotificationType.Error:
-        return of('Error');
+        return this.translator.get('notification.error');
       case NotificationType.Success:
-        return of('Success');
+        return this.translator.get('notification.success');
       case NotificationType.Warning:
-        return of('Warning');
+        return this.translator.get('notification.warning');
     }
   }
 }
