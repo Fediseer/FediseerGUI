@@ -7,6 +7,8 @@ import {MessageService} from "../../../services/message.service";
 import {AuthenticatedInstance} from "../../../user/authenticated-instance";
 import {Router} from "@angular/router";
 import {DatabaseService} from "../../../services/database.service";
+import {TranslatorService} from "../../../services/translator.service";
+import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 
 @Component({
   selector: 'app-login',
@@ -26,6 +28,8 @@ export class LoginComponent implements OnInit {
     private readonly messageService: MessageService,
     private readonly router: Router,
     private readonly database: DatabaseService,
+    private readonly translator: TranslatorService,
+    private readonly apiResponseHelper: ApiResponseHelperService,
   ) {
   }
 
@@ -35,29 +39,28 @@ export class LoginComponent implements OnInit {
 
   public async doLogin(): Promise<void> {
     if (!this.form.valid) {
-      this.messageService.createError("The form is not valid, please make sure all fields are filled correctly.");
+      this.messageService.createError(this.translator.get('error.form_invalid.generic'));
       return;
     }
 
     this.loading = true;
     const apiKey = this.form.controls.apiKey.value!;
     this.api.getCurrentInstanceInfo(apiKey).subscribe(response => {
-        if (!response.success) {
-          this.loading = false;
-          this.messageService.createError('There was an error while logging in. Is the api key correct?');
-          return;
-        }
+      if (this.apiResponseHelper.handleErrors([response])) {
+        this.loading = false;
+        return;
+      }
 
-        this.authenticationManager.currentInstance = new AuthenticatedInstance(
-          response.successResponse!.domain,
-          apiKey,
-        );
-        this.database.addAvailableAccount(this.authenticationManager.currentInstanceSnapshot);
+      this.authenticationManager.currentInstance = new AuthenticatedInstance(
+        response.successResponse!.domain,
+        apiKey,
+      );
+      this.database.addAvailableAccount(this.authenticationManager.currentInstanceSnapshot);
 
-        this.router.navigateByUrl('/').then(() => {
-          this.messageService.createSuccess('Successfully logged in.');
-        });
-      },
+      this.router.navigateByUrl('/').then(() => {
+        this.messageService.createSuccess(this.translator.get('app.auth.login.success_message'));
+      });
+    },
     );
   }
 }

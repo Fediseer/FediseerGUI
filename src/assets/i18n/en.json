@@ -68,5 +68,10 @@
   "app.auth.claim_instance.submit": "Claim instance",
   "app.auth.claim_instance.title": "Claim an instance",
   "error.form_invalid.generic": "The form is not valid, please make sure all fields are filled correctly.",
-  "app.auth.claim_instance.success_message": "Done! You should soon receive a private message with the api key."
+  "app.auth.claim_instance.success_message": "Done! You should soon receive a private message with the api key.",
+  "app.api_key": "API key",
+  "app.auth.login.info_text": "To manage your account, please log in. Otherwise you may just browse the public data in the sidebar.",
+  "app.auth.login.register_cta": "Don't have an api key yet? [link:claimInstanceLink]Claim an instance here.[/link]",
+  "app.auth.login.submit": "Sign in",
+  "app.auth.login.success_message": "Successfully logged in."
 }
