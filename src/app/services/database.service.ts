@@ -1,4 +1,4 @@
-import {EventEmitter, Injectable} from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Instance} from "../user/instance";
 import {LemmySynchronizationSettings} from "../types/lemmy-synchronization-settings";
 import {CensureListFilters} from "../types/censure-list-filters";
@@ -51,6 +51,9 @@ export class DatabaseService {
 
   public addAvailableAccount(instance: Instance): void {
     const availableAccounts = this.availableAccounts;
+    if (availableAccounts.map(instance => instance.name).includes(instance.name)) {
+      return;
+    }
     availableAccounts.push(instance);
     this.availableAccounts = availableAccounts;
   }
