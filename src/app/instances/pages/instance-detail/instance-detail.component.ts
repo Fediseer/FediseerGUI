@@ -8,6 +8,7 @@ import {MessageService, MessageType} from "../../../services/message.service";
 import {InstanceDetailResponse} from "../../../response/instance-detail.response";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-instance-detail',
@@ -30,6 +31,7 @@ export class InstanceDetailComponent implements OnInit {
   constructor(
     private readonly titleService: TitleService,
     private readonly api: FediseerApiService,
+    private readonly cachedApi: CachedFediseerApiService,
     private readonly authManager: AuthenticationManagerService,
     private readonly activatedRoute: ActivatedRoute,
     private readonly router: Router,
@@ -54,7 +56,7 @@ export class InstanceDetailComponent implements OnInit {
 
       const responses = await Promise.all([
         toPromise(this.api.getCensuresForInstance(instanceDomain)),
-        toPromise(this.api.getCensuresByInstances([instanceDomain])),
+        toPromise(this.cachedApi.getCensuresByInstances([instanceDomain])),
         toPromise(this.api.getEndorsementsForInstance(instanceDomain)),
         toPromise(this.api.getEndorsementsByInstance([instanceDomain])),
         toPromise(this.api.getGuaranteesByInstance(instanceDomain)),

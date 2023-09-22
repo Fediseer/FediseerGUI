@@ -6,6 +6,7 @@ import {FediseerApiService} from "../../../services/fediseer-api.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
 import {toPromise} from "../../../types/resolvable";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-censure-instance',
@@ -25,6 +26,7 @@ export class CensureInstanceComponent implements OnInit {
     private readonly titleService: TitleService,
     private readonly messageService: MessageService,
     private readonly api: FediseerApiService,
+    private readonly cachedApi: CachedFediseerApiService,
     private readonly router: Router,
     private readonly activatedRoute: ActivatedRoute,
     private readonly authManager: AuthenticationManagerService,
@@ -67,10 +69,13 @@ export class CensureInstanceComponent implements OnInit {
         return;
       }
 
-      this.loading = false;
-      this.router.navigateByUrl('/censures/my').then(() => {
-        this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully censured!`);
-      });
+      this.cachedApi.getCensuresByInstances([this.authManager.currentInstanceSnapshot.name], {clear: true})
+        .subscribe(() => {
+          this.loading = false;
+          this.router.navigateByUrl('/censures/my').then(() => {
+            this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully censured!`);
+          });
+        });
     });
   }
 }

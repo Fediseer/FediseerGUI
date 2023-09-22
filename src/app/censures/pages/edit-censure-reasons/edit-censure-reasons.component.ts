@@ -9,6 +9,7 @@ import {toPromise} from "../../../types/resolvable";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {map} from "rxjs";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-edit-censure-reasons',
@@ -28,6 +29,7 @@ export class EditCensureReasonsComponent implements OnInit {
     private readonly titleService: TitleService,
     private readonly messageService: MessageService,
     private readonly api: FediseerApiService,
+    private readonly cachedApi: CachedFediseerApiService,
     private readonly router: Router,
     private readonly activatedRoute: ActivatedRoute,
     private readonly authManager: AuthenticationManagerService,
@@ -98,10 +100,13 @@ export class EditCensureReasonsComponent implements OnInit {
         return;
       }
 
-      this.loading = false;
-      this.router.navigateByUrl('/censures/my').then(() => {
-        this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully updated!`);
-      });
+      this.cachedApi.getCensuresByInstances([this.authManager.currentInstanceSnapshot.name], {clear: true})
+        .subscribe(() => {
+          this.loading = false;
+          this.router.navigateByUrl('/censures/my').then(() => {
+            this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully updated!`);
+          });
+        });
     });
   }
 }

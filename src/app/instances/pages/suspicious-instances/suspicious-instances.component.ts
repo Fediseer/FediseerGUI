@@ -1,5 +1,4 @@
 import {Component, OnInit} from '@angular/core';
-import {InstanceDetailResponse} from "../../../response/instance-detail.response";
 import {Instance} from "../../../user/instance";
 import {TitleService} from "../../../services/title.service";
 import {ApiResponse, FediseerApiService} from "../../../services/fediseer-api.service";
@@ -10,6 +9,7 @@ import {toPromise} from "../../../types/resolvable";
 import {SuccessResponse} from "../../../response/success.response";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {SuspiciousInstanceDetailResponse} from "../../../response/suspicious-instance-detail.response";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-suspicious-instances',
@@ -32,6 +32,7 @@ export class SuspiciousInstancesComponent implements OnInit {
   constructor(
     private readonly titleService: TitleService,
     private readonly api: FediseerApiService,
+    private readonly cachedApi: CachedFediseerApiService,
     private readonly messageService: MessageService,
     private readonly activatedRoute: ActivatedRoute,
     private readonly authManager: AuthenticationManagerService,
@@ -44,7 +45,7 @@ export class SuspiciousInstancesComponent implements OnInit {
     this.titleService.title = 'Suspicious instances';
 
     if (!this.currentInstance.anonymous) {
-      const response = await toPromise(this.api.getCensuresByInstances([this.currentInstance.name]));
+      const response = await toPromise(this.cachedApi.getCensuresByInstances([this.currentInstance.name]));
       if (this.apiResponseHelper.handleErrors([response])) {
         this.loading = false;
         return;
@@ -87,8 +88,13 @@ export class SuspiciousInstancesComponent implements OnInit {
     }
 
     if (censured) {
-      this.censuredByMe = this.censuredByMe.filter(endorsedInstance => endorsedInstance !== instance);
-      this.loading = false;
+      this.cachedApi.getCensuresByInstances(
+        [this.currentInstance.name],
+        {clear: true},
+      ).subscribe(() => {
+        this.censuredByMe = this.censuredByMe.filter(endorsedInstance => endorsedInstance !== instance);
+        this.loading = false;
+      });
     }
   }
 

@@ -36,7 +36,7 @@ export class MyCensuresComponent implements OnInit {
     this.titleService.title = `My censures`;
 
     const responses = await Promise.all([
-      toPromise(this.api.getCensuresByInstances([this.authManager.currentInstanceSnapshot.name])),
+      toPromise(this.cachedApi.getCensuresByInstances([this.authManager.currentInstanceSnapshot.name])),
       toPromise(this.cachedApi.getCurrentInstanceInfo()),
     ])
 
@@ -62,10 +62,15 @@ export class MyCensuresComponent implements OnInit {
         return;
       }
 
-      this.instances = this.instances.filter(
-        censuredInstance => censuredInstance.domain !== instance,
-      );
-      this.loading = false;
+      this.cachedApi.getCensuresByInstances(
+        [this.authManager.currentInstanceSnapshot.name],
+        {clear: true}
+      ).subscribe(() => {
+        this.instances = this.instances.filter(
+          censuredInstance => censuredInstance.domain !== instance,
+        );
+        this.loading = false;
+      });
     });
   }
 }
