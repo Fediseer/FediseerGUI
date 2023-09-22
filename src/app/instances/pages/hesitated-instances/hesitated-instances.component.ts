@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {FilterSpecialValueAllInstances} from "../../../shared/constants";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 import {Instance} from "../../../user/instance";
@@ -15,6 +15,7 @@ import {DatabaseService} from "../../../services/database.service";
 import {toPromise} from "../../../types/resolvable";
 import {debounceTime} from "rxjs";
 import {SuccessResponse} from "../../../response/success.response";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-hesitated-instances',
@@ -49,6 +50,7 @@ export class HesitatedInstancesComponent {
   constructor(
     private readonly titleService: TitleService,
     private readonly api: FediseerApiService,
+    private readonly cachedApi: CachedFediseerApiService,
     private readonly messageService: MessageService,
     private readonly activatedRoute: ActivatedRoute,
     private readonly authManager: AuthenticationManagerService,
@@ -70,7 +72,7 @@ export class HesitatedInstancesComponent {
       this.hesitatedByMe = response.successResponse!.instances.map(instance => instance.domain);
     }
 
-    const allWhitelistedInstancesResponse = await toPromise(this.api.getWhitelistedInstances());
+    const allWhitelistedInstancesResponse = await toPromise(this.cachedApi.getWhitelistedInstances());
     if (this.apiResponseHelper.handleErrors([allWhitelistedInstancesResponse])) {
       this.loading = false;
       return;

@@ -206,7 +206,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
     if (this.whitelistedInstancesList === null) {
       this.loadingWhitelistedInstances = true;
       const responses = await Promise.all([
-        toPromise(this.api.getWhitelistedInstances()),
+        toPromise(this.cachedApi.getWhitelistedInstances()),
         toPromise(this.api.getEndorsementsByInstance([this.authManager.currentInstanceSnapshot.name])),
         toPromise(this.api.getGuaranteesByInstance(this.authManager.currentInstanceSnapshot.name)),
       ]);

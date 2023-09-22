@@ -61,6 +61,21 @@ export class CachedFediseerApiService {
     );
   }
 
+  public getWhitelistedInstances(cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 120;
+
+    const cacheKey = `api.whitelist${cacheConfig.ttl}`;
+    const item = this.getCacheItem<InstanceListResponse<InstanceDetailResponse>>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return this.getSuccessResponse(item);
+    }
+
+    return this.api.getWhitelistedInstances().pipe(
+      tap(this.storeResponse(item, cacheConfig)),
+    );
+  }
+
   public clearCache(): void {
     this.runtimeCache.clear();
     this.permanentCache.clear();
