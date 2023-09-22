@@ -6,6 +6,7 @@ import {InstanceDetailResponse} from "../response/instance-detail.response";
 import {int} from "../types/number";
 import {PermanentCacheService} from "./cache/permanent-cache.service";
 import {Cache, CacheItem} from "./cache/cache";
+import {InstanceListResponse} from "../response/instance-list.response";
 
 export enum CacheType {
   Runtime,
@@ -29,19 +30,34 @@ export class CachedFediseerApiService {
   ) {
   }
 
-  public getCurrentInstanceInfo(apiKey: string | null = null, cache: CacheConfiguration = {}): Observable<ApiResponse<InstanceDetailResponse>> {
-    cache.type ??= CacheType.Permanent;
-    cache.ttl ??= 300;
+  public getCurrentInstanceInfo(apiKey: string | null = null, cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceDetailResponse>> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 300;
 
-    const cacheKey = `api.current_instance.${apiKey}`;
+    const cacheKey = `api.current_instance.${cacheConfig.ttl}.${apiKey}`;
 
-    const item = this.getCacheItem<InstanceDetailResponse>(cacheKey, cache)!;
-    if (item.isHit && !cache.clear) {
+    const item = this.getCacheItem<InstanceDetailResponse>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
       return this.getSuccessResponse(item);
     }
 
     return this.api.getCurrentInstanceInfo(apiKey).pipe(
-      tap (this.storeResponse(item, cache)),
+      tap (this.storeResponse(item, cacheConfig)),
+    );
+  }
+
+  public getCensuresByInstances(instances: string[], cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 60;
+
+    const cacheKey = `api.censures_by_instances${cacheConfig.ttl}.${instances.join('_')}`;
+    const item = this.getCacheItem<InstanceListResponse<InstanceDetailResponse>>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return this.getSuccessResponse(item);
+    }
+
+    return this.api.getCensuresByInstances(instances).pipe(
+      tap(this.storeResponse(item, cacheConfig)),
     );
   }
 

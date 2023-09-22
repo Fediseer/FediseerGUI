@@ -11,6 +11,7 @@ import {SynchronizationSettings} from "../../../types/synchronization-settings";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 import {debounceTime, map, Observable} from "rxjs";
 import {DatabaseService} from "../../../services/database.service";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 export type SaveSettingsCallback<TSettings> = (database: DatabaseService, settings: TSettings) => void;
 export type GetSettingsCallback<TSettings> = (database: DatabaseService) => TSettings;
@@ -63,6 +64,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
 
   constructor(
     private readonly api: FediseerApiService,
+    private readonly cachedApi: CachedFediseerApiService,
     private readonly authManager: AuthenticationManagerService,
     private readonly apiResponseHelper: ApiResponseHelperService,
     private readonly messageService: MessageService,
@@ -335,7 +337,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   }
 
   private async getCensuresByInstances(instances: string[]): Promise<InstanceDetailResponse[] | null> {
-    const instancesResponse = await toPromise(this.api.getCensuresByInstances(instances));
+    const instancesResponse = await toPromise(this.cachedApi.getCensuresByInstances(instances, {ttl: 5}));
     if (this.apiResponseHelper.handleErrors([instancesResponse])) {
       return null;
     }

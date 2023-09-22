@@ -20,6 +20,7 @@ import {
 import {LemmySynchronizationSettings} from "../../../types/lemmy-synchronization-settings";
 import {NewToStringCallback} from "../../components/blacklist-diff/blacklist-diff.component";
 import {SuccessResponse} from "../../../response/success.response";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-synchronize',
@@ -60,6 +61,7 @@ export class SynchronizeLemmyComponent implements OnInit {
     private readonly authManager: AuthenticationManagerService,
     private readonly lemmyApi: LemmyApiService,
     private readonly fediseerApi: FediseerApiService,
+    private readonly cachedFediseerApi: CachedFediseerApiService,
     private readonly apiResponseHelper: ApiResponseHelperService,
     private readonly messageService: MessageService,
   ) {
@@ -84,9 +86,9 @@ export class SynchronizeLemmyComponent implements OnInit {
     this.originallyBlockedInstances = instances;
     this.sourceBlockedInstances = instances;
 
-    const myCensures = await toPromise(this.fediseerApi.getCensuresByInstances([
+    const myCensures = await toPromise(this.cachedFediseerApi.getCensuresByInstances([
       this.authManager.currentInstanceSnapshot.name,
-    ]));
+    ], {ttl: 10}));
     if (this.apiResponseHelper.handleErrors([myCensures])) {
       return;
     }
@@ -259,7 +261,10 @@ export class SynchronizeLemmyComponent implements OnInit {
       return;
     }
 
-    this.fediseerApi.getCensuresByInstances([this.authManager.currentInstanceSnapshot.name]).subscribe(response => {
+    this.cachedFediseerApi.getCensuresByInstances(
+      [this.authManager.currentInstanceSnapshot.name],
+      {clear: true, ttl: 10},
+    ).subscribe(response => {
       if (!response.success) {
         this.messageService.createWarning(`Couldn't fetch new list of your censured instances, please reload the page to get fresh data.`);
         return;
