@@ -72,7 +72,7 @@ export class CensuredInstancesComponent implements OnInit {
       this.censuredByMe = response.successResponse!.instances.map(instance => instance.domain);
     }
 
-    const allWhitelistedInstancesResponse = await toPromise(this.api.getWhitelistedInstances());
+    const allWhitelistedInstancesResponse = await toPromise(this.cachedApi.getWhitelistedInstances());
     if (this.apiResponseHelper.handleErrors([allWhitelistedInstancesResponse])) {
       this.loading = false;
       return;

@@ -9,6 +9,7 @@ import {AuthenticationManagerService} from "../../../services/authentication-man
 import {Instance} from "../../../user/instance";
 import {SuccessResponse} from "../../../response/success.response";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-whitelisted-instances',
@@ -31,6 +32,7 @@ export class WhitelistedInstancesComponent implements OnInit {
   constructor(
     private readonly titleService: TitleService,
     private readonly api: FediseerApiService,
+    private readonly cachedApi: CachedFediseerApiService,
     private readonly messageService: MessageService,
     private readonly activatedRoute: ActivatedRoute,
     private readonly authManager: AuthenticationManagerService,
@@ -51,7 +53,7 @@ export class WhitelistedInstancesComponent implements OnInit {
       this.endorsedByMe = response.successResponse!.instances.map(instance => instance.domain);
     }
 
-    const response = await toPromise(this.api.getWhitelistedInstances());
+    const response = await toPromise(this.cachedApi.getWhitelistedInstances());
     if (this.apiResponseHelper.handleErrors([response])) {
       this.loading = false;
       return;

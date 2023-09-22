@@ -4,6 +4,7 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MessageService} from "../../../services/message.service";
 import {FediseerApiService} from "../../../services/fediseer-api.service";
 import {Router} from "@angular/router";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-guarantee-instance',
@@ -20,7 +21,8 @@ export class GuaranteeInstanceComponent implements OnInit {
     private readonly titleService: TitleService,
     private readonly messageService: MessageService,
     private readonly api: FediseerApiService,
-    private readonly router: Router
+    private readonly cachedApi: CachedFediseerApiService,
+    private readonly router: Router,
   ) {
   }
 
@@ -44,6 +46,7 @@ export class GuaranteeInstanceComponent implements OnInit {
 
       this.router.navigateByUrl('/guarantees/my').then(() => {
         this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully guaranteed!`);
+        this.cachedApi.getWhitelistedInstances({clear: true}).subscribe();
       });
     });
   }

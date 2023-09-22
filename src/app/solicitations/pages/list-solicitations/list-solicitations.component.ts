@@ -60,5 +60,6 @@ export class ListSolicitationsComponent implements OnInit {
       this.instances = this.instances.filter(item => item.domain !== instance);
     }
     this.loading = false;
+    this.cachedApi.getWhitelistedInstances({clear: true}).subscribe();
   }
 }

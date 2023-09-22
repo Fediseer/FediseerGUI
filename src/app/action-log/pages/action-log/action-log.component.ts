@@ -11,6 +11,7 @@ import {range} from "../../../shared/helper/range";
 import {FormControl, FormGroup} from "@angular/forms";
 import {map} from "rxjs";
 import {TranslatorService} from "../../../services/translator.service";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-action-log',
@@ -43,6 +44,7 @@ export class ActionLogComponent implements OnInit {
   constructor(
     private readonly titleService: TitleService,
     private readonly api: FediseerApiService,
+    private readonly cachedApi: CachedFediseerApiService,
     private readonly messageService: MessageService,
     private readonly activatedRoute: ActivatedRoute,
     private readonly router: Router,
@@ -55,7 +57,7 @@ export class ActionLogComponent implements OnInit {
     this.titleService.title = this.translator.get('app.action_log');
 
     const responses = await Promise.all([
-      toPromise(this.api.getWhitelistedInstances().pipe(
+      toPromise(this.cachedApi.getWhitelistedInstances().pipe(
         map (response => {
           if (this.apiResponseHelper.handleErrors([response])) {
             return [];
