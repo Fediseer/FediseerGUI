@@ -7,6 +7,7 @@ import {FediseerApiService} from "../../../services/fediseer-api.service";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {toPromise} from "../../../types/resolvable";
 import {Router} from "@angular/router";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-reset-instance-token',
@@ -27,6 +28,7 @@ export class ResetInstanceTokenComponent implements OnInit {
     private readonly authManager: AuthenticationManagerService,
     private readonly messageService: MessageService,
     private readonly api: FediseerApiService,
+    private readonly cachedApi: CachedFediseerApiService,
     private readonly apiResponseHelper: ApiResponseHelperService,
     private readonly router: Router,
   ) {
@@ -34,7 +36,7 @@ export class ResetInstanceTokenComponent implements OnInit {
 
   public async ngOnInit(): Promise<void> {
     this.titleService.title = `Reset api key for ${this.authManager.currentInstanceSnapshot.name}`;
-    const response = await toPromise(this.api.getCurrentInstanceInfo())
+    const response = await toPromise(this.cachedApi.getCurrentInstanceInfo())
     if (this.apiResponseHelper.handleErrors([response])) {
       this.loading = false;
       return;
@@ -68,6 +70,7 @@ export class ResetInstanceTokenComponent implements OnInit {
 
     const newApiKey = response.successResponse!.new_key;
 
+    this.cachedApi.clearCache();
     this.authManager.logout();
     this.router.navigateByUrl('/auth/login').then(() => {
       this.messageService.createSuccess(`${newApiKey} is your new api key. Please save it, it won't be shown again.`);

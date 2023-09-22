@@ -14,6 +14,7 @@ import {ApiResponseHelperService} from "./services/api-response-helper.service";
 import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 import {DatabaseService} from "./services/database.service";
 import {TranslocoService} from "@ngneat/transloco";
+import {CachedFediseerApiService} from "./services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-root',
@@ -58,6 +59,7 @@ export class AppComponent implements OnInit {
     private readonly modalService: NgbModal,
     private readonly database: DatabaseService,
     private readonly transloco: TranslocoService,
+    private readonly cachedApi: CachedFediseerApiService,
     @Inject(DOCUMENT) private readonly document: Document,
   ) {
   }
@@ -119,7 +121,7 @@ export class AppComponent implements OnInit {
       this.endorsementsBadgeUrl = this.api.endorsementsBadgeUrl;
       this.guaranteesBadgeUrl = this.api.guaranteesBadgeUrl;
 
-      this.api.getCurrentInstanceInfo().subscribe(response => {
+      this.cachedApi.getCurrentInstanceInfo().subscribe(response => {
         if (this.apiResponseHelper.handleErrors([response])) {
           return;
         }
@@ -133,6 +135,7 @@ export class AppComponent implements OnInit {
     if (removeFromAccounts) {
       this.database.removeAvailableAccount(this.authenticationManager.currentInstanceSnapshot);
     }
+    this.cachedApi.clearCache();
     this.authenticationManager.logout();
     this.switchAccountModal?.close();
     await this.router.navigateByUrl('/auth/login');
@@ -196,6 +199,7 @@ export class AppComponent implements OnInit {
   public switchToInstance(instance: Instance): void {
     this.authenticationManager.currentInstance = instance;
     this.switchAccountModal?.close();
+    this.cachedApi.getCurrentInstanceInfo(null, {clear: true});
     this.router.navigateByUrl('/');
   }
 

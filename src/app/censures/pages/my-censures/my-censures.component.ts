@@ -3,12 +3,12 @@ import {TitleService} from "../../../services/title.service";
 import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
 import {FediseerApiService} from "../../../services/fediseer-api.service";
 import {MessageService} from "../../../services/message.service";
-import {InstanceDetailResponse} from "../../../response/instance-detail.response";
 import {Observable} from "rxjs";
 import {Instance} from "../../../user/instance";
 import {toPromise} from "../../../types/resolvable";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-my-censures',
@@ -28,6 +28,7 @@ export class MyCensuresComponent implements OnInit {
     private readonly api: FediseerApiService,
     private readonly messageService: MessageService,
     private readonly apiResponseHelper: ApiResponseHelperService,
+    private readonly cachedApi: CachedFediseerApiService,
   ) {
   }
 
@@ -36,7 +37,7 @@ export class MyCensuresComponent implements OnInit {
 
     const responses = await Promise.all([
       toPromise(this.api.getCensuresByInstances([this.authManager.currentInstanceSnapshot.name])),
-      toPromise(this.api.getCurrentInstanceInfo()),
+      toPromise(this.cachedApi.getCurrentInstanceInfo()),
     ])
 
     if (this.apiResponseHelper.handleErrors(responses)) {

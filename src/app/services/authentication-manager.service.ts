@@ -1,9 +1,7 @@
-import { Injectable } from '@angular/core';
-import {BehaviorSubject, catchError, map, Observable} from "rxjs";
+import {Injectable} from '@angular/core';
+import {BehaviorSubject, Observable} from "rxjs";
 import {Instance} from "../user/instance";
 import {AnonymousInstance} from "../user/anonymous-instance";
-import {FediseerApiService} from "./fediseer-api.service";
-import {AuthenticatedInstance} from "../user/authenticated-instance";
 import {DatabaseService} from "./database.service";
 
 @Injectable({

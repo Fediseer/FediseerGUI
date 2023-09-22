@@ -1,12 +1,13 @@
 import {Component, OnInit} from '@angular/core';
 import {TitleService} from "../../../services/title.service";
-import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {FormControl, FormGroup} from "@angular/forms";
 import {FediseerApiService} from "../../../services/fediseer-api.service";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {toPromise} from "../../../types/resolvable";
 import {InstanceDetailResponse} from "../../../response/instance-detail.response";
 import {MessageService} from "../../../services/message.service";
 import {Router} from "@angular/router";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-create-solicitation',
@@ -25,6 +26,7 @@ export class CreateSolicitationComponent implements OnInit {
   constructor(
     private readonly titleService: TitleService,
     private readonly api: FediseerApiService,
+    private readonly cachedApi: CachedFediseerApiService,
     private readonly apiResponseHelper: ApiResponseHelperService,
     private readonly messageService: MessageService,
     private readonly router: Router,
@@ -34,7 +36,7 @@ export class CreateSolicitationComponent implements OnInit {
   public async ngOnInit(): Promise<void> {
     this.titleService.title = 'Ask for a guarantee';
 
-    const response = await toPromise(this.api.getCurrentInstanceInfo());
+    const response = await toPromise(this.cachedApi.getCurrentInstanceInfo());
     if (this.apiResponseHelper.handleErrors([response])) {
       this.loading = false;
       return;

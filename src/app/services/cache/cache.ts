@@ -8,4 +8,6 @@ export interface CacheItem<T> {
 export interface Cache {
   getItem<T>(key: string): CacheItem<T>;
   save(item: CacheItem<any>): void;
+  remove(item: CacheItem<any>): void;
+  clear(): void;
 }
