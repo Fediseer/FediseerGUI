@@ -8,6 +8,7 @@ import {FediseerApiService} from "../../../services/fediseer-api.service";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 import {MessageService} from "../../../services/message.service";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-my-hesitations',
@@ -25,6 +26,7 @@ export class MyHesitationsComponent implements OnInit {
     private readonly titleService: TitleService,
     private readonly authManager: AuthenticationManagerService,
     private readonly api: FediseerApiService,
+    private readonly cachedApi: CachedFediseerApiService,
     private readonly apiResponseHelper: ApiResponseHelperService,
     private readonly messageService: MessageService,
   ) {
@@ -35,7 +37,7 @@ export class MyHesitationsComponent implements OnInit {
 
     const responses = await Promise.all([
       toPromise(this.api.getHesitationsByInstances([this.authManager.currentInstanceSnapshot.name])),
-      toPromise(this.api.getCurrentInstanceInfo()),
+      toPromise(this.cachedApi.getCurrentInstanceInfo()),
     ]);
 
     if (this.apiResponseHelper.handleErrors(responses)) {

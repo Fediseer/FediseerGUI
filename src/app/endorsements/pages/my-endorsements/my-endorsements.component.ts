@@ -9,6 +9,7 @@ import {toPromise} from "../../../types/resolvable";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 import {TranslatorService} from "../../../services/translator.service";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-my-endorsements',
@@ -26,6 +27,7 @@ export class MyEndorsementsComponent implements OnInit {
     private readonly titleService: TitleService,
     private readonly authManager: AuthenticationManagerService,
     private readonly api: FediseerApiService,
+    private readonly cachedApi: CachedFediseerApiService,
     private readonly messageService: MessageService,
     private readonly apiResponseHelper: ApiResponseHelperService,
     private readonly translator: TranslatorService,
@@ -38,7 +40,7 @@ export class MyEndorsementsComponent implements OnInit {
     const responses = await Promise.all([
       toPromise(this.api.getEndorsementsForInstance(this.authManager.currentInstanceSnapshot.name)),
       toPromise(this.api.getEndorsementsByInstance([this.authManager.currentInstanceSnapshot.name])),
-      toPromise(this.api.getCurrentInstanceInfo()),
+      toPromise(this.cachedApi.getCurrentInstanceInfo()),
     ]);
 
     if (this.apiResponseHelper.handleErrors(responses)) {

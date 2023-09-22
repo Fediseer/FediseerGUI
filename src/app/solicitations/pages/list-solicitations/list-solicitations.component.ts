@@ -8,6 +8,7 @@ import {AuthenticationManagerService} from "../../../services/authentication-man
 import {Instance} from "../../../user/instance";
 import {MessageService, MessageType} from "../../../services/message.service";
 import {SolicitationInstanceDetailResponse} from "../../../response/solicitation-instance-detail.response";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-list-solicitations',
@@ -23,6 +24,7 @@ export class ListSolicitationsComponent implements OnInit {
   constructor(
     private readonly titleService: TitleService,
     private readonly api: FediseerApiService,
+    private readonly cachedApi: CachedFediseerApiService,
     private readonly apiResponseHelper: ApiResponseHelperService,
     private readonly authManager: AuthenticationManagerService,
     private readonly messageService: MessageService,
@@ -39,7 +41,7 @@ export class ListSolicitationsComponent implements OnInit {
     }
 
     if (!this.authManager.currentInstanceSnapshot.anonymous) {
-      const response = await toPromise(this.api.getCurrentInstanceInfo());
+      const response = await toPromise(this.cachedApi.getCurrentInstanceInfo());
       if (!this.apiResponseHelper.handleErrors([response], MessageType.Warning)) {
         this.currentInstanceDetail = response.successResponse!;
       }

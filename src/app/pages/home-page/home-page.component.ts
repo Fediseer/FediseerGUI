@@ -2,9 +2,8 @@ import {Component, OnInit} from '@angular/core';
 import {TitleService} from "../../services/title.service";
 import {AuthenticationManagerService} from "../../services/authentication-manager.service";
 import {Instance} from "../../user/instance";
-import {FediseerApiService} from "../../services/fediseer-api.service";
 import {InstanceDetailResponse} from "../../response/instance-detail.response";
-import {ApiResponseHelperService} from "../../services/api-response-helper.service";
+import {CachedFediseerApiService} from "../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-home-page',
@@ -18,15 +17,14 @@ export class HomePageComponent implements OnInit {
   constructor(
     private readonly titleService: TitleService,
     private readonly authManager: AuthenticationManagerService,
-    private readonly api: FediseerApiService,
-    private readonly apiResponseHelper: ApiResponseHelperService,
+    private readonly cachedApi: CachedFediseerApiService,
   ) {
   }
 
   public async ngOnInit(): Promise<void> {
     this.titleService.title = 'Fediseer';
 
-    this.api.getCurrentInstanceInfo().subscribe(response => {
+    this.cachedApi.getCurrentInstanceInfo().subscribe(response => {
       if (!response.success) {
         return;
       }

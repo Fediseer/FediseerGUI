@@ -3,11 +3,11 @@ import {TitleService} from "../../../services/title.service";
 import {FediseerApiService} from "../../../services/fediseer-api.service";
 import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
 import {MessageService} from "../../../services/message.service";
-import {map, Observable} from "rxjs";
 import {InstanceDetailResponse} from "../../../response/instance-detail.response";
 import {Instance} from "../../../user/instance";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {toPromise} from "../../../types/resolvable";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-my-guarantees',
@@ -23,6 +23,7 @@ export class MyGuaranteesComponent implements OnInit {
   constructor(
     private readonly titleService: TitleService,
     private readonly api: FediseerApiService,
+    private readonly cachedApi: CachedFediseerApiService,
     private readonly authManager: AuthenticationManagerService,
     private readonly messageService: MessageService,
     private readonly apiResponseHelper: ApiResponseHelperService,
@@ -33,7 +34,7 @@ export class MyGuaranteesComponent implements OnInit {
     this.titleService.title = 'My guarantees';
 
     const responses = await Promise.all([
-      toPromise(this.api.getCurrentInstanceInfo()),
+      toPromise(this.cachedApi.getCurrentInstanceInfo()),
       toPromise(this.api.getGuaranteesByInstance(this.authManager.currentInstanceSnapshot.name!)),
     ]);
 

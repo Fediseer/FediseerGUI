@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {Cache, CacheItem} from "./cache";
 
 @Injectable({
@@ -29,12 +29,20 @@ export class RuntimeCacheService implements Cache {
     return item;
   }
 
-  save(item: CacheItem<any>): void {
+  public save(item: CacheItem<any>): void {
     this.cache[item.key] = {
       isHit: true,
       value: item.value,
       expiresAt: item.expiresAt,
       key: item.key,
     };
+  }
+
+  public remove(item: CacheItem<any>): void {
+    delete this.cache[item.key];
+  }
+
+  public clear(): void {
+    this.cache = {};
   }
 }
