@@ -105,5 +105,7 @@
   "app.suspicious_instance": "Verdächtige Instanzen",
   "app.glossary.suspicious_instance.paragraph_1": "Eine verdächtige Instanz ist eine, die aufgrund des Verhältnisses zwischen der Anzahl der aktiven Nutzer und der Anzahl der Beiträge algorithmisch als verdächtig eingestuft wird.",
   "app.glossary.suspicious_instance.paragraph_2": "Die API erlaubt die Anpassung der Parameter, um diese Instanzen zu melden. Die Unterstützung für diese Funktion wird zu einem späteren Zeitpunkt in diese GUI integriert.",
-  "app.endorsements.my": "Meine Empfehlungen"
+  "notification.error": "Fehler",
+  "notification.success": "Erfolgreich",
+  "notification.warning": "Warnung"
 }
