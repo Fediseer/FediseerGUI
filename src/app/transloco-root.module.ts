@@ -12,7 +12,7 @@ import {environment} from "../environments/environment";
   providers: [
       provideTransloco({
         config: {
-          availableLangs: ['cs', 'de', 'en'],
+          availableLangs: ['cs', 'de', 'en', 'pt'],
           defaultLang: 'en',
           reRenderOnLangChange: false,
           prodMode: environment.production,
