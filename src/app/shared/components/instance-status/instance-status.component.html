@@ -1,0 +1,4 @@
+<span class="text-success" *ngIf="status === InstanceStatus.Running">{{'app.instance_status.running' | transloco}}</span>
+<span class="text-warning" *ngIf="status === InstanceStatus.Unreachable">{{'app.instance_status.unreachable' | transloco}}</span>
+<span class="text-danger" *ngIf="status === InstanceStatus.Offline">{{'app.instance_status.offline' | transloco}}</span>
+<span class="text-danger" *ngIf="status === InstanceStatus.Decommissioned">{{'app.instance_status.decommissioned' | transloco}}</span>

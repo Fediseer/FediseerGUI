@@ -8,4 +8,5 @@ import {Component, Input} from '@angular/core';
 export class YesNoComponent {
   @Input() yes: boolean | null = false;
   @Input() swapColors: boolean = false;
+  @Input() neutral: boolean = false;
 }

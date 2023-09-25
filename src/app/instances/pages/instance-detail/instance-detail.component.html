@@ -36,10 +36,7 @@
               <strong>Status</strong>
             </td>
             <td>
-              <span class="text-success" *ngIf="detail.state === InstanceStatus.Running">{{'app.instance_status.running' | transloco}}</span>
-              <span class="text-warning" *ngIf="detail.state === InstanceStatus.Unreachable">{{'app.instance_status.unreachable' | transloco}}</span>
-              <span class="text-danger" *ngIf="detail.state === InstanceStatus.Offline">{{'app.instance_status.offline' | transloco}}</span>
-              <span class="text-danger" *ngIf="detail.state === InstanceStatus.Decommissioned">{{'app.instance_status.decommissioned' | transloco}}</span>
+              <app-instance-status [status]="detail.state" />
             </td>
           </tr>
           <tr>
