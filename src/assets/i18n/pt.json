@@ -109,7 +109,7 @@
   "notification.success": "Sucesso",
   "notification.warning": "Aviso",
   "app.endorsements.intro": "Aprovar significa que aprovas umas instância. Para mais informações visita o link do [link:glossaryLink]{{glossary}}[/link].",
-  "app.guarantee_restricted.info": "Só podes fazer isto se a tua instância estiver garantida por outra instância.",
+  "app.guarantee_restricted.info": "Só podes fazer isto se a tua instância estiver [link:glossaryLink]garantida[/link]96 por outra instância.",
   "app.endorsements.target_instance": "Instância para aprovar",
   "app.reasons": "Razões",
   "app.generic_button.update": "Atualizar",

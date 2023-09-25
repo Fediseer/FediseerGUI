@@ -12,6 +12,7 @@ import {FormatPercentagePipe} from './pipes/format-percentage.pipe';
 import {FormatNumberPipe} from './pipes/format-number.pipe';
 import {TranslocoModule} from "@ngneat/transloco";
 import {TranslocoMarkupComponent} from "ngx-transloco-markup";
+import {InstanceStatusComponent} from "./components/instance-status/instance-status.component";
 
 
 @NgModule({
@@ -25,6 +26,7 @@ import {TranslocoMarkupComponent} from "ngx-transloco-markup";
     FormatDatetimePipe,
     FormatPercentagePipe,
     FormatNumberPipe,
+    InstanceStatusComponent,
   ],
   exports: [
     ToObservablePipe,
@@ -39,6 +41,7 @@ import {TranslocoMarkupComponent} from "ngx-transloco-markup";
     TranslocoModule,
     NgbModule,
     TranslocoMarkupComponent,
+    InstanceStatusComponent,
   ],
   imports: [
     CommonModule,

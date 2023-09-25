@@ -5,7 +5,7 @@ import {TitleService} from "../../../services/title.service";
 import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
 import {LemmyApiService} from "../../../services/lemmy-api.service";
 import {toPromise} from "../../../types/resolvable";
-import {debounceTime, map} from "rxjs";
+import {debounceTime} from "rxjs";
 import {ApiResponse, FediseerApiService} from "../../../services/fediseer-api.service";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {MessageService} from "../../../services/message.service";
@@ -154,18 +154,6 @@ export class SynchronizeLemmyComponent implements OnInit {
       this.messageService.createError(`There was an error: ${error}`);
       return null;
     }
-  }
-
-  private async getEndorsedCensureChain(instance: string): Promise<string[]> {
-    return await toPromise(this.fediseerApi.getEndorsementsByInstance([instance]).pipe(
-      map(response => {
-        if (this.apiResponseHelper.handleErrors([response])) {
-          return [];
-        }
-
-        return response.successResponse!.instances.map(instance => instance.domain);
-      }),
-    ));
   }
 
   private async getBlockedInstancesFromSource(instance: string): Promise<string[] | null> {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {TitleService} from "../../../services/title.service";
 import {MessageService} from "../../../services/message.service";
@@ -9,6 +9,7 @@ import {ApiResponseHelperService} from "../../../services/api-response-helper.se
 import {toPromise} from "../../../types/resolvable";
 import {map} from "rxjs";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-edit-hesitation-reasons',
@@ -28,6 +29,7 @@ export class EditHesitationReasonsComponent {
     private readonly titleService: TitleService,
     private readonly messageService: MessageService,
     private readonly api: FediseerApiService,
+    private readonly cachedApi: CachedFediseerApiService,
     private readonly router: Router,
     private readonly activatedRoute: ActivatedRoute,
     private readonly authManager: AuthenticationManagerService,

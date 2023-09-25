@@ -1,5 +1,6 @@
 import {int} from "../types/number";
 import {ListVisibility} from "../types/list-visibility";
+import {InstanceStatus} from "../types/instance-status";
 
 export interface InstanceDetailResponse {
   id: int;
@@ -7,7 +8,9 @@ export interface InstanceDetailResponse {
   software: string;
   claimed: int;
   open_registrations: boolean;
-  email_verify: boolean;
+  email_verify: boolean | null;
+  has_captcha: boolean | null;
+  approval_required: boolean | null;
   approvals: int;
   endorsements: int;
   guarantor?: string | null;
@@ -21,4 +24,5 @@ export interface InstanceDetailResponse {
   visibility_endorsements?: ListVisibility;
   visibility_censures?: ListVisibility;
   visibility_hesitations?: ListVisibility;
+  state: InstanceStatus;
 }

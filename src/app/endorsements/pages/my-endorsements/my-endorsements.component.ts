@@ -39,7 +39,7 @@ export class MyEndorsementsComponent implements OnInit {
 
     const responses = await Promise.all([
       toPromise(this.api.getEndorsementsForInstance(this.authManager.currentInstanceSnapshot.name)),
-      toPromise(this.api.getEndorsementsByInstance([this.authManager.currentInstanceSnapshot.name])),
+      toPromise(this.cachedApi.getEndorsementsByInstances([this.authManager.currentInstanceSnapshot.name])),
       toPromise(this.cachedApi.getCurrentInstanceInfo()),
     ]);
 
@@ -69,6 +69,7 @@ export class MyEndorsementsComponent implements OnInit {
       this.endorsementsByMyInstance = this.endorsementsByMyInstance.filter(
         endorsedInstance => endorsedInstance.domain !== instance,
       );
+      this.cachedApi.getEndorsementsByInstances([this.authManager.currentInstanceSnapshot.name], {clear: true}).subscribe();
     });
   }
 }

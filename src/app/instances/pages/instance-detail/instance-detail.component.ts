@@ -9,6 +9,7 @@ import {InstanceDetailResponse} from "../../../response/instance-detail.response
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
+import {ListVisibility} from "../../../types/list-visibility";
 
 @Component({
   selector: 'app-instance-detail',
@@ -16,6 +17,8 @@ import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.se
   styleUrls: ['./instance-detail.component.scss']
 })
 export class InstanceDetailComponent implements OnInit {
+  protected readonly ListVisibility = ListVisibility;
+
   public censuresReceived: NormalizedInstanceDetailResponse[] | null = null;
   public censuresGiven: NormalizedInstanceDetailResponse[] | null = null;
   public hesitationsReceived: NormalizedInstanceDetailResponse[] | null = null;
@@ -58,11 +61,11 @@ export class InstanceDetailComponent implements OnInit {
         toPromise(this.api.getCensuresForInstance(instanceDomain)),
         toPromise(this.cachedApi.getCensuresByInstances([instanceDomain])),
         toPromise(this.api.getEndorsementsForInstance(instanceDomain)),
-        toPromise(this.api.getEndorsementsByInstance([instanceDomain])),
+        toPromise(this.cachedApi.getEndorsementsByInstances([instanceDomain])),
         toPromise(this.api.getGuaranteesByInstance(instanceDomain)),
         toPromise(this.api.getInstanceInfo(instanceDomain)),
         toPromise(this.api.getHesitationsForInstance(instanceDomain)),
-        toPromise(this.api.getHesitationsByInstances([instanceDomain])),
+        toPromise(this.cachedApi.getHesitationsByInstances([instanceDomain])),
       ]);
       this.apiResponseHelper.handleErrors(responses, MessageType.Warning);
 

@@ -24,15 +24,18 @@
             <th>Comment</th>
             <th>Open registrations</th>
             <th>Email verification</th>
+            <th>Does have captcha</th>
+            <th>Account approval required</th>
+            <th>Instance status</th>
             <th *ngIf="!currentInstance.anonymous && currentInstanceDetail!.guarantor">Guarantee</th>
           </tr>
           <tr *ngIf="!currentInstance.anonymous && !currentInstanceDetail!.guarantor">
-            <td [colSpan]="5">
+            <td [colSpan]="8">
               <a class="btn btn-primary" routerLink="/solicitations/create">Ask for a guarantee</a>
             </td>
           </tr>
           <tr *ngIf="!instances.length">
-            <td [colSpan]="!currentInstance.anonymous && currentInstanceDetail!.guarantor ? 5 : 4">
+            <td [colSpan]="!currentInstance.anonymous && currentInstanceDetail!.guarantor ? 8 : 7">
               There are currently no instances asking for a guarantee.
             </td>
           </tr>
@@ -44,10 +47,19 @@
               <ng-container *ngIf="instance.comment">{{instance.comment}}</ng-container>
             </td>
             <td>
-              <app-yes-no [yes]="instance.open_registrations" [swapColors]="true" />
+              <app-yes-no [yes]="instance.open_registrations" [neutral]="true" />
             </td>
             <td>
               <app-yes-no [yes]="instance.email_verify" />
+            </td>
+            <td>
+              <app-yes-no [yes]="instance.has_captcha" />
+            </td>
+            <td>
+              <app-yes-no [yes]="instance.approval_required" />
+            </td>
+            <td>
+              <app-instance-status [status]="instance.state" />
             </td>
             <td *ngIf="!currentInstance.anonymous && currentInstanceDetail!.guarantor">
               <button (click)="guaranteeFor(instance.domain)" class="btn btn-primary">Guarantee</button>

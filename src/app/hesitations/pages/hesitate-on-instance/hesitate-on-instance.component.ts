@@ -3,9 +3,10 @@ import {TitleService} from "../../../services/title.service";
 import {MessageService} from "../../../services/message.service";
 import {FediseerApiService} from "../../../services/fediseer-api.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
 import {toPromise} from "../../../types/resolvable";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
+import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
 
 @Component({
   selector: 'app-hesitate-on-instance',
@@ -25,6 +26,7 @@ export class HesitateOnInstanceComponent implements OnInit {
     private readonly titleService: TitleService,
     private readonly messageService: MessageService,
     private readonly api: FediseerApiService,
+    private readonly cachedApi: CachedFediseerApiService,
     private readonly router: Router,
     private readonly activatedRoute: ActivatedRoute,
     private readonly authManager: AuthenticationManagerService,
@@ -68,10 +70,13 @@ export class HesitateOnInstanceComponent implements OnInit {
         return;
       }
 
-      this.loading = false;
-      this.router.navigateByUrl('/hesitations/my').then(() => {
-        this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully hesitated on!`);
-      });
+      this.cachedApi.getHesitationsByInstances([this.authManager.currentInstanceSnapshot.name], {clear: true})
+        .subscribe(() => {
+          this.loading = false;
+          this.router.navigateByUrl('/hesitations/my').then(() => {
+            this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully hesitated on!`);
+          });
+        });
     });
   }
 }
