@@ -34,13 +34,25 @@
           <tr>
             <td><strong>Open registrations?</strong></td>
             <td>
-              <app-yes-no [yes]="detail.open_registrations"></app-yes-no>
+              <app-yes-no [yes]="detail.open_registrations" [swapColors]="true"></app-yes-no>
             </td>
           </tr>
           <tr>
             <td><strong>Email verification?</strong></td>
             <td>
               <app-yes-no [yes]="detail.email_verify"></app-yes-no>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Does have captcha?</strong></td>
+            <td>
+              <app-yes-no [yes]="detail.has_captcha"></app-yes-no>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>Account approval required?</strong></td>
+            <td>
+              <app-yes-no [yes]="detail.approval_required"></app-yes-no>
             </td>
           </tr>
           <tr>
@@ -77,6 +89,39 @@
             <td>
               <ng-container *ngIf="detail.moderators !== null">{{detail.moderators}}</ng-container>
               <code *ngIf="detail.moderators === null">N/A</code>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong>Endorsements visibility</strong>
+              <app-tooltip text="{{'app.endorsements_visibility.help' | transloco}}" />
+            </td>
+            <td>
+              <ng-container *ngIf="detail.visibility_endorsements === ListVisibility.Open">{{'app.list_visibility.open' | transloco}}</ng-container>
+              <ng-container *ngIf="detail.visibility_endorsements === ListVisibility.Endorsed">{{'app.list_visibility.endorsed' | transloco}}</ng-container>
+              <ng-container *ngIf="detail.visibility_endorsements === ListVisibility.Private">{{'app.list_visibility.private' | transloco}}</ng-container>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong>Hesitations visibility</strong>
+              <app-tooltip text="{{'app.hesitations_visibility.help' | transloco}}" />
+            </td>
+            <td>
+              <ng-container *ngIf="detail.visibility_hesitations === ListVisibility.Open">{{'app.list_visibility.open' | transloco}}</ng-container>
+              <ng-container *ngIf="detail.visibility_hesitations === ListVisibility.Endorsed">{{'app.list_visibility.endorsed' | transloco}}</ng-container>
+              <ng-container *ngIf="detail.visibility_hesitations === ListVisibility.Private">{{'app.list_visibility.private' | transloco}}</ng-container>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong>Censures visibility</strong>
+              <app-tooltip text="{{'app.censures_visibility.help' | transloco}}" />
+            </td>
+            <td>
+              <ng-container *ngIf="detail.visibility_hesitations === ListVisibility.Open">{{'app.list_visibility.open' | transloco}}</ng-container>
+              <ng-container *ngIf="detail.visibility_hesitations === ListVisibility.Endorsed">{{'app.list_visibility.endorsed' | transloco}}</ng-container>
+              <ng-container *ngIf="detail.visibility_hesitations === ListVisibility.Private">{{'app.list_visibility.private' | transloco}}</ng-container>
             </td>
           </tr>
           </tbody>

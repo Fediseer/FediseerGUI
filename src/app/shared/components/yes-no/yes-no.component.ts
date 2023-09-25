@@ -6,6 +6,6 @@ import {Component, Input} from '@angular/core';
   styleUrls: ['./yes-no.component.scss']
 })
 export class YesNoComponent {
-  @Input() yes: boolean = false;
+  @Input() yes: boolean | null = false;
   @Input() swapColors: boolean = false;
 }

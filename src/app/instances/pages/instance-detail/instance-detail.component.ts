@@ -9,6 +9,7 @@ import {InstanceDetailResponse} from "../../../response/instance-detail.response
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
+import {ListVisibility} from "../../../types/list-visibility";
 
 @Component({
   selector: 'app-instance-detail',
@@ -91,4 +92,6 @@ export class InstanceDetailComponent implements OnInit {
       this.loading = false;
     });
   }
+
+  protected readonly ListVisibility = ListVisibility;
 }

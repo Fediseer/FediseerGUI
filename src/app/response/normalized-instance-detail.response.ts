@@ -8,7 +8,7 @@ export class NormalizedInstanceDetailResponse {
     public software: string,
     public claimed: int,
     public openRegistrations: boolean,
-    public emailVerify: boolean,
+    public emailVerify: boolean | null,
     public approvals: int,
     public endorsements: int,
     public censureReasons: string[],

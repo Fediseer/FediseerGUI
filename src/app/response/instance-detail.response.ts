@@ -7,7 +7,9 @@ export interface InstanceDetailResponse {
   software: string;
   claimed: int;
   open_registrations: boolean;
-  email_verify: boolean;
+  email_verify: boolean | null;
+  has_captcha: boolean | null;
+  approval_required: boolean | null;
   approvals: int;
   endorsements: int;
   guarantor?: string | null;

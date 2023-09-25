@@ -1,10 +1,11 @@
 <span
   [class.text-success]="!swapColors"
   [class.text-danger]="swapColors"
-  *ngIf="yes"
+  *ngIf="yes === true"
 >Yes</span>
 <span
   [class.text-success]="swapColors"
   [class.text-danger]="!swapColors"
-  *ngIf="!yes"
+  *ngIf="yes === false"
 >No</span>
+<code *ngIf="yes === null">N/A</code>

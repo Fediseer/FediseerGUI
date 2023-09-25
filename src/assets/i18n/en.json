@@ -131,5 +131,11 @@
   "app.generic_buttons.edit": "Edit",
   "app.generic_buttons.cancel": "Cancel",
   "app.endorsements.my": "My endorsements",
-  "app.logo.alt": "{{fediseer}} logo"
+  "app.logo.alt": "{{fediseer}} logo",
+  "app.list_visibility.open": "Everyone",
+  "app.list_visibility.endorsed": "Endorsed instances",
+  "app.list_visibility.private": "No one",
+  "app.endorsements_visibility.help": "Who (other than the instance admins) can see this instance's endorsements",
+  "app.hesitations_visibility.help": "Who (other than the instance admins) can see this instance's hesitations",
+  "app.censures_visibility.help": "Who (other than the instance admins) can see this instance's censures"
 }
