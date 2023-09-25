@@ -10,6 +10,7 @@ import {ApiResponseHelperService} from "../../../services/api-response-helper.se
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 import {ListVisibility} from "../../../types/list-visibility";
+import {InstanceStatus} from "../../../types/instance-status";
 
 @Component({
   selector: 'app-instance-detail',
@@ -17,6 +18,9 @@ import {ListVisibility} from "../../../types/list-visibility";
   styleUrls: ['./instance-detail.component.scss']
 })
 export class InstanceDetailComponent implements OnInit {
+  protected readonly ListVisibility = ListVisibility;
+  protected readonly InstanceStatus = InstanceStatus;
+
   public censuresReceived: NormalizedInstanceDetailResponse[] | null = null;
   public censuresGiven: NormalizedInstanceDetailResponse[] | null = null;
   public hesitationsReceived: NormalizedInstanceDetailResponse[] | null = null;
@@ -92,6 +96,4 @@ export class InstanceDetailComponent implements OnInit {
       this.loading = false;
     });
   }
-
-  protected readonly ListVisibility = ListVisibility;
 }

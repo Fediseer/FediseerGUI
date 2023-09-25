@@ -137,5 +137,9 @@
   "app.list_visibility.private": "No one",
   "app.endorsements_visibility.help": "Who (other than the instance admins) can see this instance's endorsements",
   "app.hesitations_visibility.help": "Who (other than the instance admins) can see this instance's hesitations",
-  "app.censures_visibility.help": "Who (other than the instance admins) can see this instance's censures"
+  "app.censures_visibility.help": "Who (other than the instance admins) can see this instance's censures",
+  "app.instance_status.running": "Running",
+  "app.instance_status.decommissioned": "Decommissioned",
+  "app.instance_status.offline": "Offline",
+  "app.instance_status.unreachable": "Unreachable"
 }
