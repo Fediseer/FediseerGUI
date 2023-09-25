@@ -1,17 +1,19 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {RouterModule, Routes} from "@angular/router";
-import { WhitelistedInstancesComponent } from './pages/whitelisted-instances/whitelisted-instances.component';
-import { InstanceDetailComponent } from './pages/instance-detail/instance-detail.component';
-import { SuspiciousInstancesComponent } from './pages/suspicious-instances/suspicious-instances.component';
+import {WhitelistedInstancesComponent} from './pages/whitelisted-instances/whitelisted-instances.component';
+import {InstanceDetailComponent} from './pages/instance-detail/instance-detail.component';
+import {SuspiciousInstancesComponent} from './pages/suspicious-instances/suspicious-instances.component';
 import {SharedModule} from "../shared/shared.module";
-import { CensuredInstancesComponent } from './pages/censured-instances/censured-instances.component';
+import {CensuredInstancesComponent} from './pages/censured-instances/censured-instances.component';
 import {ReactiveFormsModule} from "@angular/forms";
-import { EditOwnInstanceComponent } from './pages/edit-own-instance/edit-own-instance.component';
+import {EditOwnInstanceComponent} from './pages/edit-own-instance/edit-own-instance.component';
 import {Guards} from "../guards/guards";
-import { HesitatedInstancesComponent } from './pages/hesitated-instances/hesitated-instances.component';
-import { SuspiciousInstanceDetailComponent } from './pages/suspicious-instance-detail/suspicious-instance-detail.component';
-import { ResetInstanceTokenComponent } from './pages/reset-instance-token/reset-instance-token.component';
+import {HesitatedInstancesComponent} from './pages/hesitated-instances/hesitated-instances.component';
+import {
+  SuspiciousInstanceDetailComponent
+} from './pages/suspicious-instance-detail/suspicious-instance-detail.component';
+import {ResetInstanceTokenComponent} from './pages/reset-instance-token/reset-instance-token.component';
 
 const routes: Routes = [
   {
@@ -59,7 +61,7 @@ const routes: Routes = [
     EditOwnInstanceComponent,
     HesitatedInstancesComponent,
     SuspiciousInstanceDetailComponent,
-    ResetInstanceTokenComponent
+    ResetInstanceTokenComponent,
   ],
   imports: [
     CommonModule,
