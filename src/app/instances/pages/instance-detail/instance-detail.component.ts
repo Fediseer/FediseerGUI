@@ -62,7 +62,7 @@ export class InstanceDetailComponent implements OnInit {
         toPromise(this.cachedApi.getCensuresByInstances([instanceDomain])),
         toPromise(this.api.getEndorsementsForInstance(instanceDomain)),
         toPromise(this.cachedApi.getEndorsementsByInstances([instanceDomain])),
-        toPromise(this.api.getGuaranteesByInstance(instanceDomain)),
+        toPromise(this.cachedApi.getGuaranteesByInstance(instanceDomain)),
         toPromise(this.api.getInstanceInfo(instanceDomain)),
         toPromise(this.api.getHesitationsForInstance(instanceDomain)),
         toPromise(this.cachedApi.getHesitationsByInstances([instanceDomain])),

@@ -108,6 +108,22 @@ export class CachedFediseerApiService {
     );
   }
 
+  public getGuaranteesByInstance(instance: string, cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 300;
+
+    const cacheKey = `api.guarantees_by_instances${cacheConfig.ttl}.${instance}`;
+
+    const item = this.getCacheItem<InstanceListResponse<InstanceDetailResponse>>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return this.getSuccessResponse(item);
+    }
+
+    return this.api.getGuaranteesByInstance(instance).pipe(
+      tap(this.storeResponse(item, cacheConfig)),
+    );
+  }
+
   public clearCache(): void {
     this.runtimeCache.clear();
     this.permanentCache.clear();

@@ -208,7 +208,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
       const responses = await Promise.all([
         toPromise(this.cachedApi.getWhitelistedInstances()),
         toPromise(this.cachedApi.getEndorsementsByInstances([this.authManager.currentInstanceSnapshot.name])),
-        toPromise(this.api.getGuaranteesByInstance(this.authManager.currentInstanceSnapshot.name)),
+        toPromise(this.cachedApi.getGuaranteesByInstance(this.authManager.currentInstanceSnapshot.name)),
       ]);
 
       if (this.apiResponseHelper.handleErrors(responses)) {
