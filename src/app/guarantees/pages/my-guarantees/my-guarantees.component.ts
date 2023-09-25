@@ -8,6 +8,7 @@ import {Instance} from "../../../user/instance";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {toPromise} from "../../../types/resolvable";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
+import {InstanceMoveEvent} from "../../../shared/components/instance-move-to-list/instance-move-to-list.component";
 
 @Component({
   selector: 'app-my-guarantees',
@@ -67,5 +68,17 @@ export class MyGuaranteesComponent implements OnInit {
       this.cachedApi.getWhitelistedInstances({clear: true}).subscribe();
       this.cachedApi.getGuaranteesByInstance(this.instance.name).subscribe();
     });
+  }
+
+  public async onMovingInstanceFailed(event: InstanceMoveEvent) {
+    this.messageService.createError(`Failed moving the instance ${event.instance}. Please reload the page to see whether it was removed from your guarantees or not.`);
+    this.loading = false;
+  }
+
+  public async onInstanceMoved(event: InstanceMoveEvent) {
+    this.instancesGuaranteedByMe = this.instancesGuaranteedByMe.filter(
+      guaranteedInstance => guaranteedInstance.domain !== event.instance,
+    );
+    this.loading = false;
   }
 }

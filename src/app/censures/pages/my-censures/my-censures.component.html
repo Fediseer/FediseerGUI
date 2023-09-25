@@ -51,7 +51,12 @@
               <td>
                 <a routerLink="/censures/my/edit/{{instance.domain}}" type="button" class="btn btn-primary">Edit</a>
                 &nbsp;
-                <button type="button" class="btn btn-danger" (click)="cancelCensure(instance.domain)">Cancel</button>
+                <app-instance-move-to-list
+                  instance="{{instance.domain}}"
+                  (movingInstanceFailed)="onMovingInstanceFailed($event)"
+                  (instanceMoved)="onInstanceMoved($event)"
+                  (started)="loading = true"
+                />
               </td>
             </tr>
             </tbody>

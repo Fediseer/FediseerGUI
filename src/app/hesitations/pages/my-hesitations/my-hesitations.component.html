@@ -48,7 +48,12 @@
               <td>
                 <a routerLink="/hesitations/my/edit/{{instance.domain}}" type="button" class="btn btn-primary">Edit</a>
                 &nbsp;
-                <button type="button" class="btn btn-danger" (click)="cancelHesitation(instance.domain)">Cancel</button>
+                <app-instance-move-to-list
+                  instance="{{instance.domain}}"
+                  (movingInstanceFailed)="onMovingInstanceFailed($event)"
+                  (instanceMoved)="onInstanceMoved($event)"
+                  (started)="loading = true"
+                />
               </td>
             </tr>
             </tbody>

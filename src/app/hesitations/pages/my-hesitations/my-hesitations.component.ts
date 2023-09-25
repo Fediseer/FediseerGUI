@@ -9,6 +9,7 @@ import {ApiResponseHelperService} from "../../../services/api-response-helper.se
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 import {MessageService} from "../../../services/message.service";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
+import {InstanceMoveEvent} from "../../../shared/components/instance-move-to-list/instance-move-to-list.component";
 
 @Component({
   selector: 'app-my-hesitations',
@@ -68,5 +69,17 @@ export class MyHesitationsComponent implements OnInit {
       );
       this.loading = false;
     });
+  }
+
+  public async onMovingInstanceFailed(event: InstanceMoveEvent) {
+    this.messageService.createError(`Failed moving the instance ${event.instance}. Please reload the page to see whether it was removed from your hesitations or not.`);
+    this.loading = false;
+  }
+
+  public async onInstanceMoved(event: InstanceMoveEvent) {
+    this.instances = this.instances.filter(
+      hesitatedInstance => hesitatedInstance.domain !== event.instance,
+    );
+    this.loading = false;
   }
 }
