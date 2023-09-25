@@ -131,5 +131,15 @@
   "app.generic_buttons.edit": "Bearbeiten",
   "app.generic_buttons.cancel": "Abbrechen",
   "app.endorsements.my": "Meine Empfehlungen",
-  "app.logo.alt": "{{fediseer}} logo"
+  "app.logo.alt": "{{fediseer}} logo",
+  "app.list_visibility.open": "Alle",
+  "app.list_visibility.endorsed": "Empfohlene Instanzen",
+  "app.list_visibility.private": "Niemand",
+  "app.endorsements_visibility.help": "Wer (außer den Instanzadministratoren) kann die vergebmenen Empfehlungen der Instanz sehen",
+  "app.hesitations_visibility.help": "Wer (außer den Instanzadministratoren) kann die vergebenen Zweifel der Instanz sehen",
+  "app.censures_visibility.help": "Wer (außer den Instanzadministratoren) kann die vergebenen Tadel der Instanz sehen",
+  "app.instance_status.running": "Online",
+  "app.instance_status.decommissioned": "Stillgelegt",
+  "app.instance_status.offline": "Offline",
+  "app.instance_status.unreachable": "Nicht erreichbar"
 }
