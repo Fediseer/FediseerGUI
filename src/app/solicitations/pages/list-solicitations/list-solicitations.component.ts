@@ -61,5 +61,6 @@ export class ListSolicitationsComponent implements OnInit {
     }
     this.loading = false;
     this.cachedApi.getWhitelistedInstances({clear: true}).subscribe();
+    this.cachedApi.getGuaranteesByInstance(this.authManager.currentInstanceSnapshot.name, {clear: true}).subscribe();
   }
 }

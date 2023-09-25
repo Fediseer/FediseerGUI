@@ -35,7 +35,7 @@ export class MyGuaranteesComponent implements OnInit {
 
     const responses = await Promise.all([
       toPromise(this.cachedApi.getCurrentInstanceInfo()),
-      toPromise(this.api.getGuaranteesByInstance(this.authManager.currentInstanceSnapshot.name!)),
+      toPromise(this.cachedApi.getGuaranteesByInstance(this.authManager.currentInstanceSnapshot.name!)),
     ]);
 
     if (this.apiResponseHelper.handleErrors(responses)) {
@@ -65,6 +65,7 @@ export class MyGuaranteesComponent implements OnInit {
         guaranteedInstance => guaranteedInstance.domain !== instance,
       );
       this.cachedApi.getWhitelistedInstances({clear: true}).subscribe();
+      this.cachedApi.getGuaranteesByInstance(this.instance.name).subscribe();
     });
   }
 }
