@@ -63,7 +63,7 @@ export class EndorseInstanceComponent implements OnInit {
         return;
       }
 
-      this.cachedApi.getEndorsementsByInstance([this.authManager.currentInstanceSnapshot.name], {clear: true})
+      this.cachedApi.getEndorsementsByInstances([this.authManager.currentInstanceSnapshot.name], {clear: true})
         .subscribe(() => {
           this.loading = false;
           this.router.navigateByUrl('/endorsements/my').then(() => {

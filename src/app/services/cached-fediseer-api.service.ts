@@ -92,7 +92,7 @@ export class CachedFediseerApiService {
     );
   }
 
-  public getEndorsementsByInstance(instances: string[], cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+  public getEndorsementsByInstances(instances: string[], cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     cacheConfig.type ??= CacheType.Permanent;
     cacheConfig.ttl ??= 60;
 
@@ -103,7 +103,7 @@ export class CachedFediseerApiService {
       return this.getSuccessResponse(item);
     }
 
-    return this.api.getEndorsementsByInstance(instances).pipe(
+    return this.api.getEndorsementsByInstances(instances).pipe(
       tap(this.storeResponse(item, cacheConfig)),
     );
   }

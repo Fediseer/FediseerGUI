@@ -75,7 +75,7 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Get, `endorsements/${instance}`);
   }
 
-  public getEndorsementsByInstance(instances: string[]): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+  public getEndorsementsByInstances(instances: string[]): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     const instanceString = instances.join(',');
     return this.sendRequest(HttpMethod.Get, `approvals/${instanceString}`);
   }
@@ -242,7 +242,7 @@ export class FediseerApiService {
       return of(cacheItem.value!);
     }
 
-    return this.getEndorsementsByInstance([this.authManager.currentInstanceSnapshot.name]).pipe(
+    return this.getEndorsementsByInstances([this.authManager.currentInstanceSnapshot.name]).pipe(
       map (response => {
         if (!response.success) {
           return null;
