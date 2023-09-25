@@ -33,7 +33,7 @@
             <thead>
             <tr>
               <th>Instance</th>
-              <th>Cancel</th>
+              <th>Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -49,7 +49,12 @@
             <tr *ngFor="let guaranteed of instancesGuaranteedByMe">
               <td><a routerLink="/instances/detail/{{guaranteed.domain}}">{{guaranteed.domain}}</a></td>
               <td>
-                <button class="btn btn-danger" (click)="cancelGuarantee(guaranteed.domain)">Cancel</button>
+                <app-instance-move-to-list
+                  instance="{{guaranteed.domain}}"
+                  (movingInstanceFailed)="onMovingInstanceFailed($event)"
+                  (instanceMoved)="onInstanceMoved($event)"
+                  (started)="loading = true"
+                />
               </td>
             </tr>
             </tbody>

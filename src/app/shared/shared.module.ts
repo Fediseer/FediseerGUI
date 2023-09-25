@@ -13,6 +13,8 @@ import {FormatNumberPipe} from './pipes/format-number.pipe';
 import {TranslocoModule} from "@ngneat/transloco";
 import {TranslocoMarkupComponent} from "ngx-transloco-markup";
 import {InstanceStatusComponent} from "./components/instance-status/instance-status.component";
+import {InstanceMoveToListComponent} from './components/instance-move-to-list/instance-move-to-list.component';
+import {ReactiveFormsModule} from "@angular/forms";
 
 
 @NgModule({
@@ -27,6 +29,7 @@ import {InstanceStatusComponent} from "./components/instance-status/instance-sta
     FormatPercentagePipe,
     FormatNumberPipe,
     InstanceStatusComponent,
+    InstanceMoveToListComponent,
   ],
   exports: [
     ToObservablePipe,
@@ -42,6 +45,7 @@ import {InstanceStatusComponent} from "./components/instance-status/instance-sta
     NgbModule,
     TranslocoMarkupComponent,
     InstanceStatusComponent,
+    InstanceMoveToListComponent,
   ],
   imports: [
     CommonModule,
@@ -49,6 +53,7 @@ import {InstanceStatusComponent} from "./components/instance-status/instance-sta
     TranslocoModule,
     NgbModule,
     TranslocoMarkupComponent,
+    ReactiveFormsModule,
   ]
 })
 export class SharedModule { }

@@ -9,6 +9,7 @@ import {toPromise} from "../../../types/resolvable";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
+import {InstanceMoveEvent} from "../../../shared/components/instance-move-to-list/instance-move-to-list.component";
 
 @Component({
   selector: 'app-my-censures',
@@ -53,24 +54,15 @@ export class MyCensuresComponent implements OnInit {
     this.loading = false;
   }
 
-  public async cancelCensure(instance: string): Promise<void> {
-    this.loading = true;
-    this.api.cancelCensure(instance).subscribe(response => {
-      if (!response.success) {
-        this.messageService.createError(`There was an error: ${response.errorResponse!.message}`);
-        this.loading = false;
-        return;
-      }
+  public async onMovingInstanceFailed(event: InstanceMoveEvent) {
+    this.messageService.createError(`Failed moving the instance ${event.instance}. Please reload the page to see whether it was removed from your censures or not.`);
+    this.loading = false;
+  }
 
-      this.cachedApi.getCensuresByInstances(
-        [this.authManager.currentInstanceSnapshot.name],
-        {clear: true}
-      ).subscribe(() => {
-        this.instances = this.instances.filter(
-          censuredInstance => censuredInstance.domain !== instance,
-        );
-        this.loading = false;
-      });
-    });
+  public async onInstanceMoved(event: InstanceMoveEvent) {
+    this.instances = this.instances.filter(
+      censuredInstance => censuredInstance.domain !== event.instance,
+    );
+    this.loading = false;
   }
 }
