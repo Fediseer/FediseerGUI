@@ -124,6 +124,28 @@ export class CachedFediseerApiService {
     );
   }
 
+  public getUsedEndorsementReasons(cacheConfig: CacheConfiguration = {}): Observable<string[] | null> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 300;
+
+    const cacheKey = `api.endorsement_reasons${cacheConfig.ttl}`;
+
+    const item = this.getCacheItem<string[] | null>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return of(item.value!);
+    }
+
+    return this.api.getUsedEndorsementReasons().pipe(
+      tap(result => {
+        item.value = result;
+        if (cacheConfig.ttl! >= 0) {
+          item.expiresAt = new Date(new Date().getTime() + (cacheConfig.ttl! * 1_000));
+        }
+        this.saveCacheItem(item, cacheConfig);
+      }),
+    );
+  }
+
   public clearCache(): void {
     this.runtimeCache.clear();
     this.permanentCache.clear();

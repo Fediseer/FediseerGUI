@@ -43,7 +43,7 @@ export class EditEndorsementReasonsComponent implements OnInit {
 
     this.activatedRoute.params.subscribe(async params => {
       const targetInstance = params['instance'] as string;
-      let availableReasons = await toPromise(this.api.usedEndorsementReasons);
+      let availableReasons = await toPromise(this.cachedApi.getUsedEndorsementReasons());
       if (availableReasons === null) {
         this.messageService.createWarning(this.translator.get('error.reasons.autocompletion.fetch'));
         availableReasons = [];
