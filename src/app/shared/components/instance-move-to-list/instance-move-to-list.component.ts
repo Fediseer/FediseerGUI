@@ -118,7 +118,7 @@ export class InstanceMoveToListComponent implements OnInit {
       return;
     }
 
-    this._started.next();
+    // this._started.next(); // todo find out why
     const removeResult: ApiResponse<SuccessResponse> = await this.removeFrom(originalList);
 
     if (!removeResult.success) {
@@ -137,7 +137,6 @@ export class InstanceMoveToListComponent implements OnInit {
     switch (targetList) {
       case InstanceList.Guarantees:
         moveResult = await toPromise(this.api.guaranteeInstance(this.instance));
-        this.cachedApi.getGuaranteesByInstance(this.authManager.currentInstanceSnapshot.name, {clear: true}).subscribe();
         break;
       case InstanceList.None:
         moveResult = {success: true, successResponse: {message: 'OK'}};
@@ -161,6 +160,11 @@ export class InstanceMoveToListComponent implements OnInit {
       });
       return;
     }
+
+    const currentInstance = this.authManager.currentInstanceSnapshot.name;
+    this.cachedApi.getGuaranteesByInstance(currentInstance, {clear: true}).subscribe();
+    this.cachedApi.getCensuresByInstances([currentInstance], {clear: true}).subscribe();
+    this.cachedApi.getHesitationsByInstances([currentInstance], {clear: true}).subscribe();
 
     this.originalList = targetList;
     this._instanceMoved.next({

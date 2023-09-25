@@ -6,6 +6,7 @@ import {FediseerApiService} from "../../../services/fediseer-api.service";
 import {Router} from "@angular/router";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
+import {forkJoin} from "rxjs";
 
 @Component({
   selector: 'app-guarantee-instance',
@@ -47,7 +48,14 @@ export class GuaranteeInstanceComponent implements OnInit {
         return;
       }
 
-      this.cachedApi.getGuaranteesByInstance(this.authManager.currentInstanceSnapshot.name, {clear: true}).subscribe(() => {
+      const currentInstance = this.authManager.currentInstanceSnapshot.name;
+      forkJoin([
+        this.cachedApi.getGuaranteesByInstance(currentInstance, {clear: true}),
+        this.cachedApi.getCensuresByInstances([currentInstance], {clear: true}),
+        this.cachedApi.getHesitationsByInstances([currentInstance], {clear: true}),
+        this.cachedApi.getWhitelistedInstances({clear: true}),
+      ]).subscribe(() => {
+        this.loading = false;
         this.router.navigateByUrl('/guarantees/my').then(() => {
           this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully guaranteed!`);
           this.cachedApi.getWhitelistedInstances({clear: true}).subscribe();

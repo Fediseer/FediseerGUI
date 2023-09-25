@@ -7,6 +7,7 @@ import {toPromise} from "../../../types/resolvable";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
+import {forkJoin} from "rxjs";
 
 @Component({
   selector: 'app-hesitate-on-instance',
@@ -70,13 +71,17 @@ export class HesitateOnInstanceComponent implements OnInit {
         return;
       }
 
-      this.cachedApi.getHesitationsByInstances([this.authManager.currentInstanceSnapshot.name], {clear: true})
-        .subscribe(() => {
-          this.loading = false;
-          this.router.navigateByUrl('/hesitations/my').then(() => {
-            this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully hesitated on!`);
-          });
+      const currentInstance = this.authManager.currentInstanceSnapshot.name;
+      forkJoin([
+        this.cachedApi.getGuaranteesByInstance(currentInstance, {clear: true}),
+        this.cachedApi.getCensuresByInstances([currentInstance], {clear: true}),
+        this.cachedApi.getHesitationsByInstances([currentInstance], {clear: true}),
+      ]).subscribe(() => {
+        this.loading = false;
+        this.router.navigateByUrl('/hesitations/my').then(() => {
+          this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully hesitated on!`);
         });
+      });
     });
   }
 }
