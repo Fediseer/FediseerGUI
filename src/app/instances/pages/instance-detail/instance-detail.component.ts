@@ -65,7 +65,7 @@ export class InstanceDetailComponent implements OnInit {
         toPromise(this.api.getGuaranteesByInstance(instanceDomain)),
         toPromise(this.api.getInstanceInfo(instanceDomain)),
         toPromise(this.api.getHesitationsForInstance(instanceDomain)),
-        toPromise(this.api.getHesitationsByInstances([instanceDomain])),
+        toPromise(this.cachedApi.getHesitationsByInstances([instanceDomain])),
       ]);
       this.apiResponseHelper.handleErrors(responses, MessageType.Warning);
 

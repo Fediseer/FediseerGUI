@@ -76,6 +76,22 @@ export class CachedFediseerApiService {
     );
   }
 
+  public getHesitationsByInstances(instances: string[], cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 60;
+
+    const cacheKey = `api.hesitations_by_instances${cacheConfig.ttl}.${instances.join('_')}`;
+
+    const item = this.getCacheItem<InstanceListResponse<InstanceDetailResponse>>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return this.getSuccessResponse(item);
+    }
+
+    return this.api.getHesitationsByInstances(instances).pipe(
+      tap(this.storeResponse(item, cacheConfig)),
+    );
+  }
+
   public clearCache(): void {
     this.runtimeCache.clear();
     this.permanentCache.clear();

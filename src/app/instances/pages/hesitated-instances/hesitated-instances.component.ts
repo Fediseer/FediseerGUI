@@ -64,7 +64,7 @@ export class HesitatedInstancesComponent {
     this.titleService.title = 'Hesitated instances';
 
     if (!this.currentInstance.anonymous) {
-      const response = await toPromise(this.api.getHesitationsByInstances([this.currentInstance.name]));
+      const response = await toPromise(this.cachedApi.getHesitationsByInstances([this.currentInstance.name]));
       if (this.apiResponseHelper.handleErrors([response])) {
         this.loading = false;
         return;
@@ -129,6 +129,7 @@ export class HesitatedInstancesComponent {
         this.messageService.createError(`There was an api error: ${response.errorResponse!.message}`);
         return;
       }
+      this.cachedApi.getHesitationsByInstances([this.authManager.currentInstanceSnapshot.name], {clear: true}).subscribe();
     } else {
       await this.router.navigateByUrl(`/hesitations/hesitate?instance=${instance}`);
       return;
@@ -191,7 +192,7 @@ export class HesitatedInstancesComponent {
       }
     }
 
-    const response = await toPromise(this.api.getHesitationsByInstances(sourceInstances));
+    const response = await toPromise(this.cachedApi.getHesitationsByInstances(sourceInstances));
     if (this.apiResponseHelper.handleErrors([response])) {
       this.loading = false;
       return;
