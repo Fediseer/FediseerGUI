@@ -109,7 +109,7 @@
   "notification.success": "Success",
   "notification.warning": "Warning",
   "app.endorsements.intro": "Endorsing means that you approve of an instance. For more information visit the [link:glossaryLink]{{glossary}}[/link].",
-  "app.guarantee_restricted.info": "You can do this only if your instance is guaranteed by some other instance.",
+  "app.guarantee_restricted.info": "You can do this only if your instance is [link:glossaryLink]guaranteed[/link] by some other instance.",
   "app.endorsements.target_instance": "Instance to endorse",
   "app.reasons": "Reasons",
   "app.generic_button.update": "Update",

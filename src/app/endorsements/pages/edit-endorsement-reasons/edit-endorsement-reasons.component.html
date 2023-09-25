@@ -10,7 +10,11 @@
             glossary: 'app.glossary' | transloco
           }" />
         </p>
-        <p><strong>{{'app.guarantee_restricted.info' | transloco}}</strong></p>
+        <p>
+          <strong>
+            <transloco key="app.guarantee_restricted.info" [params]="{glossaryLink: {route: ['/glossary'], fragment: 'guarantee'}}" />
+          </strong>
+        </p>
         <form [formGroup]="form" (submit)="updateReasons()">
           <div class="form-group">
             <label for="inputInstance">{{'app.endorsements.target_instance' | transloco}}</label>
