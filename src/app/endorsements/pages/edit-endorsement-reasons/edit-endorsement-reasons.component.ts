@@ -10,6 +10,7 @@ import {toPromise} from "../../../types/resolvable";
 import {map} from "rxjs";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 import {TranslatorService} from "../../../services/translator.service";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
 @Component({
   selector: 'app-edit-endorsement-reasons',
@@ -28,6 +29,7 @@ export class EditEndorsementReasonsComponent implements OnInit {
     private readonly titleService: TitleService,
     private readonly messageService: MessageService,
     private readonly api: FediseerApiService,
+    private readonly cachedApi: CachedFediseerApiService,
     private readonly router: Router,
     private readonly activatedRoute: ActivatedRoute,
     private readonly authManager: AuthenticationManagerService,
@@ -97,10 +99,13 @@ export class EditEndorsementReasonsComponent implements OnInit {
         return;
       }
 
-      this.loading = false;
-      this.router.navigateByUrl('/endorsements/my').then(() => {
-        this.messageService.createSuccess(this.translator.get('app.endorsements.success.update'));
-      });
+      this.cachedApi.getEndorsementsByInstance([this.authManager.currentInstanceSnapshot.name], {clear: true})
+        .subscribe(() => {
+          this.loading = false;
+          this.router.navigateByUrl('/endorsements/my').then(() => {
+            this.messageService.createSuccess(this.translator.get('app.endorsements.success.update'));
+          });
+        });
     });
   }
 }
