@@ -138,6 +138,34 @@ export class CachedFediseerApiService {
     return this.api.getUsedEndorsementReasons().pipe(
       tap(result => {
         item.value = result;
+        if (item.value === null) {
+          return;
+        }
+        if (cacheConfig.ttl! >= 0) {
+          item.expiresAt = new Date(new Date().getTime() + (cacheConfig.ttl! * 1_000));
+        }
+        this.saveCacheItem(item, cacheConfig);
+      }),
+    );
+  }
+
+  public getUsedReasons(instances: string[] = [], cacheConfig: CacheConfiguration = {}): Observable<string[] | null> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 300;
+
+    const cacheKey = `api.reasons${cacheConfig.ttl}.${instances.join('_')}`;
+
+    const item = this.getCacheItem<string[] | null>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return of(item.value!);
+    }
+
+    return this.api.getUsedReasons(instances).pipe(
+      tap(result => {
+        item.value = result;
+        if (item.value === null) {
+          return;
+        }
         if (cacheConfig.ttl! >= 0) {
           item.expiresAt = new Date(new Date().getTime() + (cacheConfig.ttl! * 1_000));
         }

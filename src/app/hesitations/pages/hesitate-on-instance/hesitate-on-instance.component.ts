@@ -43,7 +43,7 @@ export class HesitateOnInstanceComponent implements OnInit {
 
       this.form.patchValue({instance: query['instance']});
     });
-    let availableReasons = await toPromise(this.api.getUsedReasons());
+    let availableReasons = await toPromise(this.cachedApi.getUsedReasons());
     if (availableReasons === null) {
       this.messageService.createWarning(`Couldn't get list of reasons you've used previously, autocompletion won't work.`);
       availableReasons = [];
