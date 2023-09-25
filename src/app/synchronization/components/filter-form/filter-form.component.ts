@@ -223,7 +223,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   private async loadReasons() {
     if (this.availableReasons === null) {
       this.loadingReasons = true;
-      const reasons = await toPromise(this.api.getUsedReasons());
+      const reasons = await toPromise(this.cachedApi.getUsedReasons());
       if (reasons === null) {
         this.messageService.createError('Failed getting list of reasons from the server');
       }

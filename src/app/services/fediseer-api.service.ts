@@ -236,7 +236,7 @@ export class FediseerApiService {
     );
   }
 
-  public get usedEndorsementReasons(): Observable<string[] | null> {
+  public getUsedEndorsementReasons(): Observable<string[] | null> {
     const cacheItem = this.runtimeCache.getItem<string[]>(`used_endorsement_reasons`);
     if (cacheItem.isHit) {
       return of(cacheItem.value!);

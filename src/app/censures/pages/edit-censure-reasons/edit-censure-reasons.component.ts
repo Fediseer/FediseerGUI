@@ -42,7 +42,7 @@ export class EditCensureReasonsComponent implements OnInit {
 
     this.activatedRoute.params.subscribe(async params => {
       const targetInstance = params['instance'] as string;
-      let availableReasons = await toPromise(this.api.getUsedReasons());
+      let availableReasons = await toPromise(this.cachedApi.getUsedReasons());
       if (availableReasons === null) {
         this.messageService.createWarning(`Couldn't get list of reasons that were used previously, autocompletion won't work.`);
         availableReasons = [];

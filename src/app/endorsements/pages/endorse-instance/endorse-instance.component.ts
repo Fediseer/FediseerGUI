@@ -37,7 +37,7 @@ export class EndorseInstanceComponent implements OnInit {
   public async ngOnInit(): Promise<void> {
     this.titleService.title = this.translator.get('app.endorsements.add.title');
 
-    const reasons = await toPromise(this.api.usedEndorsementReasons);
+    const reasons = await toPromise(this.cachedApi.getUsedEndorsementReasons());
     if (reasons === null) {
       this.messageService.createWarning(this.translator.get('error.reasons.autocompletion.fetch'));
     } else {
