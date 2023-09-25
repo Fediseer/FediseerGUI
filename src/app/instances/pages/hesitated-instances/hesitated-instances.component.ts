@@ -162,7 +162,7 @@ export class HesitatedInstancesComponent {
       const allInstancesString = this.allWhitelistedInstances.map(instance => instance.domain);
       sourceInstances = sourceInstances.filter(instance => allInstancesString.indexOf(instance) > -1);
       if (this.filterForm.controls.includeEndorsed.value) {
-        const endorsedResponse = await toPromise(this.cachedApi.getEndorsementsByInstance(sourceInstances));
+        const endorsedResponse = await toPromise(this.cachedApi.getEndorsementsByInstances(sourceInstances));
         if (this.apiResponseHelper.handleErrors([endorsedResponse])) {
           this.loading = false;
           return;

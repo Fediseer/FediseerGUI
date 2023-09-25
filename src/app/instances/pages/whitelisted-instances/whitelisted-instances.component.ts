@@ -45,7 +45,7 @@ export class WhitelistedInstancesComponent implements OnInit {
     this.titleService.title = 'Whitelisted instances';
 
     if (!this.currentInstance.anonymous) {
-      const response = await toPromise(this.cachedApi.getEndorsementsByInstance([this.currentInstance.name]));
+      const response = await toPromise(this.cachedApi.getEndorsementsByInstances([this.currentInstance.name]));
       if (this.apiResponseHelper.handleErrors([response])) {
         this.loading = false;
         return;
@@ -100,7 +100,7 @@ export class WhitelistedInstancesComponent implements OnInit {
     } else {
       this.endorsedByMe.push(instance);
     }
-    this.cachedApi.getEndorsementsByInstance([this.authManager.currentInstanceSnapshot.name], {clear: true}).subscribe();
+    this.cachedApi.getEndorsementsByInstances([this.authManager.currentInstanceSnapshot.name], {clear: true}).subscribe();
   }
 
   public async goToPage(page: number): Promise<void> {

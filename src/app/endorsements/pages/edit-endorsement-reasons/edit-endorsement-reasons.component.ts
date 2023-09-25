@@ -51,7 +51,7 @@ export class EditEndorsementReasonsComponent implements OnInit {
       this.availableReasons = availableReasons;
 
       const existing = await toPromise(
-        this.api.getEndorsementsByInstance([this.authManager.currentInstanceSnapshot.name]).pipe(
+        this.api.getEndorsementsByInstances([this.authManager.currentInstanceSnapshot.name]).pipe(
           map(response => {
             if (this.apiResponseHelper.handleErrors([response])) {
               return null;
@@ -99,7 +99,7 @@ export class EditEndorsementReasonsComponent implements OnInit {
         return;
       }
 
-      this.cachedApi.getEndorsementsByInstance([this.authManager.currentInstanceSnapshot.name], {clear: true})
+      this.cachedApi.getEndorsementsByInstances([this.authManager.currentInstanceSnapshot.name], {clear: true})
         .subscribe(() => {
           this.loading = false;
           this.router.navigateByUrl('/endorsements/my').then(() => {

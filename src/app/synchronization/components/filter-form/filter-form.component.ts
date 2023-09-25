@@ -207,7 +207,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
       this.loadingWhitelistedInstances = true;
       const responses = await Promise.all([
         toPromise(this.cachedApi.getWhitelistedInstances()),
-        toPromise(this.cachedApi.getEndorsementsByInstance([this.authManager.currentInstanceSnapshot.name])),
+        toPromise(this.cachedApi.getEndorsementsByInstances([this.authManager.currentInstanceSnapshot.name])),
         toPromise(this.api.getGuaranteesByInstance(this.authManager.currentInstanceSnapshot.name)),
       ]);
 
@@ -264,7 +264,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
       return [...censures, ...hesitations];
     })();
     this.cache[`endorsed:${myInstance}`] ??= await (async () => {
-      const response = await toPromise(this.cachedApi.getEndorsementsByInstance([myInstance], {ttl: 5}));
+      const response = await toPromise(this.cachedApi.getEndorsementsByInstances([myInstance], {ttl: 5}));
       if (this.apiResponseHelper.handleErrors([response])) {
         return [];
       }
@@ -355,7 +355,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   }
 
   private async getEndorsedCensureChain(instance: string): Promise<string[]> {
-    return await toPromise(this.cachedApi.getEndorsementsByInstance([instance], {ttl: 5}).pipe(
+    return await toPromise(this.cachedApi.getEndorsementsByInstances([instance], {ttl: 5}).pipe(
       map(response => {
         if (this.apiResponseHelper.handleErrors([response])) {
           return [];
