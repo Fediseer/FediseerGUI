@@ -7,6 +7,8 @@ import {Router} from "@angular/router";
 import {toPromise} from "../../../types/resolvable";
 import {TranslatorService} from "../../../services/translator.service";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
+import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
 
 @Component({
   selector: 'app-endorse-instance',
@@ -25,9 +27,11 @@ export class EndorseInstanceComponent implements OnInit {
     private readonly titleService: TitleService,
     private readonly messageService: MessageService,
     private readonly api: FediseerApiService,
+    private readonly cachedApi: CachedFediseerApiService,
     private readonly router: Router,
     private readonly translator: TranslatorService,
     private readonly apiResponseHelper: ApiResponseHelperService,
+    private readonly authManager: AuthenticationManagerService,
   ) {
   }
   public async ngOnInit(): Promise<void> {
@@ -59,10 +63,13 @@ export class EndorseInstanceComponent implements OnInit {
         return;
       }
 
-      this.loading = false;
-      this.router.navigateByUrl('/endorsements/my').then(() => {
-        this.messageService.createSuccess(this.translator.get('app.endorsements.success.create'));
-      });
+      this.cachedApi.getEndorsementsByInstance([this.authManager.currentInstanceSnapshot.name], {clear: true})
+        .subscribe(() => {
+          this.loading = false;
+          this.router.navigateByUrl('/endorsements/my').then(() => {
+            this.messageService.createSuccess(this.translator.get('app.endorsements.success.create'));
+          });
+        });
     });
   }
 }
