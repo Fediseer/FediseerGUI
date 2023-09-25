@@ -109,7 +109,7 @@
   "notification.success": "Erfolgreich",
   "notification.warning": "Warnung",
   "app.endorsements.intro": "Empfehlen bedeutet, dass Sie einer Instanz vertrauen. Weitere Informationen finden Sie im [link:glossaryLink]{{glossary}}[/link].",
-  "app.guarantee_restricted.info": "Empfehlungen können nur ausgesprochen werden, wenn eine andere Instanz für sie Bürgt.",
+  "app.guarantee_restricted.info": "Empfehlungen können nur ausgesprochen werden, wenn eine andere Instanz für sie [link:glossaryLink]Bürgt[/link].",
   "app.endorsements.target_instance": "Domain der Instanz",
   "app.reasons": "Gründe für die Empfehlung",
   "app.generic_button.update": "Aktualisieren",
