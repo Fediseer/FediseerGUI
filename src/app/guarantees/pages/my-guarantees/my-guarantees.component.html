@@ -47,7 +47,12 @@
               <td colspan="3" *ngIf="!guarantor">No one guaranteed for this instance, you cannot give guarantees yourself.</td>
             </tr>
             <tr *ngFor="let guaranteed of instancesGuaranteedByMe">
-              <td><a routerLink="/instances/detail/{{guaranteed.domain}}">{{guaranteed.domain}}</a></td>
+              <td>
+                <a routerLink="/instances/detail/{{guaranteed.domain}}">
+                  {{guaranteed.domain}}
+                  <app-flags [instance]="guaranteed" />
+                </a>
+              </td>
               <td>
                 <app-instance-move-to-list
                   instance="{{guaranteed.domain}}"
