@@ -67,7 +67,26 @@ export class InstanceDetailComponent implements OnInit {
         toPromise(this.api.getHesitationsForInstance(instanceDomain)),
         toPromise(this.cachedApi.getHesitationsByInstances([instanceDomain])),
       ]);
-      this.apiResponseHelper.handleErrors(responses, MessageType.Warning);
+      const manuallyHandleableResponse = [
+        responses[1],
+        responses[3],
+        responses[7],
+      ];
+      const autoHandleResponse = [
+        responses[0],
+        responses[2],
+        responses[4],
+        responses[5],
+        responses[6],
+      ];
+      this.apiResponseHelper.handleErrors(autoHandleResponse, MessageType.Warning);
+
+      for (const response of manuallyHandleableResponse) {
+        if (response.success || response.statusCode === 403) {
+          continue;
+        }
+        this.apiResponseHelper.handleErrors([response]);
+      }
 
       this.censuresReceived = responses[0].successResponse?.instances.map(
         instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance),

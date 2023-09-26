@@ -139,7 +139,7 @@ export class InstanceMoveToListComponent implements OnInit {
         moveResult = await toPromise(this.api.guaranteeInstance(this.instance));
         break;
       case InstanceList.None:
-        moveResult = {success: true, successResponse: {message: 'OK'}};
+        moveResult = {success: true, successResponse: {message: 'OK'}, statusCode: 200};
         break;
       case InstanceList.Hesitations:
         await this.router.navigate(['/hesitations/hesitate'], {queryParams: {instance: this.instance}});
@@ -191,7 +191,7 @@ export class InstanceMoveToListComponent implements OnInit {
         this.cachedApi.getHesitationsByInstances([currentInstance], {clear: true}).subscribe();
         break;
       case InstanceList.None:
-        removeResult = {success: true, successResponse: {message: 'OK'}};
+        removeResult = {success: true, successResponse: {message: 'OK'}, statusCode: 200};
         break;
     }
 

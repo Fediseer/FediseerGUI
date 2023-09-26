@@ -197,6 +197,7 @@ export class CachedFediseerApiService {
     return of({
       success: true,
       successResponse: item.value,
+      statusCode: 200,
     });
   }
 
