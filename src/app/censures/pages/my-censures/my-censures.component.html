@@ -22,18 +22,19 @@
               <th>Instance</th>
               <th>Reasons</th>
               <th>Evidence</th>
+              <th>Instance status</th>
               <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             <tr *ngIf="guaranteed">
-              <td colspan="4">
+              <td colspan="5">
                 <a routerLink="/censures/censure" class="btn btn-primary">Censure an instance</a>
               </td>
             </tr>
             <tr *ngIf="!instances.length">
-              <td colspan="4" *ngIf="guaranteed">You haven't put a censure on any instance yet.</td>
-              <td colspan="4" *ngIf="!guaranteed">No one guaranteed for this instance, you cannot put a censure on
+              <td colspan="5" *ngIf="guaranteed">You haven't put a censure on any instance yet.</td>
+              <td colspan="5" *ngIf="!guaranteed">No one guaranteed for this instance, you cannot put a censure on
                 others.
               </td>
             </tr>
@@ -47,6 +48,9 @@
               <td>
                 <ng-container *ngIf="instance.censuresEvidence.length">{{instance.censuresEvidence}}</ng-container>
                 <code *ngIf="!instance.censuresEvidence.length">N/A</code>
+              </td>
+              <td>
+                <app-instance-status [status]="instance.state" />
               </td>
               <td>
                 <a routerLink="/censures/my/edit/{{instance.domain}}" type="button" class="btn btn-primary">Edit</a>
