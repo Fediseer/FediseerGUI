@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
-import {Observable} from "rxjs";
+import {Injectable} from '@angular/core';
+import {EMPTY, expand, Observable, reduce} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {AccessTokenResponse} from "../response/access-token.response";
 import {MastodonBlacklistItem, MastodonBlacklistResponse} from "../response/mastodon-blacklist.response";
 import {MastodonDomainBlacklistRequest} from "../types/mastodon-domain-blacklist-request";
+import {MastodonLinkParserService} from "./mastodon-link-parser.service";
 
 export interface GetTokenOptions {
   code: string;
@@ -19,6 +20,7 @@ export interface GetTokenOptions {
 export class MastodonApiService {
   constructor(
     private readonly httpClient: HttpClient,
+    private readonly mastodonLinkParser: MastodonLinkParserService,
   ) {
   }
 
@@ -42,7 +44,27 @@ export class MastodonApiService {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    });
+      observe: 'response'
+    }).pipe(
+      expand(response => {
+        if (response.headers.has('Link')) {
+          const links = this.mastodonLinkParser.getLinks(response.headers.get('Link')!);
+          if (links.next === undefined) {
+            return EMPTY;
+          }
+
+          return this.httpClient.get<MastodonBlacklistResponse>(links.next, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            observe: 'response',
+          });
+        }
+
+        return EMPTY;
+      }),
+      reduce((acc, value) => acc.concat(value.body!), <MastodonBlacklistResponse>[]),
+    )
   }
 
   public blacklistInstance(
