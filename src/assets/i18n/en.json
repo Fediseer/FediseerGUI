@@ -151,5 +151,6 @@
   "app.instance_lists.guarantees": "Guarantees",
   "app.instance_lists.guarantees.move": "Move to guarantees",
   "app.flag.muted": "Muted",
-  "app.flag.restricted": "Restricted"
+  "app.flag.restricted": "Restricted",
+  "app.instance.status": "Instance status"
 }
