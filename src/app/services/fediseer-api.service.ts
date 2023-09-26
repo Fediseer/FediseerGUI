@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {InstanceDetailResponse} from "../response/instance-detail.response";
 import {environment} from "../../environments/environment";
 import {catchError, forkJoin, map, Observable, of, switchMap, tap} from "rxjs";
@@ -23,6 +23,7 @@ export interface ApiResponse<T> {
   success: boolean;
   successResponse?: T;
   errorResponse?: ErrorResponse;
+  statusCode: int;
 }
 
 enum HttpMethod {
@@ -192,6 +193,7 @@ export class FediseerApiService {
             success: response.success,
             errorResponse: response.errorResponse,
             successResponse: response.successResponse,
+            statusCode: response.statusCode,
           });
         }
 
@@ -375,12 +377,14 @@ export class FediseerApiService {
           success: response.ok,
           successResponse: response.ok ? <T>response.body : undefined,
           errorResponse: !response.ok ? <ErrorResponse>response.body : undefined,
+          statusCode: response.status,
         };
       }),
-      catchError((err) => {
+      catchError((err: HttpErrorResponse) => {
         return of({
           success: false,
           errorResponse: err.error,
+          statusCode: err.status,
         });
       }),
     );
