@@ -23,7 +23,10 @@
           </thead>
           <tbody>
           <tr *ngFor="let instance of instances">
-            <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
+            <td>
+              <a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a>
+              <app-flags [instance]="instance" />
+            </td>
             <td>
               <a *ngIf="instance.guarantor" routerLink="/instances/detail/{{instance.guarantor}}">{{instance.guarantor}}</a>
               <code *ngIf="!instance.guarantor">N/A</code>

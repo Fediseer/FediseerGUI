@@ -40,7 +40,12 @@
             </td>
           </tr>
           <tr *ngFor="let instance of instances">
-            <td>{{instance.domain}}</td>
+            <td>
+              <a routerLink="/instances/detail/{{instance.domain}}">
+                {{instance.domain}}
+              </a>
+              <app-flags [instance]="instance" />
+            </td>
             <td>{{instance.software}}</td>
             <td>
               <code *ngIf="!instance.comment">N/A</code>

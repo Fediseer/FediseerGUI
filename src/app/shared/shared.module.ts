@@ -15,6 +15,7 @@ import {TranslocoMarkupComponent} from "ngx-transloco-markup";
 import {InstanceStatusComponent} from "./components/instance-status/instance-status.component";
 import {InstanceMoveToListComponent} from './components/instance-move-to-list/instance-move-to-list.component';
 import {ReactiveFormsModule} from "@angular/forms";
+import {FlagsComponent} from './components/flags/flags.component';
 
 
 @NgModule({
@@ -30,23 +31,25 @@ import {ReactiveFormsModule} from "@angular/forms";
     FormatNumberPipe,
     InstanceStatusComponent,
     InstanceMoveToListComponent,
+    FlagsComponent,
   ],
-  exports: [
-    ToObservablePipe,
-    LoaderComponent,
-    YesNoComponent,
-    IterableEnumPipe,
-    TomSelectDirective,
-    TooltipComponent,
-    FormatDatetimePipe,
-    FormatPercentagePipe,
-    FormatNumberPipe,
-    TranslocoModule,
-    NgbModule,
-    TranslocoMarkupComponent,
-    InstanceStatusComponent,
-    InstanceMoveToListComponent,
-  ],
+    exports: [
+        ToObservablePipe,
+        LoaderComponent,
+        YesNoComponent,
+        IterableEnumPipe,
+        TomSelectDirective,
+        TooltipComponent,
+        FormatDatetimePipe,
+        FormatPercentagePipe,
+        FormatNumberPipe,
+        TranslocoModule,
+        NgbModule,
+        TranslocoMarkupComponent,
+        InstanceStatusComponent,
+        InstanceMoveToListComponent,
+        FlagsComponent,
+    ],
   imports: [
     CommonModule,
     NgbTooltip,

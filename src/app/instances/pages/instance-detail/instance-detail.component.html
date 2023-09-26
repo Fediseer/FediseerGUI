@@ -16,7 +16,10 @@
           <tbody>
           <tr>
             <td><strong>Domain</strong></td>
-            <td>{{detail.domain}}</td>
+            <td>
+              {{detail.domain}}
+              <app-flags [instance]="detail" />
+            </td>
           </tr>
           <tr>
             <td><strong>Software</strong></td>
@@ -374,7 +377,10 @@
             </thead>
             <tbody>
             <tr *ngFor="let instance of guaranteesGiven">
-              <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
+              <td>
+                <a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a>
+                <app-flags [instance]="instance" />
+              </td>
             </tr>
             </tbody>
           </table>
