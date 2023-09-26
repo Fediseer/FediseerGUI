@@ -1,5 +1,5 @@
 <ng-container *ngIf="instance">
-  <span class="btn btn-xs btn-outline-danger" *ngFor="let flag of instance.flags">
+  <span class="btn btn-xs btn-outline-danger" *ngFor="let flag of instance.flags" ngbTooltip="{{flag.comment}}">
     <ng-container *ngIf="flag.flag === InstanceFlag.Muted">{{'app.flag.muted' | transloco}}</ng-container>
     <ng-container *ngIf="flag.flag === InstanceFlag.Restricted">{{'app.flag.restricted' | transloco}}</ng-container>
   </span>
