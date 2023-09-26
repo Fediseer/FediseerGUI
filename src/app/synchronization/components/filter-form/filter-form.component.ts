@@ -51,6 +51,8 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   public whitelistedInstancesList: InstanceDetailResponse[] | null = null;
   public availableReasons: string[] | null = null;
 
+  public myInstance: string = this.authManager.currentInstanceSnapshot.name;
+
   public form = new FormGroup({
     purgeBlacklist: new FormControl<boolean>(false, [Validators.required]),
     mode: new FormControl<SynchronizationMode>(SynchronizationMode.Own, [Validators.required]),
