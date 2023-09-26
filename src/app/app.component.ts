@@ -121,7 +121,7 @@ export class AppComponent implements OnInit {
       this.endorsementsBadgeUrl = this.api.endorsementsBadgeUrl;
       this.guaranteesBadgeUrl = this.api.guaranteesBadgeUrl;
 
-      this.cachedApi.getCurrentInstanceInfo().subscribe(response => {
+      this.cachedApi.getCurrentInstanceInfo(null, {clear: true}).subscribe(response => {
         if (this.apiResponseHelper.handleErrors([response])) {
           return;
         }
