@@ -135,6 +135,14 @@
               <ng-container *ngIf="detail.visibility_hesitations === ListVisibility.Private">{{'app.list_visibility.private' | transloco}}</ng-container>
             </td>
           </tr>
+          <tr>
+            <td>
+              <strong>Instance status</strong>
+            </td>
+            <td>
+              <app-instance-status [status]="detail.state" />
+            </td>
+          </tr>
           </tbody>
         </table>
       </div>

@@ -15,11 +15,12 @@
             <tr>
               <th>{{ "app.instance" | transloco }}</th>
               <th>{{"app.reasons" | transloco}}</th>
+              <th>{{"app.instance.status" | transloco}}</th>
             </tr>
             </thead>
             <tbody>
             <tr *ngIf="!endorsementsForMyInstance.length">
-              <td colspan="2">{{'app.endorsements.my.received.none' | transloco}}</td>
+              <td colspan="3">{{'app.endorsements.my.received.none' | transloco}}</td>
             </tr>
             <tr *ngFor="let endorsed of endorsementsForMyInstance">
               <td><a routerLink="/instances/detail/{{endorsed.domain}}">{{endorsed.domain}}</a></td>
@@ -28,6 +29,9 @@
                   <li *ngFor="let reason of endorsed.endorsementReasons">{{reason}}</li>
                 </ul>
                 <code *ngIf="!endorsed.endorsementReasons.length">{{"app.not_applicable" | transloco}}</code>
+              </td>
+              <td>
+                <app-instance-status [status]="endorsed.state" />
               </td>
             </tr>
             </tbody>
@@ -47,18 +51,19 @@
             <tr>
               <th>{{"app.instance" | transloco}}</th>
               <th>{{"app.reasons" | transloco}}</th>
+              <th>{{"app.instance.status" | transloco}}</th>
               <th>{{"app.actions" | transloco}}</th>
             </tr>
             </thead>
             <tbody>
             <tr *ngIf="guaranteed">
-              <td colspan="3">
+              <td colspan="4">
                 <a routerLink="/endorsements/endorse" class="btn btn-primary">{{'app.endorsements.add.title' | transloco}}</a>
               </td>
             </tr>
             <tr *ngIf="!endorsementsByMyInstance.length">
-              <td colspan="3" *ngIf="guaranteed">{{'app.endorsements.my.given.none' | transloco}}</td>
-              <td colspan="3" *ngIf="!guaranteed">{{'app.endorsements.my.given.unguaranteed' | transloco}}</td>
+              <td colspan="4" *ngIf="guaranteed">{{'app.endorsements.my.given.none' | transloco}}</td>
+              <td colspan="4" *ngIf="!guaranteed">{{'app.endorsements.my.given.unguaranteed' | transloco}}</td>
             </tr>
             <tr *ngFor="let endorsed of endorsementsByMyInstance">
               <td><a routerLink="/instances/detail/{{endorsed.domain}}">{{endorsed.domain}}</a></td>
@@ -67,6 +72,9 @@
                   <li *ngFor="let reason of endorsed.endorsementReasons">{{reason}}</li>
                 </ul>
                 <code *ngIf="!endorsed.endorsementReasons.length">{{'app.not_applicable' | transloco}}</code>
+              </td>
+              <td>
+                <app-instance-status [status]="endorsed.state" />
               </td>
               <td>
                 <a routerLink="/endorsements/my/edit/{{endorsed.domain}}" type="button" class="btn btn-primary">{{'app.generic_buttons.edit' | transloco}}</a>

@@ -1,5 +1,6 @@
 import {int} from "../types/number";
 import {InstanceDetailResponse} from "./instance-detail.response";
+import {InstanceStatus} from "../types/instance-status";
 
 export class NormalizedInstanceDetailResponse {
   constructor(
@@ -21,6 +22,7 @@ export class NormalizedInstanceDetailResponse {
     public unmergedEndorsementReasons: string[],
     public sysadmins: int | null,
     public moderators: int | null,
+    public state: InstanceStatus,
     public guarantor?: string | null,
   ) {
   }
@@ -62,6 +64,7 @@ export class NormalizedInstanceDetailResponse {
       unmergedEndorsementReasons,
       detail.sysadmins,
       detail.moderators,
+      detail.state,
       detail.guarantor,
     );
   }
