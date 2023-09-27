@@ -7,6 +7,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
 import {toPromise} from "../../../types/resolvable";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
+import {forkJoin} from "rxjs";
 
 @Component({
   selector: 'app-censure-instance',
@@ -42,7 +43,7 @@ export class CensureInstanceComponent implements OnInit {
 
       this.form.patchValue({instance: query['instance']});
     });
-    let availableReasons = await toPromise(this.api.getUsedReasons());
+    let availableReasons = await toPromise(this.cachedApi.getUsedReasons());
     if (availableReasons === null) {
       this.messageService.createWarning(`Couldn't get list of reasons you've used previously, autocompletion won't work.`);
       availableReasons = [];
@@ -69,13 +70,17 @@ export class CensureInstanceComponent implements OnInit {
         return;
       }
 
-      this.cachedApi.getCensuresByInstances([this.authManager.currentInstanceSnapshot.name], {clear: true})
-        .subscribe(() => {
-          this.loading = false;
-          this.router.navigateByUrl('/censures/my').then(() => {
-            this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully censured!`);
-          });
+      const currentInstance = this.authManager.currentInstanceSnapshot.name;
+      forkJoin([
+        this.cachedApi.getGuaranteesByInstance(currentInstance, {clear: true}),
+        this.cachedApi.getCensuresByInstances([currentInstance], {clear: true}),
+        this.cachedApi.getHesitationsByInstances([currentInstance], {clear: true}),
+      ]).subscribe(() => {
+        this.loading = false;
+        this.router.navigateByUrl('/censures/my').then(() => {
+          this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully censured!`);
         });
+      });
     });
   }
 }

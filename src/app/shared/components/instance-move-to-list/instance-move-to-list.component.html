@@ -1,0 +1,24 @@
+<form [formGroup]="form" *ngIf="!loading">
+  <select formControlName="targetList" class="form-control">
+    <option [value]="InstanceList.None">
+      <ng-container *ngIf="form.controls.targetList.value === InstanceList.None">{{'app.instance_lists.none' | transloco}}</ng-container>
+      <ng-container *ngIf="form.controls.targetList.value !== InstanceList.None">{{'app.instance_lists.none.move' | transloco}}</ng-container>
+    </option>
+    <option [value]="InstanceList.Hesitations">
+      <ng-container *ngIf="form.controls.targetList.value === InstanceList.Hesitations">{{'app.instance_lists.hesitations' | transloco}}</ng-container>
+      <ng-container *ngIf="form.controls.targetList.value !== InstanceList.Hesitations">{{'app.instance_lists.hesitations.move' | transloco}}</ng-container>
+    </option>
+    <option [value]="InstanceList.Censures">
+      <ng-container *ngIf="form.controls.targetList.value === InstanceList.Censures">{{'app.instance_lists.censures' | transloco}}</ng-container>
+      <ng-container *ngIf="form.controls.targetList.value !== InstanceList.Censures">{{'app.instance_lists.censures.move' | transloco}}</ng-container>
+    </option>
+    <option [value]="InstanceList.Guarantees" *ngIf="form.controls.targetList.value !== InstanceList.Endorsements">
+      <ng-container *ngIf="form.controls.targetList.value === InstanceList.Guarantees">{{'app.instance_lists.guarantees' | transloco}}</ng-container>
+      <ng-container *ngIf="form.controls.targetList.value !== InstanceList.Guarantees">{{'app.instance_lists.guarantees.move' | transloco}}</ng-container>
+    </option>
+    <option [value]="InstanceList.Endorsements" *ngIf="form.controls.targetList.value !== InstanceList.Guarantees">
+      <ng-container *ngIf="form.controls.targetList.value === InstanceList.Endorsements">{{'app.instance_lists.endorsements' | transloco}}</ng-container>
+      <ng-container *ngIf="form.controls.targetList.value !== InstanceList.Endorsements">{{'app.instance_lists.endorsements.move' | transloco}}</ng-container>
+    </option>
+  </select>
+</form>

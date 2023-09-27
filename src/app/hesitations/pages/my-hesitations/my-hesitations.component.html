@@ -19,18 +19,19 @@
               <th>Instance</th>
               <th>Reasons</th>
               <th>Evidence</th>
+              <th>{{"app.instance.status" | transloco}}</th>
               <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             <tr *ngIf="guaranteed">
-              <td colspan="4">
+              <td colspan="5">
                 <a routerLink="/hesitations/hesitate" class="btn btn-primary">Hesitate on an instance</a>
               </td>
             </tr>
             <tr *ngIf="!instances.length">
-              <td colspan="4" *ngIf="guaranteed">You haven't put a hesitation on any instance yet.</td>
-              <td colspan="4" *ngIf="!guaranteed">
+              <td colspan="5" *ngIf="guaranteed">You haven't put a hesitation on any instance yet.</td>
+              <td colspan="5" *ngIf="!guaranteed">
                 No one guaranteed for this instance, you cannot put a hesitation on others.
               </td>
             </tr>
@@ -46,9 +47,17 @@
                 <code *ngIf="!instance.hesitationsEvidence.length">N/A</code>
               </td>
               <td>
+                <app-instance-status [status]="instance.state" />
+              </td>
+              <td>
                 <a routerLink="/hesitations/my/edit/{{instance.domain}}" type="button" class="btn btn-primary">Edit</a>
                 &nbsp;
-                <button type="button" class="btn btn-danger" (click)="cancelHesitation(instance.domain)">Cancel</button>
+                <app-instance-move-to-list
+                  instance="{{instance.domain}}"
+                  (movingInstanceFailed)="onMovingInstanceFailed($event)"
+                  (instanceMoved)="onInstanceMoved($event)"
+                  (started)="loading = true"
+                />
               </td>
             </tr>
             </tbody>

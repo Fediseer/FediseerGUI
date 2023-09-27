@@ -108,6 +108,72 @@ export class CachedFediseerApiService {
     );
   }
 
+  public getGuaranteesByInstance(instance: string, cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 300;
+
+    const cacheKey = `api.guarantees_by_instances${cacheConfig.ttl}.${instance}`;
+
+    const item = this.getCacheItem<InstanceListResponse<InstanceDetailResponse>>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return this.getSuccessResponse(item);
+    }
+
+    return this.api.getGuaranteesByInstance(instance).pipe(
+      tap(this.storeResponse(item, cacheConfig)),
+    );
+  }
+
+  public getUsedEndorsementReasons(cacheConfig: CacheConfiguration = {}): Observable<string[] | null> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 300;
+
+    const cacheKey = `api.endorsement_reasons${cacheConfig.ttl}`;
+
+    const item = this.getCacheItem<string[] | null>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return of(item.value!);
+    }
+
+    return this.api.getUsedEndorsementReasons().pipe(
+      tap(result => {
+        item.value = result;
+        if (item.value === null) {
+          return;
+        }
+        if (cacheConfig.ttl! >= 0) {
+          item.expiresAt = new Date(new Date().getTime() + (cacheConfig.ttl! * 1_000));
+        }
+        this.saveCacheItem(item, cacheConfig);
+      }),
+    );
+  }
+
+  public getUsedReasons(instances: string[] = [], cacheConfig: CacheConfiguration = {}): Observable<string[] | null> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 300;
+
+    const cacheKey = `api.reasons${cacheConfig.ttl}.${instances.join('_')}`;
+
+    const item = this.getCacheItem<string[] | null>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return of(item.value!);
+    }
+
+    return this.api.getUsedReasons(instances).pipe(
+      tap(result => {
+        item.value = result;
+        if (item.value === null) {
+          return;
+        }
+        if (cacheConfig.ttl! >= 0) {
+          item.expiresAt = new Date(new Date().getTime() + (cacheConfig.ttl! * 1_000));
+        }
+        this.saveCacheItem(item, cacheConfig);
+      }),
+    );
+  }
+
   public clearCache(): void {
     this.runtimeCache.clear();
     this.permanentCache.clear();
@@ -131,6 +197,7 @@ export class CachedFediseerApiService {
     return of({
       success: true,
       successResponse: item.value,
+      statusCode: 200,
     });
   }
 

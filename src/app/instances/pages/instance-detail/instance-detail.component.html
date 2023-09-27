@@ -6,9 +6,19 @@
       <div class="card-header">
         <h3 class="card-title" id="instance-details">Instance details</h3>
         <div class="float-right">
-          <a *ngIf="myInstance" routerLink="/instances/edit/reset-token" class="btn btn-primary btn-sm">Reset my api key</a>
-          &nbsp;
-          <a *ngIf="myInstance" routerLink="/instances/edit/my" class="btn btn-primary btn-sm">Edit instance details</a>
+          <ng-container *ngIf="myInstance else instanceControls">
+            <a *ngIf="myInstance" routerLink="/instances/edit/reset-token" class="btn btn-primary btn-sm">Reset my api key</a>
+            &nbsp;
+            <a *ngIf="myInstance" routerLink="/instances/edit/my" class="btn btn-primary btn-sm">Edit instance details</a>
+          </ng-container>
+          <ng-template #instanceControls>
+            In a list:&nbsp;
+            <app-instance-move-to-list
+              instance="{{detail.domain}}"
+              (movingInstanceFailed)="onMovingInstanceFailed($event)"
+              (instanceMoved)="onInstanceMoved($event)"
+            />
+          </ng-template>
         </div>
       </div>
       <div class="card-body">
@@ -16,7 +26,10 @@
           <tbody>
           <tr>
             <td><strong>Domain</strong></td>
-            <td>{{detail.domain}}</td>
+            <td>
+              {{detail.domain}}
+              <app-flags [instance]="detail" />
+            </td>
           </tr>
           <tr>
             <td><strong>Software</strong></td>
@@ -130,6 +143,14 @@
               <ng-container *ngIf="detail.visibility_hesitations === ListVisibility.Open">{{'app.list_visibility.open' | transloco}}</ng-container>
               <ng-container *ngIf="detail.visibility_hesitations === ListVisibility.Endorsed">{{'app.list_visibility.endorsed' | transloco}}</ng-container>
               <ng-container *ngIf="detail.visibility_hesitations === ListVisibility.Private">{{'app.list_visibility.private' | transloco}}</ng-container>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong>Instance status</strong>
+            </td>
+            <td>
+              <app-instance-status [status]="detail.state" />
             </td>
           </tr>
           </tbody>
@@ -374,7 +395,10 @@
             </thead>
             <tbody>
             <tr *ngFor="let instance of guaranteesGiven">
-              <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
+              <td>
+                <a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a>
+                <app-flags [instance]="instance" />
+              </td>
             </tr>
             </tbody>
           </table>

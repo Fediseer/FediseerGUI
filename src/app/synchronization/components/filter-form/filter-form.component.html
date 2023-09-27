@@ -36,7 +36,9 @@
       <label for="inputFilterReasons" class="custom-control-label">Filter by reasons</label>
     </div>
     <small id="inputFilterReasonsDescription">
-      If enabled, only instances with censure reasons you specify will get blacklisted. Note that your own blacklist is always synchronized in full.
+      If enabled, only instances with censure reasons you specify will get blacklisted.
+      <br>
+      <strong>Note that your own blacklist is always synchronized in full and this setting is ignored for instances that <em>{{myInstance}}</em> itself censured.</strong>
     </small>
   </div>
   <div class="form-group position-relative" *ngIf="form.controls.filterByReasons.value">
@@ -54,7 +56,10 @@
     </div>
     <small id="inputIgnoreInstancesDescription">
       If enabled, you can specify a list of instances that will be excluded from blacklisting even if they match the other rules.
+      <br>
       <strong>Note that instances you endorse are always excluded from blacklisting.</strong>
+      <br>
+      <strong>Note that your own blacklist is always synchronized in full and this setting is ignored for instances that <em>{{myInstance}}</em> itself censured.</strong>
     </small>
   </div>
   <div class="form-group position-relative" *ngIf="form.controls.ignoreInstances.value">

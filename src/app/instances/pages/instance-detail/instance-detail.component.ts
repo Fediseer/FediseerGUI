@@ -10,6 +10,7 @@ import {ApiResponseHelperService} from "../../../services/api-response-helper.se
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 import {ListVisibility} from "../../../types/list-visibility";
+import {InstanceMoveEvent} from "../../../shared/components/instance-move-to-list/instance-move-to-list.component";
 
 @Component({
   selector: 'app-instance-detail',
@@ -62,12 +63,31 @@ export class InstanceDetailComponent implements OnInit {
         toPromise(this.cachedApi.getCensuresByInstances([instanceDomain])),
         toPromise(this.api.getEndorsementsForInstance(instanceDomain)),
         toPromise(this.cachedApi.getEndorsementsByInstances([instanceDomain])),
-        toPromise(this.api.getGuaranteesByInstance(instanceDomain)),
+        toPromise(this.cachedApi.getGuaranteesByInstance(instanceDomain)),
         toPromise(this.api.getInstanceInfo(instanceDomain)),
         toPromise(this.api.getHesitationsForInstance(instanceDomain)),
         toPromise(this.cachedApi.getHesitationsByInstances([instanceDomain])),
       ]);
-      this.apiResponseHelper.handleErrors(responses, MessageType.Warning);
+      const manuallyHandleableResponse = [
+        responses[1],
+        responses[3],
+        responses[7],
+      ];
+      const autoHandleResponse = [
+        responses[0],
+        responses[2],
+        responses[4],
+        responses[5],
+        responses[6],
+      ];
+      this.apiResponseHelper.handleErrors(autoHandleResponse, MessageType.Warning);
+
+      for (const response of manuallyHandleableResponse) {
+        if (response.success || response.statusCode === 403) {
+          continue;
+        }
+        this.apiResponseHelper.handleErrors([response]);
+      }
 
       this.censuresReceived = responses[0].successResponse?.instances.map(
         instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance),
@@ -93,5 +113,13 @@ export class InstanceDetailComponent implements OnInit {
 
       this.loading = false;
     });
+  }
+
+  public async onMovingInstanceFailed(event: InstanceMoveEvent) {
+
+  }
+
+  public async onInstanceMoved(event: InstanceMoveEvent) {
+
   }
 }

@@ -1,6 +1,7 @@
 import {int} from "../types/number";
 import {ListVisibility} from "../types/list-visibility";
 import {InstanceStatus} from "../types/instance-status";
+import {InstanceFlag} from "../types/instance-flag";
 
 export interface InstanceDetailResponse {
   id: int;
@@ -25,4 +26,5 @@ export interface InstanceDetailResponse {
   visibility_censures?: ListVisibility;
   visibility_hesitations?: ListVisibility;
   state: InstanceStatus;
+  flags: {flag: InstanceFlag, comment: string}[];
 }

@@ -174,7 +174,7 @@ export class HesitatedInstancesComponent {
       }
       if (this.filterForm.controls.includeGuaranteed.value) {
         const guaranteed = await Promise.all(sourceInstances.map(async sourceInstance => {
-          const guaranteedResponse = await toPromise(this.api.getGuaranteesByInstance(sourceInstance));
+          const guaranteedResponse = await toPromise(this.cachedApi.getGuaranteesByInstance(sourceInstance));
           if (this.apiResponseHelper.handleErrors([guaranteedResponse])) {
             this.loading = false;
             return [sourceInstance];

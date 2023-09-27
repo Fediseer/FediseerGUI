@@ -141,5 +141,18 @@
   "app.instance_status.running": "Running",
   "app.instance_status.decommissioned": "Decommissioned",
   "app.instance_status.offline": "Offline",
-  "app.instance_status.unreachable": "Unreachable"
+  "app.instance_status.unreachable": "Unreachable",
+  "app.instance_lists.none": "No list",
+  "app.instance_lists.none.move": "Remove from all lists",
+  "app.instance_lists.hesitations": "Hesitations",
+  "app.instance_lists.hesitations.move": "Move to hesitations",
+  "app.instance_lists.censures": "Censures",
+  "app.instance_lists.censures.move": "Move to censures",
+  "app.instance_lists.guarantees": "Guarantees",
+  "app.instance_lists.guarantees.move": "Move to guarantees",
+  "app.flag.muted": "Muted",
+  "app.flag.restricted": "Restricted",
+  "app.instance.status": "Instance status",
+  "app.instance_lists.endorsements": "Endorsements",
+  "app.instance_lists.endorsements.move": "Move to endorsements"
 }

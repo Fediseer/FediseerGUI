@@ -51,6 +51,8 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   public whitelistedInstancesList: InstanceDetailResponse[] | null = null;
   public availableReasons: string[] | null = null;
 
+  public myInstance: string = this.authManager.currentInstanceSnapshot.name;
+
   public form = new FormGroup({
     purgeBlacklist: new FormControl<boolean>(false, [Validators.required]),
     mode: new FormControl<SynchronizationMode>(SynchronizationMode.Own, [Validators.required]),
@@ -208,7 +210,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
       const responses = await Promise.all([
         toPromise(this.cachedApi.getWhitelistedInstances()),
         toPromise(this.cachedApi.getEndorsementsByInstances([this.authManager.currentInstanceSnapshot.name])),
-        toPromise(this.api.getGuaranteesByInstance(this.authManager.currentInstanceSnapshot.name)),
+        toPromise(this.cachedApi.getGuaranteesByInstance(this.authManager.currentInstanceSnapshot.name)),
       ]);
 
       if (this.apiResponseHelper.handleErrors(responses)) {
@@ -223,7 +225,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   private async loadReasons() {
     if (this.availableReasons === null) {
       this.loadingReasons = true;
-      const reasons = await toPromise(this.api.getUsedReasons());
+      const reasons = await toPromise(this.cachedApi.getUsedReasons());
       if (reasons === null) {
         this.messageService.createError('Failed getting list of reasons from the server');
       }

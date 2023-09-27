@@ -33,23 +33,37 @@
             <thead>
             <tr>
               <th>Instance</th>
-              <th>Cancel</th>
+              <th>{{"app.instance.status" | transloco}}</th>
+              <th>Actions</th>
             </tr>
             </thead>
             <tbody>
             <tr *ngIf="guarantor">
-              <td colspan="2">
+              <td colspan="3">
                 <a routerLink="/guarantees/guarantee" class="btn btn-primary">Guarantee an instance</a>
               </td>
             </tr>
             <tr *ngIf="!instancesGuaranteedByMe.length">
-              <td colspan="2" *ngIf="guarantor">This instance didn't guarantee anyone yet.</td>
+              <td colspan="3" *ngIf="guarantor">This instance didn't guarantee anyone yet.</td>
               <td colspan="3" *ngIf="!guarantor">No one guaranteed for this instance, you cannot give guarantees yourself.</td>
             </tr>
             <tr *ngFor="let guaranteed of instancesGuaranteedByMe">
-              <td><a routerLink="/instances/detail/{{guaranteed.domain}}">{{guaranteed.domain}}</a></td>
               <td>
-                <button class="btn btn-danger" (click)="cancelGuarantee(guaranteed.domain)">Cancel</button>
+                <a routerLink="/instances/detail/{{guaranteed.domain}}">
+                  {{guaranteed.domain}}
+                  <app-flags [instance]="guaranteed" />
+                </a>
+              </td>
+              <td>
+                <app-instance-status [status]="guaranteed.state" />
+              </td>
+              <td>
+                <app-instance-move-to-list
+                  instance="{{guaranteed.domain}}"
+                  (movingInstanceFailed)="onMovingInstanceFailed($event)"
+                  (instanceMoved)="onInstanceMoved($event)"
+                  (started)="loading = true"
+                />
               </td>
             </tr>
             </tbody>

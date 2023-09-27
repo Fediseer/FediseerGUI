@@ -18,12 +18,16 @@
             </th>
             <th>Endorsements</th>
             <th>Sysadmins / moderators</th>
+            <th>Instance status</th>
             <th *ngIf="!currentInstance.anonymous">Endorsed by me?</th>
           </tr>
           </thead>
           <tbody>
           <tr *ngFor="let instance of instances">
-            <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
+            <td>
+              <a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a>
+              <app-flags [instance]="instance" />
+            </td>
             <td>
               <a *ngIf="instance.guarantor" routerLink="/instances/detail/{{instance.guarantor}}">{{instance.guarantor}}</a>
               <code *ngIf="!instance.guarantor">N/A</code>
@@ -45,6 +49,9 @@
                 <code *ngIf="instance.moderators === null">N/A</code>
                 <ng-container *ngIf="instance.moderators !== null">{{instance.moderators}}</ng-container>
               </ng-template>
+            </td>
+            <td>
+              <app-instance-status [status]="instance.state" />
             </td>
             <td *ngIf="!currentInstance.anonymous">
               <a href="javascript:void(0)" (click)="toggleEndorse(instance.domain)">
