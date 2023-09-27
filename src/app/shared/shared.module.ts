@@ -1,5 +1,5 @@
 import {NgModule} from '@angular/core';
-import {CommonModule} from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import {ToObservablePipe} from "./pipes/to-observable.pipe";
 import {LoaderComponent} from './components/loader/loader.component';
 import {YesNoComponent} from './components/yes-no/yes-no.component';
@@ -16,6 +16,7 @@ import {InstanceStatusComponent} from "./components/instance-status/instance-sta
 import {InstanceMoveToListComponent} from './components/instance-move-to-list/instance-move-to-list.component';
 import {ReactiveFormsModule} from "@angular/forms";
 import {FlagsComponent} from './components/flags/flags.component';
+import {InstanceLogoComponent} from './components/instance-logo/instance-logo.component';
 
 
 @NgModule({
@@ -32,6 +33,7 @@ import {FlagsComponent} from './components/flags/flags.component';
     InstanceStatusComponent,
     InstanceMoveToListComponent,
     FlagsComponent,
+    InstanceLogoComponent,
   ],
     exports: [
         ToObservablePipe,
@@ -49,6 +51,7 @@ import {FlagsComponent} from './components/flags/flags.component';
         InstanceStatusComponent,
         InstanceMoveToListComponent,
         FlagsComponent,
+        InstanceLogoComponent,
     ],
   imports: [
     CommonModule,
@@ -57,6 +60,7 @@ import {FlagsComponent} from './components/flags/flags.component';
     NgbModule,
     TranslocoMarkupComponent,
     ReactiveFormsModule,
+    NgOptimizedImage,
   ]
 })
 export class SharedModule { }

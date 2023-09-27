@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {map, Observable} from "rxjs";
-import {FederatedInstancesResponse} from "../response/federated-instances.response";
 import {GetFederatedInstancesResponse} from "../response/get-federated-instances.response";
 import {LemmyLoginResponse} from "../response/lemmy-login-response";
 import {GetSiteResponse} from "../response/get-site.response";
+import {LemmySiteDetail} from "../response/lemmy-site-detail";
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +13,11 @@ export class LemmyApiService {
   constructor(
     private readonly httpClient: HttpClient,
   ) {
+  }
+
+  public getSiteInfo(instance: string): Observable<LemmySiteDetail> {
+    const url = `https://${instance}/api/v3/site`;
+    return this.httpClient.get<LemmySiteDetail>(url);
   }
 
   public getBlockedInstances(instance: string): Observable<string[]> {
