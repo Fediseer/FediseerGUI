@@ -3,7 +3,7 @@ import {TitleService} from "../../../services/title.service";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {MessageService} from "../../../services/message.service";
 import {FediseerApiService} from "../../../services/fediseer-api.service";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
 import {toPromise} from "../../../types/resolvable";
 import {TranslatorService} from "../../../services/translator.service";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
@@ -32,11 +32,19 @@ export class EndorseInstanceComponent implements OnInit {
     private readonly translator: TranslatorService,
     private readonly apiResponseHelper: ApiResponseHelperService,
     private readonly authManager: AuthenticationManagerService,
+    private readonly activatedRoute: ActivatedRoute,
   ) {
   }
   public async ngOnInit(): Promise<void> {
     this.titleService.title = this.translator.get('app.endorsements.add.title');
 
+    this.activatedRoute.queryParams.subscribe(query => {
+      if (!query['instance']) {
+        return;
+      }
+
+      this.form.patchValue({instance: query['instance']});
+    });
     const reasons = await toPromise(this.cachedApi.getUsedEndorsementReasons());
     if (reasons === null) {
       this.messageService.createWarning(this.translator.get('error.reasons.autocompletion.fetch'));

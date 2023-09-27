@@ -15,6 +15,7 @@ export enum InstanceList {
   Censures = 'censures',
   Hesitations = 'hesitations',
   Guarantees = 'guarantees',
+  Endorsements = 'endorsements',
 }
 
 export interface InstanceMoveEvent {
@@ -73,6 +74,7 @@ export class InstanceMoveToListComponent implements OnInit {
         toPromise(this.cachedApi.getHesitationsByInstances([myInstance])),
         toPromise(this.cachedApi.getCensuresByInstances([myInstance])),
         toPromise(this.cachedApi.getGuaranteesByInstance(myInstance)),
+        toPromise(this.cachedApi.getEndorsementsByInstances([myInstance])),
       ]);
 
       if (this.apiResponseHelper.handleErrors(responses)) {
@@ -87,12 +89,12 @@ export class InstanceMoveToListComponent implements OnInit {
       this.originalList = InstanceList.None;
       if (instanceResponses[0].includes(this.instance)) {
         this.originalList = InstanceList.Hesitations;
-      }
-      if (instanceResponses[1].includes(this.instance)) {
+      } else if (instanceResponses[1].includes(this.instance)) {
         this.originalList = InstanceList.Censures;
-      }
-      if (instanceResponses[2].includes(this.instance)) {
+      } else if (instanceResponses[2].includes(this.instance)) {
         this.originalList = InstanceList.Guarantees;
+      } else if (instanceResponses[3].includes(this.instance)) {
+        this.originalList = InstanceList.Endorsements;
       }
 
       await lock.free();
@@ -119,18 +121,25 @@ export class InstanceMoveToListComponent implements OnInit {
     }
 
     // this._started.next(); // todo find out why
-    const removeResult: ApiResponse<SuccessResponse> = await this.removeFrom(originalList);
+    if (
+      !(
+        (originalList === InstanceList.Endorsements || originalList === InstanceList.Guarantees)
+        && (targetList === InstanceList.Endorsements || targetList === InstanceList.Guarantees)
+      )
+    ) {
+      const removeResult: ApiResponse<SuccessResponse> = await this.removeFrom(originalList);
 
-    if (!removeResult.success) {
-      this._instanceMoveFailed.next({
-        instance: this.instance,
-        from: originalList,
-        to: targetList,
-      });
-      this.form.patchValue({
-        targetList: originalList,
-      });
-      return;
+      if (!removeResult.success) {
+        this._instanceMoveFailed.next({
+          instance: this.instance,
+          from: originalList,
+          to: targetList,
+        });
+        this.form.patchValue({
+          targetList: originalList,
+        });
+        return;
+      }
     }
 
     let moveResult: ApiResponse<SuccessResponse>
@@ -141,6 +150,9 @@ export class InstanceMoveToListComponent implements OnInit {
       case InstanceList.None:
         moveResult = {success: true, successResponse: {message: 'OK'}, statusCode: 200};
         break;
+      case InstanceList.Endorsements:
+        await this.router.navigate(['/endorsements/endorse'], {queryParams: {instance: this.instance}});
+        return;
       case InstanceList.Hesitations:
         await this.router.navigate(['/hesitations/hesitate'], {queryParams: {instance: this.instance}});
         return;
@@ -189,6 +201,10 @@ export class InstanceMoveToListComponent implements OnInit {
       case InstanceList.Hesitations:
         removeResult = await toPromise(this.api.cancelHesitation(this.instance));
         this.cachedApi.getHesitationsByInstances([currentInstance], {clear: true}).subscribe();
+        break;
+      case InstanceList.Endorsements:
+        removeResult = await toPromise(this.api.cancelEndorsement(this.instance));
+        this.cachedApi.getEndorsementsByInstances([currentInstance], {clear: true}).subscribe();
         break;
       case InstanceList.None:
         removeResult = {success: true, successResponse: {message: 'OK'}, statusCode: 200};

@@ -10,6 +10,7 @@ import {ApiResponseHelperService} from "../../../services/api-response-helper.se
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 import {ListVisibility} from "../../../types/list-visibility";
+import {InstanceMoveEvent} from "../../../shared/components/instance-move-to-list/instance-move-to-list.component";
 
 @Component({
   selector: 'app-instance-detail',
@@ -112,5 +113,13 @@ export class InstanceDetailComponent implements OnInit {
 
       this.loading = false;
     });
+  }
+
+  public async onMovingInstanceFailed(event: InstanceMoveEvent) {
+
+  }
+
+  public async onInstanceMoved(event: InstanceMoveEvent) {
+
   }
 }
