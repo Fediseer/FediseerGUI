@@ -6,54 +6,57 @@
       <div class="card-header">
         <h3 class="card-title">{{"app.filter.title" | transloco}}</h3>
       </div>
-      <div class="card-body">
-        <form [formGroup]="form" (submit)="filterLog()">
-          <div class="row">
-            <div class="col-md-12">
-              <div class="form-group">
-                <label for="inputType">Type</label>
-                <select class="form-control" id="inputType" formControlName="type">
-                  <option [value]="null">---</option>
-                  <option [value]="ActionLogReportType.Censure">{{"app.censure" | transloco}}</option>
-                  <option [value]="ActionLogReportType.Endorsement">{{"app.endorsement" | transloco}}</option>
-                  <option [value]="ActionLogReportType.Hesitation">{{"app.hesitation" | transloco}}</option>
-                  <option [value]="ActionLogReportType.Guarantee">{{"app.guarantee" | transloco}}</option>
-                  <option [value]="ActionLogReportType.Claim">{{"app.instance_claim" | transloco}}</option>
-                  <option [value]="ActionLogReportType.Solicitation">{{"app.solicitation" | transloco}}</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="inputActivity">{{"app.action_log.activity" | transloco}}</label>
-                <select class="form-control" id="inputActivity" formControlName="activity">
-                  <option [value]="null">---</option>
-                  <option [value]="ActionLogReportActivity.Added">{{"app.action_log.activity.created" | transloco}}</option>
-                  <option [value]="ActionLogReportActivity.Deleted">{{"app.action_log.activity.deleted" | transloco}}</option>
-                  <option [value]="ActionLogReportActivity.Modified">{{"app.action_log.activity.modified" | transloco}}</option>
-                </select>
-              </div>
-              <div class="form-group" *ngIf="whitelistedDomains">
-                <label for="inputSourceDomains">{{"app.source_domains" | transloco}}</label>
-                <select id="inputSourceDomains" formControlName="sourceDomains" multiple tom-select [maxItems]="null" [create]="true">
-                  <option *ngFor="let option of whitelistedDomains" [value]="option">{{option}}</option>
-                </select>
-              </div>
-              <div class="form-group" *ngIf="whitelistedDomains && blacklistedDomains">
-                <label for="inputTargetDomains">{{"app.target_domains" | transloco}}</label>
-                <select id="inputTargetDomains" formControlName="targetDomains" multiple tom-select [maxItems]="null" [create]="true">
-                  <option *ngFor="let option of blacklistedDomains" [value]="option">{{option}}</option>
-                  <option *ngFor="let option of whitelistedDomains" [value]="option">{{option}}</option>
-                </select>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-12">
-              <div class="form-group">
-                <button type="submit" class="btn btn-primary">{{"app.filter.submit" | transloco}}</button>
+      <div class="card-body position-relative">
+        <app-loader *ngIf="filtersLoading else filters" />
+        <ng-template #filters>
+          <form [formGroup]="form" (submit)="filterLog()">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <label for="inputType">Type</label>
+                  <select class="form-control" id="inputType" formControlName="type">
+                    <option [value]="null">---</option>
+                    <option [value]="ActionLogReportType.Censure">{{"app.censure" | transloco}}</option>
+                    <option [value]="ActionLogReportType.Endorsement">{{"app.endorsement" | transloco}}</option>
+                    <option [value]="ActionLogReportType.Hesitation">{{"app.hesitation" | transloco}}</option>
+                    <option [value]="ActionLogReportType.Guarantee">{{"app.guarantee" | transloco}}</option>
+                    <option [value]="ActionLogReportType.Claim">{{"app.instance_claim" | transloco}}</option>
+                    <option [value]="ActionLogReportType.Solicitation">{{"app.solicitation" | transloco}}</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="inputActivity">{{"app.action_log.activity" | transloco}}</label>
+                  <select class="form-control" id="inputActivity" formControlName="activity">
+                    <option [value]="null">---</option>
+                    <option [value]="ActionLogReportActivity.Added">{{"app.action_log.activity.created" | transloco}}</option>
+                    <option [value]="ActionLogReportActivity.Deleted">{{"app.action_log.activity.deleted" | transloco}}</option>
+                    <option [value]="ActionLogReportActivity.Modified">{{"app.action_log.activity.modified" | transloco}}</option>
+                  </select>
+                </div>
+                <div class="form-group" *ngIf="whitelistedDomains">
+                  <label for="inputSourceDomains">{{"app.source_domains" | transloco}}</label>
+                  <select id="inputSourceDomains" formControlName="sourceDomains" multiple tom-select [maxItems]="null" [create]="true">
+                    <option *ngFor="let option of whitelistedDomains" [value]="option">{{option}}</option>
+                  </select>
+                </div>
+                <div class="form-group" *ngIf="whitelistedDomains && blacklistedDomains">
+                  <label for="inputTargetDomains">{{"app.target_domains" | transloco}}</label>
+                  <select id="inputTargetDomains" formControlName="targetDomains" multiple tom-select [maxItems]="null" [create]="true">
+                    <option *ngFor="let option of blacklistedDomains" [value]="option">{{option}}</option>
+                    <option *ngFor="let option of whitelistedDomains" [value]="option">{{option}}</option>
+                  </select>
+                </div>
               </div>
             </div>
-          </div>
-        </form>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  <button type="submit" class="btn btn-primary">{{"app.filter.submit" | transloco}}</button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </ng-template>
       </div>
     </div>
     <div class="card">

@@ -26,6 +26,7 @@ export class ActionLogComponent implements OnInit {
 
   public loading: boolean = true;
   public actionLog: ActionLogResponse | null = null;
+  public filtersLoading: boolean = true;
 
   public pages: int[] = range(5);
   public currentPage: int = 1;
@@ -56,7 +57,7 @@ export class ActionLogComponent implements OnInit {
   public async ngOnInit(): Promise<void> {
     this.titleService.title = this.translator.get('app.action_log');
 
-    const responses = await Promise.all([
+    Promise.all([
       toPromise(this.cachedApi.getWhitelistedInstances().pipe(
         map (response => {
           if (this.apiResponseHelper.handleErrors([response])) {
@@ -75,10 +76,13 @@ export class ActionLogComponent implements OnInit {
           return response.successResponse!.instances.map(instance => instance.domain);
         }),
       )),
-    ]);
+    ]).then(responses => {
+      this.whitelistedDomains = responses[0];
+      this.blacklistedDomains = responses[1];
 
-    this.whitelistedDomains = responses[0];
-    this.blacklistedDomains = responses[1];
+      this.filtersLoading = false;
+    });
+
 
     this.activatedRoute.queryParams.subscribe(async params => {
       this.loading = true;
