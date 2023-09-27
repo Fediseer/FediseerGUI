@@ -141,5 +141,18 @@
   "app.instance_status.running": "Online",
   "app.instance_status.decommissioned": "Stillgelegt",
   "app.instance_status.offline": "Offline",
-  "app.instance_status.unreachable": "Nicht erreichbar"
+  "app.instance_status.unreachable": "Nicht erreichbar",
+  "app.instance_lists.none": "Keine Liste",
+  "app.instance_lists.none.move": "Aus allen Listen entfernen",
+  "app.instance_lists.hesitations": "Zweifel",
+  "app.instance_lists.hesitations.move": "In die Liste \"Zweifel\" verschieben",
+  "app.instance_lists.censures": "Tadel",
+  "app.instance_lists.censures.move": "In die Liste \"Tadel\" verschieben",
+  "app.instance_lists.guarantees": "Bürgschaften",
+  "app.instance_lists.guarantees.move": "In die Liste \"Bürgschaften\" verschieben",
+  "app.flag.muted": "Stummgeschaltet",
+  "app.flag.restricted": "Eingeschränkt",
+  "app.instance.status": "Instanz status",
+  "app.instance_lists.endorsements": "Empfehlungen",
+  "app.instance_lists.endorsements.move": "In die Liste \"Empfehlungen\" verschieben"
 }
