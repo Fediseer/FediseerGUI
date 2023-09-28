@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {InstanceDetailResponse} from "../response/instance-detail.response";
 import {environment} from "../../environments/environment";
-import {catchError, forkJoin, map, Observable, of, switchMap, tap} from "rxjs";
+import {catchError, EMPTY, expand, forkJoin, map, Observable, of, reduce, switchMap, tap} from "rxjs";
 import {AuthenticationManagerService} from "./authentication-manager.service";
 import {ErrorResponse} from "../response/error.response";
 import {InstanceListResponse} from "../response/instance-list.response";
@@ -178,7 +178,42 @@ export class FediseerApiService {
   }
 
   public getWhitelistedInstances(): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
-    return this.sendRequest(HttpMethod.Get, `whitelist`);
+    const maxPerPage = 100; // from api
+
+    const sendRequest = (page: number, limit: number): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> => this.sendRequest(
+      HttpMethod.Get,
+      `whitelist`,
+      {
+        page: String(page),
+        limit: String(limit),
+      },
+    );
+
+    let currentPage = 1;
+
+    return sendRequest(currentPage, maxPerPage).pipe(
+      expand (response => {
+        if (!response.success) {
+          return EMPTY;
+        }
+        if (!response.successResponse!.instances.length) {
+          return EMPTY;
+        }
+        if (response.successResponse!.instances.length < maxPerPage) {
+          return EMPTY;
+        }
+
+        return sendRequest(++currentPage, maxPerPage);
+      }),
+      reduce((acc, value) => {
+        if (!value.success || !acc.success) {
+          return acc;
+        }
+        acc.successResponse!.instances = [...acc.successResponse!.instances, ...value.successResponse!.instances];
+
+        return acc;
+      }),
+    );
   }
 
   public getSuspiciousInstances(): Observable<ApiResponse<InstanceListResponse<SuspiciousInstanceDetailResponse>>> {

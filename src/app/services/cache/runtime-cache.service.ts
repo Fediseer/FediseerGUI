@@ -45,4 +45,12 @@ export class RuntimeCacheService implements Cache {
   public clear(): void {
     this.cache = {};
   }
+
+  public clearByPrefix(prefix: string): void {
+    for (const key of Object.keys(this.cache)) {
+      if (key.startsWith(prefix)) {
+        delete this.cache[key];
+      }
+    }
+  }
 }

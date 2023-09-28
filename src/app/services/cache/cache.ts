@@ -10,4 +10,5 @@ export interface Cache {
   save(item: CacheItem<any>): void;
   remove(item: CacheItem<any>): void;
   clear(): void;
+  clearByPrefix(prefix: string): void;
 }

@@ -76,6 +76,15 @@ export class PermanentCacheService implements Cache {
     }
   }
 
+  public clearByPrefix(prefix: string): void {
+    if (typeof localStorage === 'undefined') {
+      return;
+    }
+    for (const key of Object.keys(localStorage).filter(key => key.startsWith(`${this.prefix}.${prefix}`))) {
+      localStorage.removeItem(key);
+    }
+  }
+
   private getKey(key: string): string {
     return `${this.prefix}.${key}`;
   }
