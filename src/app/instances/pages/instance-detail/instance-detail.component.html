@@ -53,6 +53,20 @@
             </td>
           </tr>
           <tr>
+            <td>
+              <strong>Tags</strong>
+              <app-tooltip text="Self-reported list of tags" />
+            </td>
+            <td>
+              <code *ngIf="!detail.tags.length">N/A</code>
+              <ng-container *ngIf="detail.tags.length">
+                <a routerLink="/instances/whitelisted" [queryParams]="{tags: tag}" class="btn btn-sm btn-outline-primary" *ngFor="let tag of detail.tags">
+                  {{tag}}
+                </a>
+              </ng-container>
+            </td>
+          </tr>
+          <tr>
             <td><strong>Open registrations?</strong></td>
             <td>
               <app-yes-no [yes]="detail.open_registrations" [swapColors]="true"></app-yes-no>
@@ -143,14 +157,6 @@
               <ng-container *ngIf="detail.visibility_hesitations === ListVisibility.Open">{{'app.list_visibility.open' | transloco}}</ng-container>
               <ng-container *ngIf="detail.visibility_hesitations === ListVisibility.Endorsed">{{'app.list_visibility.endorsed' | transloco}}</ng-container>
               <ng-container *ngIf="detail.visibility_hesitations === ListVisibility.Private">{{'app.list_visibility.private' | transloco}}</ng-container>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <strong>Instance status</strong>
-            </td>
-            <td>
-              <app-instance-status [status]="detail.state" />
             </td>
           </tr>
           </tbody>

@@ -18,6 +18,7 @@ import {ResetApiKeyResponse} from "../response/reset-api-key.response";
 import {PrivateMessageProxy} from "../types/private-message-proxy";
 import {SolicitationInstanceDetailResponse} from "../response/solicitation-instance-detail.response";
 import {ActionLogFilter} from "../types/action-log.filter";
+import {WhitelistFilter} from "../types/whitelist-filter";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -177,8 +178,13 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Patch, `hesitations/${instance}`, body);
   }
 
-  public getWhitelistedInstances(): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+  public getWhitelistedInstances(filter: WhitelistFilter = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     const maxPerPage = 100; // from api
+
+    let body: {[key: string]: string} = {};
+    if (filter.tags !== undefined) {
+      body['tags_csv'] = filter.tags.join(',');
+    }
 
     const sendRequest = (page: number, limit: number): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> => this.sendRequest(
       HttpMethod.Get,
@@ -186,6 +192,7 @@ export class FediseerApiService {
       {
         page: String(page),
         limit: String(limit),
+        ...body,
       },
     );
 
@@ -378,6 +385,18 @@ export class FediseerApiService {
     }
 
     return this.sendRequest(HttpMethod.Post, `solicitations`, body);
+  }
+
+  public tagInstance(tags: string[]): Observable<ApiResponse<ChangedResponse>> {
+    return this.sendRequest(HttpMethod.Put, `tags`, {
+      tags_csv: tags.join(','),
+    });
+  }
+
+  public removeInstanceTags(tags: string[]): Observable<ApiResponse<SuccessResponse>> {
+    return this.sendRequest(HttpMethod.Delete, `tags`, {
+      tags_csv: tags.join(','),
+    });
   }
 
   private sendRequest<T>(

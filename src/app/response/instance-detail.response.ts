@@ -27,4 +27,5 @@ export interface InstanceDetailResponse {
   visibility_hesitations?: ListVisibility;
   state: InstanceStatus;
   flags: {flag: InstanceFlag, comment: string}[];
+  tags: string[];
 }
