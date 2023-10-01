@@ -1,12 +1,13 @@
 import {Injectable} from '@angular/core';
 import {ApiResponse, FediseerApiService} from "./fediseer-api.service";
 import {RuntimeCacheService} from "./cache/runtime-cache.service";
-import {Observable, of, tap} from "rxjs";
+import {map, Observable, of, tap} from "rxjs";
 import {InstanceDetailResponse} from "../response/instance-detail.response";
 import {int} from "../types/number";
 import {PermanentCacheService} from "./cache/permanent-cache.service";
 import {Cache, CacheItem} from "./cache/cache";
 import {InstanceListResponse} from "../response/instance-list.response";
+import {WhitelistFilter} from "../types/whitelist-filter";
 
 export enum CacheType {
   Runtime,
@@ -61,19 +62,24 @@ export class CachedFediseerApiService {
     );
   }
 
-  public getWhitelistedInstances(cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+  public getWhitelistedInstances(whitelistFilter: WhitelistFilter = {}, cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     cacheConfig.type ??= CacheType.Permanent;
     cacheConfig.ttl ??= 120;
 
-    const cacheKey = `api.whitelist${cacheConfig.ttl}`;
+    const cacheKey = `api.whitelist${cacheConfig.ttl}.${JSON.stringify(whitelistFilter)}`;
     const item = this.getCacheItem<InstanceListResponse<InstanceDetailResponse>>(cacheKey, cacheConfig)!;
     if (item.isHit && !cacheConfig.clear) {
       return this.getSuccessResponse(item);
     }
 
-    return this.api.getWhitelistedInstances().pipe(
+    return this.api.getWhitelistedInstances(whitelistFilter).pipe(
       tap(this.storeResponse(item, cacheConfig)),
     );
+  }
+
+  public clearWhitelistCache(): void {
+    this.runtimeCache.clearByPrefix('api.whitelist');
+    this.permanentCache.clearByPrefix('api.whitelist');
   }
 
   public getHesitationsByInstances(instances: string[], cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
@@ -172,6 +178,37 @@ export class CachedFediseerApiService {
         this.saveCacheItem(item, cacheConfig);
       }),
     );
+  }
+
+  public getAvailableTags(cacheConfig: CacheConfiguration = {}): Observable<string[]> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 300;
+
+    const cacheKey = `api.tags${cacheConfig.ttl}`;
+
+    const item = this.getCacheItem<string[] | null>(cacheKey, cacheConfig)!;
+
+    if (item.isHit && !cacheConfig.clear) {
+      return of(item.value!);
+    }
+
+    return this.getWhitelistedInstances()
+      .pipe(
+        map (response => {
+          if (!response.success) {
+            return [];
+          }
+
+          return response.successResponse!.instances.flatMap(instance => instance.tags);
+        }),
+        tap (result => {
+          item.value = result;
+          if (cacheConfig.ttl! >= 0) {
+            item.expiresAt = new Date(new Date().getTime() + (cacheConfig.ttl! * 1_000));
+          }
+          this.saveCacheItem(item, cacheConfig);
+        }),
+      )
   }
 
   public clearCache(): void {

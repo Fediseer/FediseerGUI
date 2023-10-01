@@ -18,6 +18,7 @@
             </th>
             <th>Endorsements</th>
             <th>Sysadmins / moderators</th>
+            <th>Tags</th>
             <th>Instance status</th>
             <th *ngIf="!currentInstance.anonymous">Endorsed by me?</th>
           </tr>
@@ -49,6 +50,14 @@
                 <code *ngIf="instance.moderators === null">N/A</code>
                 <ng-container *ngIf="instance.moderators !== null">{{instance.moderators}}</ng-container>
               </ng-template>
+            </td>
+            <td>
+              <code *ngIf="!instance.tags.length">N/A</code>
+              <ng-container *ngIf="instance.tags.length">
+                <a routerLink="/instances/whitelisted" [queryParams]="{tags: tag}" class="btn btn-sm btn-outline-primary" *ngFor="let tag of instance.tags">
+                  {{tag}}
+                </a>
+              </ng-container>
             </td>
             <td>
               <app-instance-status [status]="instance.state" />

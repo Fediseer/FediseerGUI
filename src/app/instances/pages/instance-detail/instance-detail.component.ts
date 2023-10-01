@@ -11,6 +11,7 @@ import {NormalizedInstanceDetailResponse} from "../../../response/normalized-ins
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 import {ListVisibility} from "../../../types/list-visibility";
 import {InstanceMoveEvent} from "../../../shared/components/instance-move-to-list/instance-move-to-list.component";
+import {InstanceFlag} from "../../../types/instance-flag";
 
 @Component({
   selector: 'app-instance-detail',
@@ -122,4 +123,6 @@ export class InstanceDetailComponent implements OnInit {
   public async onInstanceMoved(event: InstanceMoveEvent) {
 
   }
+
+  protected readonly InstanceFlag = InstanceFlag;
 }

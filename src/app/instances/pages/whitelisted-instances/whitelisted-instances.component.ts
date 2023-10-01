@@ -10,6 +10,7 @@ import {Instance} from "../../../user/instance";
 import {SuccessResponse} from "../../../response/success.response";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
+import {WhitelistFilter} from "../../../types/whitelist-filter";
 
 @Component({
   selector: 'app-whitelisted-instances',
@@ -44,38 +45,44 @@ export class WhitelistedInstancesComponent implements OnInit {
   public async ngOnInit(): Promise<void> {
     this.titleService.title = 'Whitelisted instances';
 
-    if (!this.currentInstance.anonymous) {
-      const response = await toPromise(this.cachedApi.getEndorsementsByInstances([this.currentInstance.name]));
+    this.activatedRoute.queryParams.subscribe(async queryParams => {
+      this.loading = true;
+      this.currentPage = queryParams['page'] ? Number(queryParams['page']) : 1;
+
+      const filters: WhitelistFilter = {};
+      if (queryParams['tags']) {
+        filters.tags = queryParams['tags'].split(',');
+      }
+
+      if (!this.currentInstance.anonymous) {
+        const response = await toPromise(this.cachedApi.getEndorsementsByInstances([this.currentInstance.name]));
+        if (this.apiResponseHelper.handleErrors([response])) {
+          this.loading = false;
+          return;
+        }
+        this.endorsedByMe = response.successResponse!.instances.map(instance => instance.domain);
+      }
+
+      const response = await toPromise(this.cachedApi.getWhitelistedInstances(filters));
       if (this.apiResponseHelper.handleErrors([response])) {
         this.loading = false;
         return;
       }
-      this.endorsedByMe = response.successResponse!.instances.map(instance => instance.domain);
-    }
+      this.allInstances = response.successResponse!.instances.sort((a, b) => {
+        if (a.endorsements === b.endorsements) {
+          return 0;
+        }
 
-    const response = await toPromise(this.cachedApi.getWhitelistedInstances());
-    if (this.apiResponseHelper.handleErrors([response])) {
-      this.loading = false;
-      return;
-    }
-    this.allInstances = response.successResponse!.instances.sort((a, b) => {
-      if (a.endorsements === b.endorsements) {
-        return 0;
+        return a.endorsements > b.endorsements ? -1 : 1;
+      });
+      this.titleService.title = `Whitelisted instances (${this.allInstances.length})`;
+      this.maxPage = Math.ceil(this.allInstances.length / this.perPage);
+      for (let i = 1; i <= this.maxPage; ++i) {
+        this.pages.push(i);
       }
 
-      return a.endorsements > b.endorsements ? -1 : 1;
-    });
-    this.titleService.title = `Whitelisted instances (${this.allInstances.length})`;
-    this.maxPage = Math.ceil(this.allInstances.length / this.perPage);
-    for (let i = 1; i <= this.maxPage; ++i) {
-      this.pages.push(i);
-    }
-
-    this.loading = false;
-
-    this.activatedRoute.queryParams.subscribe(query => {
-      this.currentPage = query['page'] ? Number(query['page']) : 1;
       this.instances = this.allInstances.slice((this.currentPage - 1) * this.perPage, this.currentPage * this.perPage);
+      this.loading = false;
     });
   }
 

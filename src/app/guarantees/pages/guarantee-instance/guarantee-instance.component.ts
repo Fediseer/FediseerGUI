@@ -53,12 +53,11 @@ export class GuaranteeInstanceComponent implements OnInit {
         this.cachedApi.getGuaranteesByInstance(currentInstance, {clear: true}),
         this.cachedApi.getCensuresByInstances([currentInstance], {clear: true}),
         this.cachedApi.getHesitationsByInstances([currentInstance], {clear: true}),
-        this.cachedApi.getWhitelistedInstances({clear: true}),
       ]).subscribe(() => {
         this.loading = false;
         this.router.navigateByUrl('/guarantees/my').then(() => {
           this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully guaranteed!`);
-          this.cachedApi.getWhitelistedInstances({clear: true}).subscribe();
+          this.cachedApi.clearWhitelistCache();
         });
       });
     });

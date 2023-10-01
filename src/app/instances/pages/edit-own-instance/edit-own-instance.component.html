@@ -16,6 +16,13 @@
             <label for="inputModerators">Amount of moderators</label>
             <input class="form-control" type="number" min="0" step="1" id="inputModerators" formControlName="moderators" />
           </div>
+          <div class="form-group">
+            <label for="inputTags">Tags</label>
+            <app-tooltip text="Self-reported list of tags, can be anything you feel represents your instance." />
+            <select formControlName="tags" id="inputTags" tom-select multiple [create]="true" [maxItems]="null">
+              <option *ngFor="let option of availableTags" [value]="option">{{option}}</option>
+            </select>
+          </div>
 
           <ng-template #visibilitySelect let-formControlName="formControlName" let-type="type">
             <div class="form-group">

@@ -65,7 +65,7 @@ export class MyGuaranteesComponent implements OnInit {
       this.instancesGuaranteedByMe = this.instancesGuaranteedByMe.filter(
         guaranteedInstance => guaranteedInstance.domain !== instance,
       );
-      this.cachedApi.getWhitelistedInstances({clear: true}).subscribe();
+      this.cachedApi.clearWhitelistCache();
       this.cachedApi.getGuaranteesByInstance(this.instance.name).subscribe();
     });
   }
