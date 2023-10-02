@@ -4,6 +4,39 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-body">
+        <!-- filters -->
+        <form [formGroup]="form" (submit)="loadInstances()">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="inputFilterTags">Tags</label>
+                <select formControlName="tags" id="inputFilterTags" multiple tom-select [maxItems]="null" [create]="true">
+                  <option *ngFor="let option of availableTags" [value]="option">{{option}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="inputFilterMinimumEndorsements">Minimum amount of endorsements</label>
+                <input type="number" id="inputFilterMinimumEndorsements" formControlName="minimumEndorsements" class="form-control" />
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="inputFilterMinimumGuarantors">Minimum amount of guarantors</label>
+                <input type="number" id="inputFilterMinimumGuarantors" formControlName="minimumGuarantors" class="form-control" />
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-3">
+              <div class="form-group">
+                <button [disabled]="!form.valid" type="submit" class="btn btn-primary">Filter</button>
+              </div>
+            </div>
+          </div>
+        </form>
+        <!-- end filters -->
         <p *ngIf="!currentInstance.anonymous">
           If you're looking for managing of your own whitelist, go to <a routerLink="/endorsements/my">your endorsements</a>.
         </p>
