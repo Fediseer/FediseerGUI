@@ -185,6 +185,12 @@ export class FediseerApiService {
     if (filter.tags !== undefined) {
       body['tags_csv'] = filter.tags.join(',');
     }
+    if (filter.minimumEndorsements !== undefined) {
+      body['endorsements'] = String(filter.minimumEndorsements);
+    }
+    if (filter.minimumGuarantors !== undefined) {
+      body['guarantors'] = String(filter.minimumGuarantors);
+    }
 
     const sendRequest = (page: number, limit: number): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> => this.sendRequest(
       HttpMethod.Get,

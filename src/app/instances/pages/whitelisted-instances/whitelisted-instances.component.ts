@@ -4,13 +4,15 @@ import {ApiResponse, FediseerApiService} from "../../../services/fediseer-api.se
 import {MessageService} from "../../../services/message.service";
 import {InstanceDetailResponse} from "../../../response/instance-detail.response";
 import {toPromise} from "../../../types/resolvable";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Params, Router} from "@angular/router";
 import {AuthenticationManagerService} from "../../../services/authentication-manager.service";
 import {Instance} from "../../../user/instance";
 import {SuccessResponse} from "../../../response/success.response";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 import {WhitelistFilter} from "../../../types/whitelist-filter";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
+import {int} from "../../../types/number";
 
 @Component({
   selector: 'app-whitelisted-instances',
@@ -21,6 +23,7 @@ export class WhitelistedInstancesComponent implements OnInit {
   private readonly perPage = 30;
 
   private allInstances: InstanceDetailResponse[] = [];
+  private initialLoadComplete: boolean = false;
 
   public instances: InstanceDetailResponse[] = [];
   public currentInstance: Instance = this.authManager.currentInstanceSnapshot;
@@ -29,6 +32,14 @@ export class WhitelistedInstancesComponent implements OnInit {
   public currentPage = 1;
   public pages: number[] = [];
   public loading: boolean = true;
+
+  public availableTags: string[] = [];
+
+  public form = new FormGroup({
+    tags: new FormControl<string[]>([]),
+    minimumEndorsements: new FormControl<int>(0, [Validators.min(0)]),
+    minimumGuarantors: new FormControl<int>(1, [Validators.min(0)]),
+  });
 
   constructor(
     private readonly titleService: TitleService,
@@ -50,9 +61,21 @@ export class WhitelistedInstancesComponent implements OnInit {
       this.currentPage = queryParams['page'] ? Number(queryParams['page']) : 1;
 
       const filters: WhitelistFilter = {};
-      if (queryParams['tags']) {
+      if (queryParams['tags'] !== undefined) {
         filters.tags = queryParams['tags'].split(',');
       }
+      if (queryParams['minimumEndorsements'] !== undefined) {
+        filters.minimumEndorsements = Number(queryParams['minimumEndorsements']);
+      }
+      if (queryParams['minimumGuarantors'] !== undefined) {
+        filters.minimumGuarantors = Number(queryParams['minimumGuarantors']);
+      }
+
+      const formPatch: WhitelistFilter = JSON.parse(JSON.stringify(filters));
+      formPatch.tags ??= [];
+      formPatch.minimumGuarantors ??= 1;
+      formPatch.minimumEndorsements ??= 0;
+      this.form.patchValue(formPatch);
 
       if (!this.currentInstance.anonymous) {
         const response = await toPromise(this.cachedApi.getEndorsementsByInstances([this.currentInstance.name]));
@@ -83,6 +106,12 @@ export class WhitelistedInstancesComponent implements OnInit {
 
       this.instances = this.allInstances.slice((this.currentPage - 1) * this.perPage, this.currentPage * this.perPage);
       this.loading = false;
+
+      this.availableTags = await toPromise(this.cachedApi.getAvailableTags());
+
+      if (!this.initialLoadComplete) {
+        this.initialLoadComplete = true;
+      }
     });
   }
 
@@ -115,6 +144,30 @@ export class WhitelistedInstancesComponent implements OnInit {
       relativeTo: this.activatedRoute,
       queryParams: {page: page},
       queryParamsHandling: 'merge',
+    });
+  }
+
+  public async loadInstances(): Promise<void> {
+    if (!this.form.valid) {
+      return;
+    }
+
+    const queryParams: Params = {
+      page: 1,
+    };
+    if (this.form.controls.tags.value?.length) {
+      queryParams['tags'] = this.form.controls.tags.value!.join(',');
+    }
+    if (this.form.controls.minimumEndorsements.value !== null) {
+      queryParams['minimumEndorsements'] = this.form.controls.minimumEndorsements.value!;
+    }
+    if (this.form.controls.minimumGuarantors.value !== null) {
+      queryParams['minimumGuarantors'] = this.form.controls.minimumGuarantors.value!;
+    }
+
+    await this.router.navigate([], {
+      relativeTo: this.activatedRoute,
+      queryParams: queryParams,
     });
   }
 }
