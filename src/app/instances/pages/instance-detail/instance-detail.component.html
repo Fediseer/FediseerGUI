@@ -12,12 +12,14 @@
             <a *ngIf="myInstance" routerLink="/instances/edit/my" class="btn btn-primary btn-sm">Edit instance details</a>
           </ng-container>
           <ng-template #instanceControls>
-            In a list:&nbsp;
-            <app-instance-move-to-list
-              instance="{{detail.domain}}"
-              (movingInstanceFailed)="onMovingInstanceFailed($event)"
-              (instanceMoved)="onInstanceMoved($event)"
-            />
+            <ng-container *ngIf="loggedIn">
+              In a list:&nbsp;
+              <app-instance-move-to-list
+                instance="{{detail.domain}}"
+                (movingInstanceFailed)="onMovingInstanceFailed($event)"
+                (instanceMoved)="onInstanceMoved($event)"
+              />
+            </ng-container>
           </ng-template>
         </div>
       </div>
