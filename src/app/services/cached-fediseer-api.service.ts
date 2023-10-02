@@ -199,7 +199,8 @@ export class CachedFediseerApiService {
             return [];
           }
 
-          return response.successResponse!.instances.flatMap(instance => instance.tags);
+          return response.successResponse!.instances.flatMap(instance => instance.tags)
+            .filter((value, index, array) => array.indexOf(value) === index);
         }),
         tap (result => {
           item.value = result;
