@@ -44,7 +44,7 @@
 <ng-template #synchronizeForm>
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title">Synchronization</h3>
+      <h3 class="card-title">Synchronization from Fediseer to Mastodon</h3>
     </div>
     <div class="card-body">
       <app-filter-form
@@ -121,6 +121,44 @@
       </div>
     </div>
   </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Synchronization from Mastodon to Fediseer</h3>
+    </div>
+    <div class="card-body">
+      <p>
+        Note that no domains will be removed from Fediseer, only domains that are present on
+        <strong>{{currentInstance}}</strong> but not here on <strong>Fediseer</strong>
+        will be added to your Fediseer censure list.
+      </p>
+      <form [formGroup]="form" (submit)="synchronizeFromMastodon()">
+        <button type="submit" class="btn-primary btn">Synchronize</button>
+      </form>
+
+      <div class="row mt-4">
+        <div class="col-md-12 minimum-height">
+          <h3>Preview</h3>
+
+          <div class="position-relative">
+            <app-loader *ngIf="loadingPreviewMastodonToFediseer else previewMastodonToFediseer" />
+          </div>
+
+          <ng-template #previewMastodonToFediseer>
+            <app-blacklist-diff
+              [originalList]="myCensuredInstances"
+              [newList]="sourceBlockedInstances"
+              [newToStringCallback]="mastodonToFediseerSyncNewListCallback"
+              [purgeMode]="false"
+              [highlightRemoved]="false"
+              addedText="This domain is only on your instance blocklist and will be added to your Fediseer censures"
+            />
+          </ng-template>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="card">
     <div class="card-header">
       <h3 class="card-title">Original blacklist</h3>

@@ -16,8 +16,12 @@ import {
 } from "../../components/filter-form/filter-form.component";
 import {InstanceDetailResponse} from "../../../response/instance-detail.response";
 import {SynchronizationMode} from "../../../types/synchronization-mode";
-import {OriginalToStringCallback} from "../../components/blacklist-diff/blacklist-diff.component";
+import {NewToStringCallback, OriginalToStringCallback} from "../../components/blacklist-diff/blacklist-diff.component";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
+import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
+import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
+import {ApiResponse, FediseerApiService} from "../../../services/fediseer-api.service";
+import {SuccessResponse} from "../../../response/success.response";
 
 @Component({
   selector: 'app-synchronize-mastodon',
@@ -27,6 +31,7 @@ import {NormalizedInstanceDetailResponse} from "../../../response/normalized-ins
 export class SynchronizeMastodonComponent implements OnInit {
   protected readonly MastodonBlacklistSeverity = MastodonBlacklistSeverity;
   protected readonly currentInstance = this.authManager.currentInstanceSnapshot.name;
+  protected readonly mastodonToFediseerSyncNewListCallback: NewToStringCallback<MastodonBlacklistItem>  = instance => instance.domain;
 
   private syncSettings: MastodonSynchronizationSettings = this.database.mastodonSynchronizationSettings;
 
@@ -51,6 +56,7 @@ export class SynchronizeMastodonComponent implements OnInit {
   public loadingPreview: boolean = true;
   public purgeMode: boolean | null = null;
   public instancesToBanPreview: InstanceDetailResponse[] | null = null;
+  public myCensuredInstances: string[] = [];
 
   public saveSettingsCallback: SaveSettingsCallback<MastodonSynchronizationSettings> = (database, settings) => {
     database.mastodonSynchronizationSettings = settings;
@@ -59,6 +65,7 @@ export class SynchronizeMastodonComponent implements OnInit {
     return database.mastodonSynchronizationSettings;
   }
   public instanceToStringCallback: OriginalToStringCallback<MastodonBlacklistItem> = instance => instance.domain;
+  public loadingPreviewMastodonToFediseer: boolean = true;
 
   constructor(
     private readonly database: DatabaseService,
@@ -66,6 +73,9 @@ export class SynchronizeMastodonComponent implements OnInit {
     private readonly authManager: AuthenticationManagerService,
     private readonly mastodonApi: MastodonApiService,
     private readonly messageService: MessageService,
+    private readonly cachedFediseerApi: CachedFediseerApiService,
+    private readonly fediseerApi: FediseerApiService,
+    private readonly apiResponseHelper: ApiResponseHelperService,
   ) {
   }
 
@@ -123,6 +133,15 @@ export class SynchronizeMastodonComponent implements OnInit {
     }
     this.originallyBlockedInstances = instances;
     this.sourceBlockedInstances = instances;
+
+    const myCensures = await toPromise(this.cachedFediseerApi.getCensuresByInstances([
+      this.authManager.currentInstanceSnapshot.name,
+    ], {ttl: 10}));
+    if (this.apiResponseHelper.handleErrors([myCensures])) {
+      return;
+    }
+    this.myCensuredInstances = myCensures.successResponse!.instances.map(instance => instance.domain);
+    this.loadingPreviewMastodonToFediseer = false;
   }
 
   public async saveOauth(): Promise<void> {
@@ -262,5 +281,48 @@ export class SynchronizeMastodonComponent implements OnInit {
     }
     this.instancesToBanPreview = [...instancesToBan.censured, ...instancesToBan.hesitated];
     this.loadingPreview = false;
+  }
+
+  public async synchronizeFromMastodon() {
+    this.loading = true;
+
+    const instances = this.sourceBlockedInstances.filter(
+      instance => !this.myCensuredInstances.includes(instance.domain),
+    );
+
+    const promises: Promise<ApiResponse<SuccessResponse>>[] = [];
+    for (const instance of instances) {
+      let reasons: string[] = [];
+      if (instance.private_comment) {
+        reasons.push(instance.private_comment);
+      }
+      if (instance.public_comment) {
+        reasons.push(instance.public_comment);
+      }
+
+      reasons = reasons.join(',').split(',').map(reason => reason.trim().toLowerCase());
+      promises.push(toPromise(this.fediseerApi.censureInstance(instance.domain, reasons.length ? reasons.join(',') : null)));
+    }
+
+    const responses = await Promise.all(promises);
+    if (this.apiResponseHelper.handleErrors(responses)) {
+      this.loading = false;
+      return;
+    }
+
+    this.cachedFediseerApi.getCensuresByInstances(
+      [this.authManager.currentInstanceSnapshot.name],
+      {clear: true, ttl: 10},
+    ).subscribe(response => {
+      if (!response.success) {
+        this.messageService.createWarning(`Couldn't fetch new list of your censured instances, please reload the page to get fresh data.`);
+        return;
+      }
+
+      this.myCensuredInstances = response.successResponse!.instances.map(instance => instance.domain);
+    });
+
+    this.messageService.createSuccess(`Your Mastodon blocklist was successfully synchronized to Fediseer. Please add reasons to the newly imported censures (if you haven't done so on Mastodon) to help your fellow admins.`);
+    this.loading = false;
   }
 }
