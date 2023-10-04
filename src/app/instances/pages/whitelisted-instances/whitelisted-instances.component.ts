@@ -59,6 +59,7 @@ export class WhitelistedInstancesComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe(async queryParams => {
       this.loading = true;
       this.currentPage = queryParams['page'] ? Number(queryParams['page']) : 1;
+      this.pages = [];
 
       const filters: WhitelistFilter = {};
       if (queryParams['tags'] !== undefined) {
