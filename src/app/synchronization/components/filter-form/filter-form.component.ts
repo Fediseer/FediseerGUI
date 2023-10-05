@@ -45,10 +45,10 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
 
   private cache: {[key: string]: InstanceDetailResponse[] | null} = {};
 
-  public loadingWhitelistedInstances = false;
+  public loadingSafelistedInstances = false;
   public loadingReasons = false;
 
-  public whitelistedInstancesList: InstanceDetailResponse[] | null = null;
+  public safelistedInstancesList: InstanceDetailResponse[] | null = null;
   public availableReasons: string[] | null = null;
 
   public myInstance: string = this.authManager.currentInstanceSnapshot.name;
@@ -205,10 +205,10 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   }
 
   private async loadCustomInstancesSelect(mode: SynchronizationMode) {
-    if (this.whitelistedInstancesList === null) {
-      this.loadingWhitelistedInstances = true;
+    if (this.safelistedInstancesList === null) {
+      this.loadingSafelistedInstances = true;
       const responses = await Promise.all([
-        toPromise(this.cachedApi.getWhitelistedInstances()),
+        toPromise(this.cachedApi.getSafelistedInstances()),
         toPromise(this.cachedApi.getEndorsementsByInstances([this.authManager.currentInstanceSnapshot.name])),
         toPromise(this.cachedApi.getGuaranteesByInstance(this.authManager.currentInstanceSnapshot.name)),
       ]);
@@ -217,8 +217,8 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
         return;
       }
 
-      this.whitelistedInstancesList = responses[0].successResponse!.instances;
-      this.loadingWhitelistedInstances = false;
+      this.safelistedInstancesList = responses[0].successResponse!.instances;
+      this.loadingSafelistedInstances = false;
     }
   }
 

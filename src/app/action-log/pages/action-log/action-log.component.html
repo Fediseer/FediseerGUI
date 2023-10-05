@@ -33,17 +33,17 @@
                     <option [value]="ActionLogReportActivity.Modified">{{"app.action_log.activity.modified" | transloco}}</option>
                   </select>
                 </div>
-                <div class="form-group" *ngIf="whitelistedDomains">
+                <div class="form-group" *ngIf="safelistedDomains">
                   <label for="inputSourceDomains">{{"app.source_domains" | transloco}}</label>
                   <select id="inputSourceDomains" formControlName="sourceDomains" multiple tom-select [maxItems]="null" [create]="true">
-                    <option *ngFor="let option of whitelistedDomains" [value]="option">{{option}}</option>
+                    <option *ngFor="let option of safelistedDomains" [value]="option">{{option}}</option>
                   </select>
                 </div>
-                <div class="form-group" *ngIf="whitelistedDomains && blacklistedDomains">
+                <div class="form-group" *ngIf="safelistedDomains && blacklistedDomains">
                   <label for="inputTargetDomains">{{"app.target_domains" | transloco}}</label>
                   <select id="inputTargetDomains" formControlName="targetDomains" multiple tom-select [maxItems]="null" [create]="true">
                     <option *ngFor="let option of blacklistedDomains" [value]="option">{{option}}</option>
-                    <option *ngFor="let option of whitelistedDomains" [value]="option">{{option}}</option>
+                    <option *ngFor="let option of safelistedDomains" [value]="option">{{option}}</option>
                   </select>
                 </div>
               </div>

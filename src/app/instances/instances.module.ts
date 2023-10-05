@@ -1,7 +1,7 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {RouterModule, Routes} from "@angular/router";
-import {WhitelistedInstancesComponent} from './pages/whitelisted-instances/whitelisted-instances.component';
+import {SafelistedInstancesComponent} from './pages/safelisted-instances/safelisted-instances.component';
 import {InstanceDetailComponent} from './pages/instance-detail/instance-detail.component';
 import {SuspiciousInstancesComponent} from './pages/suspicious-instances/suspicious-instances.component';
 import {SharedModule} from "../shared/shared.module";
@@ -14,11 +14,16 @@ import {
   SuspiciousInstanceDetailComponent
 } from './pages/suspicious-instance-detail/suspicious-instance-detail.component';
 import {ResetInstanceTokenComponent} from './pages/reset-instance-token/reset-instance-token.component';
+import {RedirectWhitelistComponent} from './pages/redirect-whitelist/redirect-whitelist.component';
 
 const routes: Routes = [
   {
+    path: 'safelisted',
+    component: SafelistedInstancesComponent,
+  },
+  {
     path: 'whitelisted',
-    component: WhitelistedInstancesComponent,
+    component: RedirectWhitelistComponent,
   },
   {
     path: 'suspicious',
@@ -54,7 +59,7 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [
-    WhitelistedInstancesComponent,
+    SafelistedInstancesComponent,
     InstanceDetailComponent,
     SuspiciousInstancesComponent,
     CensuredInstancesComponent,
@@ -62,6 +67,7 @@ const routes: Routes = [
     HesitatedInstancesComponent,
     SuspiciousInstanceDetailComponent,
     ResetInstanceTokenComponent,
+    RedirectWhitelistComponent,
   ],
   imports: [
     CommonModule,

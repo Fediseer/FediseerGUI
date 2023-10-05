@@ -15,11 +15,11 @@
     </small>
   </div>
   <div class="form-group position-relative" *ngIf="form.controls.mode.value === SynchronizationMode.CustomInstances">
-    <app-loader *ngIf="loadingWhitelistedInstances else whitelistedInstancesSelect" />
-    <ng-template #whitelistedInstancesSelect>
+    <app-loader *ngIf="loadingSafelistedInstances else safelistedInstancesSelect" />
+    <ng-template #safelistedInstancesSelect>
       <label for="inputCustomInstances">Custom instances</label>
-      <select formControlName="customInstances" id="inputCustomInstances" *ngIf="whitelistedInstancesList" tom-select multiple [maxItems]="null">
-        <option *ngFor="let option of whitelistedInstancesList" [value]="option.domain">{{option.domain}}</option>
+      <select formControlName="customInstances" id="inputCustomInstances" *ngIf="safelistedInstancesList" tom-select multiple [maxItems]="null">
+        <option *ngFor="let option of safelistedInstancesList" [value]="option.domain">{{option.domain}}</option>
       </select>
     </ng-template>
   </div>
@@ -63,10 +63,10 @@
     </small>
   </div>
   <div class="form-group position-relative" *ngIf="form.controls.ignoreInstances.value">
-    <app-loader *ngIf="loadingWhitelistedInstances else instancesSelect" />
+    <app-loader *ngIf="loadingSafelistedInstances else instancesSelect" />
     <ng-template #instancesSelect>
       <select formControlName="ignoreInstanceList" tom-select multiple [create]="true" [maxItems]="null">
-        <option *ngFor="let option of whitelistedInstancesList" [value]="option.domain">{{option.domain}}</option>
+        <option *ngFor="let option of safelistedInstancesList" [value]="option.domain">{{option.domain}}</option>
       </select>
     </ng-template>
   </div>

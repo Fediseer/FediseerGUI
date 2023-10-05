@@ -10,7 +10,7 @@
       </p>
       <p *ngIf="currentInstance.anonymous">
         <transloco [key]="'app.home.info_text.anonymous'" [params]="{
-          guaranteedLink: {route: ['instances/whitelisted']},
+          guaranteedLink: {route: ['instances/safelisted']},
           censuredLink: {route: ['instances/censured']},
           loginLink: {route: ['auth/login']},
           claimLink: {route: ['/auth/claim-instance']}
@@ -18,7 +18,7 @@
       </p>
       <p *ngIf="!currentInstance.anonymous && currentInstanceDetail?.guarantor">
         <transloco [key]="'app.home.info_text.logged_in.with_guarantor'" [params]="{
-          guaranteedLink: {route: ['instances/whitelisted']},
+          guaranteedLink: {route: ['instances/safelisted']},
           censuredLink: {route: ['instances/censured']},
           myEndorsements: {route: ['endorsements/my']},
           myGuarantees: {route: ['guarantees/my']},

@@ -7,7 +7,7 @@ import {int} from "../types/number";
 import {PermanentCacheService} from "./cache/permanent-cache.service";
 import {Cache, CacheItem} from "./cache/cache";
 import {InstanceListResponse} from "../response/instance-list.response";
-import {WhitelistFilter} from "../types/whitelist-filter";
+import {SafelistFilter} from "../types/safelist-filter";
 
 export enum CacheType {
   Runtime,
@@ -62,24 +62,24 @@ export class CachedFediseerApiService {
     );
   }
 
-  public getWhitelistedInstances(whitelistFilter: WhitelistFilter = {}, cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+  public getSafelistedInstances(safelistFilter: SafelistFilter = {}, cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     cacheConfig.type ??= CacheType.Permanent;
     cacheConfig.ttl ??= 120;
 
-    const cacheKey = `api.whitelist${cacheConfig.ttl}.${JSON.stringify(whitelistFilter)}`;
+    const cacheKey = `api.safelist${cacheConfig.ttl}.${JSON.stringify(safelistFilter)}`;
     const item = this.getCacheItem<InstanceListResponse<InstanceDetailResponse>>(cacheKey, cacheConfig)!;
     if (item.isHit && !cacheConfig.clear) {
       return this.getSuccessResponse(item);
     }
 
-    return this.api.getWhitelistedInstances(whitelistFilter).pipe(
+    return this.api.getSafelistedInstances(safelistFilter).pipe(
       tap(this.storeResponse(item, cacheConfig)),
     );
   }
 
-  public clearWhitelistCache(): void {
-    this.runtimeCache.clearByPrefix('api.whitelist');
-    this.permanentCache.clearByPrefix('api.whitelist');
+  public clearSafelistCache(): void {
+    this.runtimeCache.clearByPrefix('api.safelist');
+    this.permanentCache.clearByPrefix('api.safelist');
   }
 
   public getHesitationsByInstances(instances: string[], cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
@@ -192,7 +192,7 @@ export class CachedFediseerApiService {
       return of(item.value!);
     }
 
-    return this.getWhitelistedInstances()
+    return this.getSafelistedInstances()
       .pipe(
         map (response => {
           if (!response.success) {

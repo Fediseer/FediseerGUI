@@ -18,7 +18,7 @@ import {ResetApiKeyResponse} from "../response/reset-api-key.response";
 import {PrivateMessageProxy} from "../types/private-message-proxy";
 import {SolicitationInstanceDetailResponse} from "../response/solicitation-instance-detail.response";
 import {ActionLogFilter} from "../types/action-log.filter";
-import {WhitelistFilter} from "../types/whitelist-filter";
+import {SafelistFilter} from "../types/safelist-filter";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -178,7 +178,7 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Patch, `hesitations/${instance}`, body);
   }
 
-  public getWhitelistedInstances(filter: WhitelistFilter = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+  public getSafelistedInstances(filter: SafelistFilter = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     const maxPerPage = 100; // from api
 
     let body: {[key: string]: string} = {};
@@ -234,7 +234,7 @@ export class FediseerApiService {
   }
 
   public getCensuredInstances(): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
-    return this.getWhitelistedInstances().pipe(
+    return this.getSafelistedInstances().pipe(
       switchMap(response => {
         if (!response.success) {
           return of({

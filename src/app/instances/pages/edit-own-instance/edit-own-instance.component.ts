@@ -90,7 +90,7 @@ export class EditOwnInstanceComponent implements OnInit {
       return;
     }
 
-    this.cachedApi.clearWhitelistCache();
+    this.cachedApi.clearSafelistCache();
     this.cachedApi.getAvailableTags({clear: true}).subscribe();
     this.cachedApi.getCurrentInstanceInfo(null, {clear: true}).subscribe();
 

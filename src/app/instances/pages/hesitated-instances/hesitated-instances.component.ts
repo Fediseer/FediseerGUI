@@ -36,7 +36,7 @@ export class HesitatedInstancesComponent {
   public currentPage = 1;
   public pages: number[] = [];
   public loading: boolean = true;
-  public allWhitelistedInstances: InstanceDetailResponse[] = [];
+  public allSafelistedInstances: InstanceDetailResponse[] = [];
 
   public filterForm = new FormGroup({
     instances: new FormControl<string[]>(environment.defaultCensuresListInstanceFilter),
@@ -72,12 +72,12 @@ export class HesitatedInstancesComponent {
       this.hesitatedByMe = response.successResponse!.instances.map(instance => instance.domain);
     }
 
-    const allWhitelistedInstancesResponse = await toPromise(this.cachedApi.getWhitelistedInstances());
-    if (this.apiResponseHelper.handleErrors([allWhitelistedInstancesResponse])) {
+    const allSafelistedInstancesResponse = await toPromise(this.cachedApi.getSafelistedInstances());
+    if (this.apiResponseHelper.handleErrors([allSafelistedInstancesResponse])) {
       this.loading = false;
       return;
     }
-    this.allWhitelistedInstances = allWhitelistedInstancesResponse.successResponse!.instances;
+    this.allSafelistedInstances = allSafelistedInstancesResponse.successResponse!.instances;
 
     const storedFilters = this.database.censureListFilters;
     if (!storedFilters.instances.length) {
@@ -157,9 +157,9 @@ export class HesitatedInstancesComponent {
       sourceInstances = environment.defaultCensuresListInstanceFilter;
     }
     if (sourceInstances.indexOf(this.filterInstanceSpecialValueAll) > -1) {
-      sourceInstances = this.allWhitelistedInstances.map(instance => instance.domain);
+      sourceInstances = this.allSafelistedInstances.map(instance => instance.domain);
     } else {
-      const allInstancesString = this.allWhitelistedInstances.map(instance => instance.domain);
+      const allInstancesString = this.allSafelistedInstances.map(instance => instance.domain);
       sourceInstances = sourceInstances.filter(instance => allInstancesString.indexOf(instance) > -1);
       if (this.filterForm.controls.includeEndorsed.value) {
         const endorsedResponse = await toPromise(this.cachedApi.getEndorsementsByInstances(sourceInstances));
