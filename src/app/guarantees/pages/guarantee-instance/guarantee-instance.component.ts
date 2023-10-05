@@ -57,7 +57,7 @@ export class GuaranteeInstanceComponent implements OnInit {
         this.loading = false;
         this.router.navigateByUrl('/guarantees/my').then(() => {
           this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully guaranteed!`);
-          this.cachedApi.clearWhitelistCache();
+          this.cachedApi.clearSafelistCache();
         });
       });
     });

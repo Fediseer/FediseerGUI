@@ -10,16 +10,16 @@ import {Instance} from "../../../user/instance";
 import {SuccessResponse} from "../../../response/success.response";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
-import {WhitelistFilter} from "../../../types/whitelist-filter";
+import {SafelistFilter} from "../../../types/safelist-filter";
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {int} from "../../../types/number";
 
 @Component({
-  selector: 'app-whitelisted-instances',
-  templateUrl: './whitelisted-instances.component.html',
-  styleUrls: ['./whitelisted-instances.component.scss']
+  selector: 'app-safelisted-instances',
+  templateUrl: './safelisted-instances.component.html',
+  styleUrls: ['./safelisted-instances.component.scss']
 })
-export class WhitelistedInstancesComponent implements OnInit {
+export class SafelistedInstancesComponent implements OnInit {
   private readonly perPage = 30;
 
   private allInstances: InstanceDetailResponse[] = [];
@@ -54,14 +54,14 @@ export class WhitelistedInstancesComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.titleService.title = 'Whitelisted instances';
+    this.titleService.title = 'Safelisted instances';
 
     this.activatedRoute.queryParams.subscribe(async queryParams => {
       this.loading = true;
       this.currentPage = queryParams['page'] ? Number(queryParams['page']) : 1;
       this.pages = [];
 
-      const filters: WhitelistFilter = {};
+      const filters: SafelistFilter = {};
       if (queryParams['tags'] !== undefined) {
         filters.tags = queryParams['tags'].split(',');
       }
@@ -72,7 +72,7 @@ export class WhitelistedInstancesComponent implements OnInit {
         filters.minimumGuarantors = Number(queryParams['minimumGuarantors']);
       }
 
-      const formPatch: WhitelistFilter = JSON.parse(JSON.stringify(filters));
+      const formPatch: SafelistFilter = JSON.parse(JSON.stringify(filters));
       formPatch.tags ??= [];
       formPatch.minimumGuarantors ??= 1;
       formPatch.minimumEndorsements ??= 0;
@@ -87,7 +87,7 @@ export class WhitelistedInstancesComponent implements OnInit {
         this.endorsedByMe = response.successResponse!.instances.map(instance => instance.domain);
       }
 
-      const response = await toPromise(this.cachedApi.getWhitelistedInstances(filters));
+      const response = await toPromise(this.cachedApi.getSafelistedInstances(filters));
       if (this.apiResponseHelper.handleErrors([response])) {
         this.loading = false;
         return;
@@ -99,7 +99,7 @@ export class WhitelistedInstancesComponent implements OnInit {
 
         return a.endorsements > b.endorsements ? -1 : 1;
       });
-      this.titleService.title = `Whitelisted instances (${this.allInstances.length})`;
+      this.titleService.title = `Safelisted instances (${this.allInstances.length})`;
       this.maxPage = Math.ceil(this.allInstances.length / this.perPage);
       for (let i = 1; i <= this.maxPage; ++i) {
         this.pages.push(i);

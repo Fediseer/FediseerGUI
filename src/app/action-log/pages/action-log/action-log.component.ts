@@ -32,7 +32,7 @@ export class ActionLogComponent implements OnInit {
   public currentPage: int = 1;
   public lastPageReached: boolean = false;
 
-  public whitelistedDomains: string[] | null = null;
+  public safelistedDomains: string[] | null = null;
   public blacklistedDomains: string[] | null = null;
 
   public form = new FormGroup({
@@ -58,7 +58,7 @@ export class ActionLogComponent implements OnInit {
     this.titleService.title = this.translator.get('app.action_log');
 
     Promise.all([
-      toPromise(this.cachedApi.getWhitelistedInstances().pipe(
+      toPromise(this.cachedApi.getSafelistedInstances().pipe(
         map (response => {
           if (this.apiResponseHelper.handleErrors([response])) {
             return [];
@@ -77,7 +77,7 @@ export class ActionLogComponent implements OnInit {
         }),
       )),
     ]).then(responses => {
-      this.whitelistedDomains = responses[0];
+      this.safelistedDomains = responses[0];
       this.blacklistedDomains = responses[1];
 
       this.filtersLoading = false;

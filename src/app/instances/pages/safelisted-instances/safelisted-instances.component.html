@@ -38,7 +38,7 @@
         </form>
         <!-- end filters -->
         <p *ngIf="!currentInstance.anonymous">
-          If you're looking for managing of your own whitelist, go to <a routerLink="/endorsements/my">your endorsements</a>.
+          You might also be looking to manage <a routerLink="/endorsements/my">your endorsements</a>.
         </p>
         <table class="table table-bordered">
           <thead>
@@ -87,7 +87,7 @@
             <td>
               <code *ngIf="!instance.tags.length">N/A</code>
               <ng-container *ngIf="instance.tags.length">
-                <a routerLink="/instances/whitelisted" [queryParams]="{tags: tag}" class="btn btn-sm btn-outline-primary" *ngFor="let tag of instance.tags">
+                <a routerLink="/instances/safelisted" [queryParams]="{tags: tag}" class="btn btn-sm btn-outline-primary" *ngFor="let tag of instance.tags">
                   {{tag}}
                 </a>
               </ng-container>

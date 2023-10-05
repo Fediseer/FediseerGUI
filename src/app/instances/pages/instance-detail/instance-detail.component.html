@@ -62,7 +62,7 @@
             <td>
               <code *ngIf="!detail.tags.length">N/A</code>
               <ng-container *ngIf="detail.tags.length">
-                <a routerLink="/instances/whitelisted" [queryParams]="{tags: tag}" class="btn btn-sm btn-outline-primary" *ngFor="let tag of detail.tags">
+                <a routerLink="/instances/safelisted" [queryParams]="{tags: tag}" class="btn btn-sm btn-outline-primary" *ngFor="let tag of detail.tags">
                   {{tag}}
                 </a>
               </ng-container>
