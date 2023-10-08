@@ -10,6 +10,7 @@ import {ApiResponseHelperService} from "../../../services/api-response-helper.se
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 import {InstanceMoveEvent} from "../../../shared/components/instance-move-to-list/instance-move-to-list.component";
+import {TranslatorService} from "../../../services/translator.service";
 
 @Component({
   selector: 'app-my-censures',
@@ -30,11 +31,12 @@ export class MyCensuresComponent implements OnInit {
     private readonly messageService: MessageService,
     private readonly apiResponseHelper: ApiResponseHelperService,
     private readonly cachedApi: CachedFediseerApiService,
+    private readonly translator: TranslatorService,
   ) {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.titleService.title = `My censures`;
+    this.titleService.title = this.translator.get('app.censures.my.title');
 
     const responses = await Promise.all([
       toPromise(this.cachedApi.getCensuresByInstances([this.authManager.currentInstanceSnapshot.name])),
@@ -55,7 +57,9 @@ export class MyCensuresComponent implements OnInit {
   }
 
   public async onMovingInstanceFailed(event: InstanceMoveEvent) {
-    this.messageService.createError(`Failed moving the instance ${event.instance}. Please reload the page to see whether it was removed from your censures or not.`);
+    this.messageService.createError(this.translator.get('error.censures.moving_failed', {
+      instance: event.instance,
+    }));
     this.loading = false;
   }
 

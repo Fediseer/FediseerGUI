@@ -4,27 +4,32 @@
   <div class="col-md-12">
     <div class="card">
       <div class="card-body">
-        <p>Censuring means that you strongly disapprove of an instance. For more information visit the <a routerLink="/glossary">Glossary</a>.</p>
-        <p><strong>You can do this only if your instance is guaranteed by some other instance.</strong></p>
+        <p>
+          <transloco key="app.censures.intro" [params]="{glossaryLink: {route: '/glossary'}, glossary: 'app.glossary' | transloco}" />
+        </p>
+        <p>
+          <strong><transloco key="app.guarantee_restricted.info" [params]="{glossaryLink: {route: '/glossary', fragment: 'guarantee'}}" /></strong>
+        </p>
         <form [formGroup]="form" (submit)="doCensure()">
           <div class="form-group">
-            <label for="inputInstance">Instance to censure</label>
+            <label for="inputInstance">{{'app.censures.instance_to_censure' | transloco}}</label>
             <input class="form-control" type="text" id="inputInstance" formControlName="instance" />
           </div>
           <div class="form-group">
-            <label for="inputReason">Reasons</label>
+            <label for="inputReason">{{'app.reasons' | transloco}}</label>
             <select formControlName="reasons" id="inputReason" multiple tom-select [maxItems]="null" [create]="true">
               <option *ngFor="let option of availableReasons" [value]="option">{{option}}</option>
             </select>
           </div>
           <div class="form-group">
-            <label for="inputEvidence">Evidence</label>
+            <label for="inputEvidence">{{'app.evidence' | transloco}}</label>
             <textarea id="inputEvidence" class="form-control" formControlName="evidence" aria-describedby="inputEvidenceDescription"></textarea>
             <small id="inputEvidenceDescription">
-              You may optionally provide an evidence, for example links, or any other text up to 1000 characters in length.
+              <!-- todo get amount from api -->
+              {{'app.evidence.description' | transloco:{amount: 1000 | formatNumber} }}
             </small>
           </div>
-          <button type="submit" class="btn btn-primary">Censure</button>
+          <button type="submit" class="btn btn-primary">{{'app.censures.button.censure' | transloco}}</button>
         </form>
       </div>
     </div>

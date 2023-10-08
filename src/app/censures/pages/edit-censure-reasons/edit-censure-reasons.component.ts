@@ -10,6 +10,7 @@ import {ApiResponseHelperService} from "../../../services/api-response-helper.se
 import {map} from "rxjs";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
+import {TranslatorService} from "../../../services/translator.service";
 
 @Component({
   selector: 'app-edit-censure-reasons',
@@ -34,17 +35,18 @@ export class EditCensureReasonsComponent implements OnInit {
     private readonly activatedRoute: ActivatedRoute,
     private readonly authManager: AuthenticationManagerService,
     private readonly apiResponseHelper: ApiResponseHelperService,
+    private readonly translator: TranslatorService,
   ) {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.titleService.title = 'Update censure reasons';
+    this.titleService.title = this.translator.get('app.censures.update_reasons.title');
 
     this.activatedRoute.params.subscribe(async params => {
       const targetInstance = params['instance'] as string;
       let availableReasons = await toPromise(this.cachedApi.getUsedReasons());
       if (availableReasons === null) {
-        this.messageService.createWarning(`Couldn't get list of reasons that were used previously, autocompletion won't work.`);
+        this.messageService.createWarning(this.translator.get('error.reasons.autocompletion.fetch'));
         availableReasons = [];
       }
       this.availableReasons = availableReasons;
@@ -60,7 +62,7 @@ export class EditCensureReasonsComponent implements OnInit {
               instance => instance.domain === targetInstance,
             );
             if (!instance.length) {
-              this.messageService.createError(`Couldn't find this instance amongst your censures. Are you sure you've censured it?`);
+              this.messageService.createError(this.translator.get('error.censures.instance_not_censured'));
               return null;
             }
 
@@ -85,7 +87,7 @@ export class EditCensureReasonsComponent implements OnInit {
 
   public async updateReasons(): Promise<void> {
     if (!this.form.valid) {
-      this.messageService.createError("The form is not valid, please make sure all fields are filled correctly.");
+      this.messageService.createError(this.translator.get('error.form_invalid.generic'));
       return;
     }
 
@@ -104,7 +106,7 @@ export class EditCensureReasonsComponent implements OnInit {
         .subscribe(() => {
           this.loading = false;
           this.router.navigateByUrl('/censures/my').then(() => {
-            this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully updated!`);
+            this.messageService.createSuccess(this.translator.get('app.censures.success.update'));
           });
         });
     });

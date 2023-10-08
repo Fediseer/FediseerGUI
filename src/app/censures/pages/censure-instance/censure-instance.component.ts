@@ -8,6 +8,8 @@ import {AuthenticationManagerService} from "../../../services/authentication-man
 import {toPromise} from "../../../types/resolvable";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 import {forkJoin} from "rxjs";
+import {TranslatorService} from "../../../services/translator.service";
+import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
 
 @Component({
   selector: 'app-censure-instance',
@@ -31,10 +33,12 @@ export class CensureInstanceComponent implements OnInit {
     private readonly router: Router,
     private readonly activatedRoute: ActivatedRoute,
     private readonly authManager: AuthenticationManagerService,
+    private readonly translator: TranslatorService,
+    private readonly apiResponseHelper: ApiResponseHelperService,
   ) {
   }
   public async ngOnInit(): Promise<void> {
-    this.titleService.title = 'Censure an instance';
+    this.titleService.title = this.translator.get('app.censures.title');
 
     this.activatedRoute.queryParams.subscribe(query => {
       if (!query['instance']) {
@@ -45,7 +49,7 @@ export class CensureInstanceComponent implements OnInit {
     });
     let availableReasons = await toPromise(this.cachedApi.getUsedReasons());
     if (availableReasons === null) {
-      this.messageService.createWarning(`Couldn't get list of reasons you've used previously, autocompletion won't work.`);
+      this.messageService.createWarning(this.translator.get('error.reasons.autocompletion.fetch'));
       availableReasons = [];
     }
     this.availableReasons = availableReasons;
@@ -54,7 +58,7 @@ export class CensureInstanceComponent implements OnInit {
 
   public async doCensure(): Promise<void> {
     if (!this.form.valid) {
-      this.messageService.createError("The form is not valid, please make sure all fields are filled correctly.");
+      this.messageService.createError(this.translator.get('error.form_invalid.generic'));
       return;
     }
 
@@ -64,9 +68,8 @@ export class CensureInstanceComponent implements OnInit {
       this.form.controls.reasons.value ? this.form.controls.reasons.value!.join(',') : null,
       this.form.controls.evidence.value,
     ).subscribe(response => {
-      if (!response.success) {
+      if (this.apiResponseHelper.handleErrors([response])) {
         this.loading = false;
-        this.messageService.createError(`There was an api error: ${response.errorResponse!.message}`);
         return;
       }
 
@@ -78,7 +81,9 @@ export class CensureInstanceComponent implements OnInit {
       ]).subscribe(() => {
         this.loading = false;
         this.router.navigateByUrl('/censures/my').then(() => {
-          this.messageService.createSuccess(`${this.form.controls.instance.value} was successfully censured!`);
+          this.messageService.createSuccess(this.translator.get('app.censures.instance_censured', {
+            instance: this.form.controls.instance.value!,
+          }));
         });
       });
     });

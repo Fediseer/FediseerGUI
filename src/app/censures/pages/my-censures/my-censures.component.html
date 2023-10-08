@@ -5,38 +5,44 @@
     <div class="col-md-12">
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Censures that {{instance.name}} <strong>has given</strong></h3>
+          <h3 class="card-title">
+            <transloco key="app.censures.given_by_instance" [params]="{instance: instance.name}" />
+          </h3>
         </div>
         <div class="card-body">
           <p *ngIf="software === 'lemmy'">
-            You can easily synchronize your blacklist to your Lemmy instance defederations from the
-            <a routerLink="/synchronize/lemmy">Synchronize page</a>.
+            <transloco key="app.synchronize.intro" [params]="{
+              synchronizeLink: {route: '/synchronize/lemmy'},
+              synchronizePageTitle: 'app.synchronize.title' | transloco,
+              software: 'Lemmy'
+            }" />
           </p>
           <p *ngIf="software === 'mastodon'">
-            You can easily synchronize your blacklist to your Mastodon instance blocklist from the
-            <a routerLink="/synchronize/mastodon">Synchronize page</a>.
+            <transloco key="app.synchronize.intro" [params]="{
+              synchronizeLink: {route: '/synchronize/mastodon'},
+              synchronizePageTitle: 'app.synchronize.title' | transloco,
+              software: 'Mastodon'
+            }" />
           </p>
           <table class="table table-bordered">
             <thead>
             <tr>
-              <th>Instance</th>
-              <th>Reasons</th>
-              <th>Evidence</th>
-              <th>Instance status</th>
-              <th>Actions</th>
+              <th>{{'app.instance' | transloco}}</th>
+              <th>{{'app.reasons' | transloco}}</th>
+              <th>{{'app.evidence' | transloco}}</th>
+              <th>{{'app.instance.status' | transloco}}</th>
+              <th>{{'app.actions' | transloco}}</th>
             </tr>
             </thead>
             <tbody>
             <tr *ngIf="guaranteed">
               <td colspan="5">
-                <a routerLink="/censures/censure" class="btn btn-primary">Censure an instance</a>
+                <a routerLink="/censures/censure" class="btn btn-primary">{{'app.censures.button.create_censure_link' | transloco}}</a>
               </td>
             </tr>
             <tr *ngIf="!instances.length">
-              <td colspan="5" *ngIf="guaranteed">You haven't put a censure on any instance yet.</td>
-              <td colspan="5" *ngIf="!guaranteed">No one guaranteed for this instance, you cannot put a censure on
-                others.
-              </td>
+              <td colspan="5" *ngIf="guaranteed">{{'app.censures.no_censures_message' | transloco}}</td>
+              <td colspan="5" *ngIf="!guaranteed">{{'app.censures.unguaranteed' | transloco}}</td>
             </tr>
             <tr *ngFor="let instance of instances">
               <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
@@ -47,13 +53,15 @@
               </td>
               <td>
                 <ng-container *ngIf="instance.censuresEvidence.length">{{instance.censuresEvidence}}</ng-container>
-                <code *ngIf="!instance.censuresEvidence.length">N/A</code>
+                <code *ngIf="!instance.censuresEvidence.length">{{'app.not_applicable' | transloco}}</code>
               </td>
               <td>
                 <app-instance-status [status]="instance.state" />
               </td>
               <td>
-                <a routerLink="/censures/my/edit/{{instance.domain}}" type="button" class="btn btn-primary">Edit</a>
+                <a routerLink="/censures/my/edit/{{instance.domain}}" type="button" class="btn btn-primary">
+                  {{'app.generic_buttons.edit' | transloco}}
+                </a>
                 &nbsp;
                 <app-instance-move-to-list
                   instance="{{instance.domain}}"
