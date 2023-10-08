@@ -38,7 +38,7 @@ export class MyEndorsementsComponent implements OnInit {
     this.titleService.title = this.translator.get('app.endorsements.my');
 
     const responses = await Promise.all([
-      toPromise(this.api.getEndorsementsForInstance(this.authManager.currentInstanceSnapshot.name)),
+      toPromise(this.cachedApi.getEndorsementsForInstance(this.authManager.currentInstanceSnapshot.name)),
       toPromise(this.cachedApi.getEndorsementsByInstances([this.authManager.currentInstanceSnapshot.name])),
       toPromise(this.cachedApi.getCurrentInstanceInfo()),
     ]);
