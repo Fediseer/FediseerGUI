@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ApiResponse, FediseerApiService} from "./fediseer-api.service";
 import {RuntimeCacheService} from "./cache/runtime-cache.service";
-import {map, Observable, of, tap} from "rxjs";
+import {map, Observable, of, Subscription, tap} from "rxjs";
 import {InstanceDetailResponse} from "../response/instance-detail.response";
 import {int} from "../types/number";
 import {PermanentCacheService} from "./cache/permanent-cache.service";
@@ -159,24 +159,53 @@ export class CachedFediseerApiService {
     cacheConfig.type ??= CacheType.Permanent;
     cacheConfig.ttl ??= 300;
 
-    const cacheKey = `api.reasons${cacheConfig.ttl}.${instances.join('_')}`;
+    const permanentCacheConfig: CacheConfiguration = {
+      type: CacheType.Permanent,
+      clear: cacheConfig.clear,
+    };
 
-    const item = this.getCacheItem<string[] | null>(cacheKey, cacheConfig)!;
-    if (item.isHit && !cacheConfig.clear) {
-      return of(item.value!);
+    const cacheKey = `api.reasons${cacheConfig.ttl}.${instances.join('_')}`;
+    const permanentCacheKey = `api.reasons.forever.${instances.join('_')}`;
+
+    const expirableCacheItem = this.getCacheItem<string[] | null>(cacheKey, cacheConfig)!;
+    const permanentCacheItem = this.getCacheItem<string[] | null>(permanentCacheKey, permanentCacheConfig)!;
+
+    if (expirableCacheItem.isHit && !cacheConfig.clear) {
+      return of(expirableCacheItem.value!);
+    }
+
+    const apiResponseHandler = (callback?: () => void) => (reasons: string[] | null) => {
+      if (reasons === null) {
+        return;
+      }
+
+      expirableCacheItem.value = reasons;
+      permanentCacheItem.value = reasons;
+
+      if (cacheConfig.ttl! >= 0) {
+        expirableCacheItem.expiresAt = new Date(new Date().getTime() + (cacheConfig.ttl! * 1_000));
+      }
+
+      this.saveCacheItem(expirableCacheItem, cacheConfig);
+      this.saveCacheItem(permanentCacheItem, permanentCacheConfig);
+
+      if (callback) {
+        callback();
+      }
+    }
+
+    if (permanentCacheItem.isHit && !cacheConfig.clear) {
+      return of(permanentCacheItem.value!)
+        .pipe(
+          tap (() => {
+            let sub: Subscription;
+            sub = this.api.getUsedReasons(instances).subscribe(apiResponseHandler(() => sub.unsubscribe()));
+          }),
+        )
     }
 
     return this.api.getUsedReasons(instances).pipe(
-      tap(result => {
-        item.value = result;
-        if (item.value === null) {
-          return;
-        }
-        if (cacheConfig.ttl! >= 0) {
-          item.expiresAt = new Date(new Date().getTime() + (cacheConfig.ttl! * 1_000));
-        }
-        this.saveCacheItem(item, cacheConfig);
-      }),
+      tap(apiResponseHandler()),
     );
   }
 
