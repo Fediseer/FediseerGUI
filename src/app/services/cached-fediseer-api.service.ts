@@ -47,6 +47,22 @@ export class CachedFediseerApiService {
     );
   }
 
+  public getInstanceInfo(instance: string, cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceDetailResponse>> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 60;
+
+    const cacheKey = `api.instance_info.${cacheConfig.ttl}.${instance}`;
+
+    const item = this.getCacheItem<InstanceDetailResponse>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return this.getSuccessResponse(item);
+    }
+
+    return this.api.getInstanceInfo(instance).pipe(
+      tap (this.storeResponse(item, cacheConfig)),
+    );
+  }
+
   public getCensuresByInstances(instances: string[], cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     cacheConfig.type ??= CacheType.Permanent;
     cacheConfig.ttl ??= 60;
@@ -94,6 +110,22 @@ export class CachedFediseerApiService {
     }
 
     return this.api.getHesitationsByInstances(instances).pipe(
+      tap(this.storeResponse(item, cacheConfig)),
+    );
+  }
+
+  public getEndorsementsForInstance(instance: string, cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 180;
+
+    const cacheKey = `api.endorsements_for_instance${cacheConfig.ttl}.${instance}`;
+
+    const item = this.getCacheItem<InstanceListResponse<InstanceDetailResponse>>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return this.getSuccessResponse(item);
+    }
+
+    return this.api.getEndorsementsForInstance(instance).pipe(
       tap(this.storeResponse(item, cacheConfig)),
     );
   }
