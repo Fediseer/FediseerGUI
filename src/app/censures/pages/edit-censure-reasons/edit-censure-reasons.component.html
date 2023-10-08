@@ -6,23 +6,24 @@
       <div class="card-body">
         <form [formGroup]="form" (submit)="updateReasons()">
           <div class="form-group">
-            <label for="inputInstance">Instance to censure</label>
+            <label for="inputInstance">{{'app.censures.instance_to_censure' | transloco}}</label>
             <input class="form-control" type="text" id="inputInstance" formControlName="instance" />
           </div>
           <div class="form-group">
-            <label for="inputReason">Reasons</label>
+            <label for="inputReason">{{'app.reasons' | transloco}}</label>
             <select formControlName="reasons" id="inputReason" multiple tom-select [maxItems]="null" [create]="true">
               <option *ngFor="let option of availableReasons" [value]="option">{{option}}</option>
             </select>
           </div>
           <div class="form-group">
-            <label for="inputEvidence">Evidence</label>
+            <label for="inputEvidence">{{'app.evidence' | transloco}}</label>
             <textarea id="inputEvidence" class="form-control" formControlName="evidence" aria-describedby="inputEvidenceDescription"></textarea>
             <small id="inputEvidenceDescription">
-              You may optionally provide an evidence, for example links, or any other text up to 1000 characters in length.
+              <!-- todo get amount from api -->
+              {{'app.evidence.description' | transloco:{amount: 1000 | formatNumber} }}
             </small>
           </div>
-          <button type="submit" class="btn btn-primary">Update</button>
+          <button type="submit" class="btn btn-primary">{{'app.generic_button.update' | transloco}}</button>
         </form>
       </div>
     </div>
