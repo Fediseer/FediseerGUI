@@ -7,7 +7,7 @@ import {HttpClientModule} from "@angular/common/http";
 import {NotificationComponent} from './components/notification/notification.component';
 import {HomePageComponent} from './pages/home-page/home-page.component';
 import {SharedModule} from "./shared/shared.module";
-import {ReactiveFormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {TranslocoRootModule} from './transloco-root.module';
 import {defaultTranslocoMarkupTranspilers, provideTranslationMarkupTranspiler} from "ngx-transloco-markup";
 import {translocoMarkupRouterLinkRenderer} from "ngx-transloco-markup-router-link";

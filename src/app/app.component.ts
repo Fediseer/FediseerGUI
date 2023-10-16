@@ -49,6 +49,9 @@ export class AppComponent implements OnInit {
   public maintainerLink: string | null = null;
   public availableAccounts: Observable<Instance[]> = this.database.availableAccountsObservable;
 
+  public availableLanguages: string[] = [];
+  public selectedLanguage: string | null = null;
+
   constructor(
     private readonly titleService: TitleService,
     private readonly authenticationManager: AuthenticationManagerService,
@@ -67,13 +70,20 @@ export class AppComponent implements OnInit {
   public async ngOnInit(): Promise<void> {
     this.titleService.titleChanged.subscribe(title => this.title = title);
 
-    const availableLanguages = this.transloco.getAvailableLangs().map(value => typeof value === 'string' ? value : value.id);
-    for (const language of navigator.languages.map(language => language.split("-")[0])) {
-      if (availableLanguages.includes(language)) {
-        this.transloco.setActiveLang(language);
-        break;
+    this.availableLanguages = this.transloco.getAvailableLangs().map(value => typeof value === 'string' ? value : value.id);
+    if (this.database.storedLanguage) {
+      this.transloco.setActiveLang(this.database.storedLanguage);
+      this.selectedLanguage = this.database.storedLanguage;
+    } else {
+      for (const language of navigator.languages.map(language => language.split("-")[0])) {
+        if (this.availableLanguages.includes(language)) {
+          this.transloco.setActiveLang(language);
+          this.selectedLanguage = language;
+          break;
+        }
       }
     }
+    this.selectedLanguage ??= this.transloco.config.defaultLang;
 
     const darkModeDetected = window.matchMedia('(prefers-color-scheme: dark)').matches;
     if (darkModeDetected) {
@@ -208,5 +218,10 @@ export class AppComponent implements OnInit {
     if (instance.name === this.authenticationManager.currentInstanceSnapshot.name) {
       this.logout();
     }
+  }
+
+  public changeLanguage(language: string) {
+    this.transloco.setActiveLang(language);
+    this.database.storedLanguage = language;
   }
 }
