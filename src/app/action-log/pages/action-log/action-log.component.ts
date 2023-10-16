@@ -33,7 +33,7 @@ export class ActionLogComponent implements OnInit {
   public lastPageReached: boolean = false;
 
   public safelistedDomains: string[] | null = null;
-  public blacklistedDomains: string[] | null = null;
+  public blocklistedDomains: string[] | null = null;
 
   public form = new FormGroup({
     type: new FormControl<ActionLogReportType | null>(null),
@@ -78,7 +78,7 @@ export class ActionLogComponent implements OnInit {
       )),
     ]).then(responses => {
       this.safelistedDomains = responses[0];
-      this.blacklistedDomains = responses[1];
+      this.blocklistedDomains = responses[1];
 
       this.filtersLoading = false;
     });

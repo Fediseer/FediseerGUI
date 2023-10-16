@@ -18,7 +18,7 @@ import {
   SaveSettingsCallback
 } from "../../components/filter-form/filter-form.component";
 import {LemmySynchronizationSettings} from "../../../types/lemmy-synchronization-settings";
-import {NewToStringCallback} from "../../components/blacklist-diff/blacklist-diff.component";
+import {NewToStringCallback} from "../../components/blocklist-diff/blocklist-diff.component";
 import {SuccessResponse} from "../../../response/success.response";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 
@@ -68,7 +68,7 @@ export class SynchronizeLemmyComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.titleService.title = 'Blacklist synchronization - Lemmy';
+    this.titleService.title = 'Blocklist synchronization - Lemmy';
 
     const settings = this.database.lemmySynchronizationSettings;
     this.form.patchValue({
@@ -201,7 +201,7 @@ export class SynchronizeLemmyComponent implements OnInit {
       ;
 
       try {
-        await toPromise(this.lemmyApi.updateBlacklist(myInstance, jwt, newInstances));
+        await toPromise(this.lemmyApi.updateBlocklist(myInstance, jwt, newInstances));
       } catch (e) {
         const error = (<HttpErrorResponse>e).error.error;
         this.messageService.createError(`There was an error: ${error}`);

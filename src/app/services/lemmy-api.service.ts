@@ -59,7 +59,7 @@ export class LemmyApiService {
     );
   }
 
-  public updateBlacklist(instance: string, jwt: string, newInstancesToBlock: string[]): Observable<void> {
+  public updateBlocklist(instance: string, jwt: string, newInstancesToBlock: string[]): Observable<void> {
     const url = `https://${instance}/api/v3/site`;
 
     return this.httpClient.put(url, {

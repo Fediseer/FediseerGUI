@@ -70,21 +70,21 @@
           </div>
           <ng-template #modeSelect let-name="name" let-id="id">
             <select class="form-control" formControlName="{{name}}" id="{{id}}">
-              <option [value]="MastodonBlacklistSeverity.Silence">Silence</option>
-              <option [value]="MastodonBlacklistSeverity.Suspend">Suspend</option>
-              <option [value]="MastodonBlacklistSeverity.RejectMedia">Reject media</option>
-              <option [value]="MastodonBlacklistSeverity.Nothing">No action</option>
+              <option [value]="MastodonBlocklistSeverity.Silence">Silence</option>
+              <option [value]="MastodonBlocklistSeverity.Suspend">Suspend</option>
+              <option [value]="MastodonBlocklistSeverity.RejectMedia">Reject media</option>
+              <option [value]="MastodonBlocklistSeverity.Nothing">No action</option>
             </select>
-            <small *ngIf="$any(form.controls)[name].value === MastodonBlacklistSeverity.Silence">
+            <small *ngIf="$any(form.controls)[name].value === MastodonBlocklistSeverity.Silence">
               <strong>Silence</strong> will make posts from accounts at this instance invisible to anyone who isn't following them.
             </small>
-            <small *ngIf="$any(form.controls)[name].value === MastodonBlacklistSeverity.Suspend">
+            <small *ngIf="$any(form.controls)[name].value === MastodonBlocklistSeverity.Suspend">
               <strong>Suspend</strong> will remove all content, media, and profile data for this instance's accounts from your server.
             </small>
-            <small *ngIf="$any(form.controls)[name].value === MastodonBlacklistSeverity.RejectMedia">
+            <small *ngIf="$any(form.controls)[name].value === MastodonBlocklistSeverity.RejectMedia">
               <strong>Reject media</strong> will reject all media files.
             </small>
-            <small *ngIf="$any(form.controls)[name].value === MastodonBlacklistSeverity.Nothing">
+            <small *ngIf="$any(form.controls)[name].value === MastodonBlocklistSeverity.Nothing">
               <strong>No action</strong> will do nothing.
             </small>
           </ng-template>
@@ -110,7 +110,7 @@
           </div>
 
           <ng-template #previewTable>
-            <app-blacklist-diff
+            <app-blocklist-diff
               [originalList]="sourceBlockedInstances"
               [newList]="instancesToBanPreview!"
               [purgeMode]="purgeMode ?? false"
@@ -145,7 +145,7 @@
           </div>
 
           <ng-template #previewMastodonToFediseer>
-            <app-blacklist-diff
+            <app-blocklist-diff
               [originalList]="myCensuredInstances"
               [newList]="sourceBlockedInstances"
               [newToStringCallback]="mastodonToFediseerSyncNewListCallback"
@@ -161,13 +161,13 @@
 
   <div class="card">
     <div class="card-header">
-      <h3 class="card-title">Original blacklist</h3>
+      <h3 class="card-title">Original blocklist</h3>
     </div>
     <div class="card-body">
       <p>
         Please back up this list before attempting any synchronization.
         <strong>
-          If you move away from this page after a failed operation, there's no way to retrieve the original blacklist.
+          If you move away from this page after a failed operation, there's no way to retrieve the original blocklist.
         </strong>
       </p>
       <p>

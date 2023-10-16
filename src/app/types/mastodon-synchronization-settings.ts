@@ -1,11 +1,11 @@
 import {SynchronizationSettings} from "./synchronization-settings";
-import {MastodonBlacklistSeverity} from "../response/mastodon-blacklist.response";
+import {MastodonBlocklistSeverity} from "../response/mastodon-blocklist.response";
 
 export interface MastodonSynchronizationSettings extends SynchronizationSettings {
   oauthClientId?: string;
   oauthClientSecret?: string;
   oauthToken?: string;
   reasonsPublic: boolean;
-  censuresMode: MastodonBlacklistSeverity;
-  hesitationsMode: MastodonBlacklistSeverity;
+  censuresMode: MastodonBlocklistSeverity;
+  hesitationsMode: MastodonBlocklistSeverity;
 }

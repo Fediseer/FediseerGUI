@@ -54,7 +54,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   public myInstance: string = this.authManager.currentInstanceSnapshot.name;
 
   public form = new FormGroup({
-    purgeBlacklist: new FormControl<boolean>(false, [Validators.required]),
+    purgeBlocklist: new FormControl<boolean>(false, [Validators.required]),
     mode: new FormControl<SynchronizationMode>(SynchronizationMode.Own, [Validators.required]),
     customInstances: new FormControl<string[]>([]),
     filterByReasons: new FormControl<boolean>(false),
@@ -123,7 +123,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
     const settings = this.getSettingsCallback(this.database);
     this.form.patchValue({
       mode: settings.mode,
-      purgeBlacklist: settings.purge,
+      purgeBlocklist: settings.purge,
       filterByReasons: settings.filterByReasons,
       includeHesitations: settings.includeHesitations,
       ignoreInstanceList: settings.ignoreInstanceList,
@@ -140,7 +140,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
       settings.reasonsFilter = changes.reasonsFilter ?? [];
       settings.mode = changes.mode ?? SynchronizationMode.Own;
       settings.filterByReasons = changes.filterByReasons ?? false;
-      settings.purge = changes.purgeBlacklist ?? false;
+      settings.purge = changes.purgeBlocklist ?? false;
       settings.customInstances = changes.customInstances ?? [];
       settings.ignoreInstances = changes.ignoreInstances ?? false;
       settings.ignoreInstanceList = changes.ignoreInstanceList ?? [];
@@ -168,7 +168,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
       this.loadCustomInstancesSelect(mode);
       this._modeChanged.next(mode);
     });
-    this.form.controls.purgeBlacklist.valueChanges.subscribe(purge => {
+    this.form.controls.purgeBlocklist.valueChanges.subscribe(purge => {
       if (purge === null) {
         return;
       }
@@ -187,8 +187,8 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
       this.loadCustomInstancesSelect(this.form.controls.mode.value);
       this._modeChanged.next(this.form.controls.mode.value);
     }
-    if (this.form.controls.purgeBlacklist.value !== null) {
-      this._purgeChanged.next(this.form.controls.purgeBlacklist.value);
+    if (this.form.controls.purgeBlocklist.value !== null) {
+      this._purgeChanged.next(this.form.controls.purgeBlocklist.value);
     }
     if (this.form.controls.filterByReasons.value) {
       this.loadReasons();
@@ -289,9 +289,9 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
           throw new Error(`Unsupported mode: ${mode}`);
       }
 
-      let foreignInstanceBlacklist: InstanceDetailResponse[] = [];
+      let foreignInstanceBlocklist: InstanceDetailResponse[] = [];
       if (sourceFrom.length) {
-        foreignInstanceBlacklist =  await (async () => {
+        foreignInstanceBlocklist =  await (async () => {
           const censures = hesitationsMode === true ? [] : await this.getCensuresByInstances(sourceFrom);
           const hesitations = hesitationsMode === false || (hesitationsMode === null && !this.form.controls.includeHesitations.value)
             ? []
@@ -305,21 +305,21 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
         })();
         if (this.form.controls.filterByReasons.value && this.form.controls.reasonsFilter.value) {
           const reasons = this.form.controls.reasonsFilter.value!;
-          foreignInstanceBlacklist = foreignInstanceBlacklist.filter(
+          foreignInstanceBlocklist = foreignInstanceBlocklist.filter(
             instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance).unmergedCensureReasons.filter(
               reason => reasons.includes(reason),
             ).length,
           );
         }
         if (this.form.controls.ignoreInstances.valid && this.form.controls.ignoreInstanceList.value) {
-          foreignInstanceBlacklist = foreignInstanceBlacklist.filter(
+          foreignInstanceBlocklist = foreignInstanceBlocklist.filter(
             instance => !this.form.controls.ignoreInstanceList.value!.includes(instance.domain),
           );
         }
       }
 
       const myEndorsed = this.cache[`endorsed:${myInstance}`]!.map(instance => instance.domain);
-      const result = [...this.cache[myInstanceCacheKey]!, ...foreignInstanceBlacklist];
+      const result = [...this.cache[myInstanceCacheKey]!, ...foreignInstanceBlocklist];
       const handled: string[] = [];
 
       return result.filter(instance => {
