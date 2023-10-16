@@ -1,14 +1,14 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
 import {SynchronizeLemmyComponent} from "./pages/synchronize-lemmy/synchronize-lemmy.component";
 import {RouterModule, Routes} from "@angular/router";
 import {Guards} from "../guards/guards";
 import {ReactiveFormsModule} from "@angular/forms";
 import {SharedModule} from "../shared/shared.module";
-import { SynchronizeMastodonComponent } from './pages/synchronize-mastodon/synchronize-mastodon.component';
-import { MastodonOauthCallbackComponent } from './pages/mastodon-oauth-callback/mastodon-oauth-callback.component';
-import { BlacklistDiffComponent } from './components/blacklist-diff/blacklist-diff.component';
-import { FilterFormComponent } from './components/filter-form/filter-form.component';
+import {SynchronizeMastodonComponent} from './pages/synchronize-mastodon/synchronize-mastodon.component';
+import {MastodonOauthCallbackComponent} from './pages/mastodon-oauth-callback/mastodon-oauth-callback.component';
+import {BlocklistDiffComponent} from './components/blocklist-diff/blocklist-diff.component';
+import {FilterFormComponent} from './components/filter-form/filter-form.component';
 
 const routes: Routes = [
   {
@@ -33,7 +33,7 @@ const routes: Routes = [
     SynchronizeLemmyComponent,
     SynchronizeMastodonComponent,
     MastodonOauthCallbackComponent,
-    BlacklistDiffComponent,
+    BlocklistDiffComponent,
     FilterFormComponent,
   ],
   imports: [

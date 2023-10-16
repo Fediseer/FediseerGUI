@@ -6,11 +6,11 @@ export type OriginalToStringCallback<T> = ((instance: T) => string);
 export type NewToStringCallback<T> = ((instance: T) => string);
 
 @Component({
-  selector: 'app-blacklist-diff',
-  templateUrl: './blacklist-diff.component.html',
-  styleUrls: ['./blacklist-diff.component.scss']
+  selector: 'app-blocklist-diff',
+  templateUrl: './blocklist-diff.component.html',
+  styleUrls: ['./blocklist-diff.component.scss']
 })
-export class BlacklistDiffComponent<TOriginalInstance, TNewInstance> implements OnInit, OnChanges {
+export class BlocklistDiffComponent<TOriginalInstance, TNewInstance> implements OnInit, OnChanges {
 
   @Input() originalList: TOriginalInstance[] = [];
   @Input() newList: TNewInstance[] = [];

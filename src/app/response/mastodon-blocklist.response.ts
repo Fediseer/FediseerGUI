@@ -1,15 +1,15 @@
-export enum MastodonBlacklistSeverity {
+export enum MastodonBlocklistSeverity {
   Silence = "silence",
   Suspend = "suspend",
   RejectMedia = "noop",
   Nothing = '',
 }
 
-export interface MastodonBlacklistItem {
+export interface MastodonBlocklistItem {
   id: string;
   domain: string;
   created_at: string;
-  severity: MastodonBlacklistSeverity;
+  severity: MastodonBlocklistSeverity;
   reject_media: boolean;
   reject_reports: boolean;
   private_comment: string | null;
@@ -17,4 +17,4 @@ export interface MastodonBlacklistItem {
   obfuscate: boolean;
 }
 
-export type MastodonBlacklistResponse = MastodonBlacklistItem[];
+export type MastodonBlocklistResponse = MastodonBlocklistItem[];

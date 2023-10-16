@@ -4,7 +4,7 @@ import {LemmySynchronizationSettings} from "../types/lemmy-synchronization-setti
 import {CensureListFilters} from "../types/censure-list-filters";
 import {SynchronizationMode} from "../types/synchronization-mode";
 import {MastodonSynchronizationSettings} from "../types/mastodon-synchronization-settings";
-import {MastodonBlacklistSeverity} from "../response/mastodon-blacklist.response";
+import {MastodonBlocklistSeverity} from "../response/mastodon-blocklist.response";
 import {BehaviorSubject, Observable} from "rxjs";
 
 @Injectable({
@@ -123,8 +123,8 @@ export class DatabaseService {
       ignoreInstanceList: [],
       ignoreInstances: false,
       reasonsPublic: false,
-      censuresMode: MastodonBlacklistSeverity.Suspend,
-      hesitationsMode: MastodonBlacklistSeverity.Silence,
+      censuresMode: MastodonBlocklistSeverity.Suspend,
+      hesitationsMode: MastodonBlocklistSeverity.Silence,
     };
   }
 

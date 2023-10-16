@@ -7,7 +7,7 @@ import {AuthenticationManagerService} from "../../../services/authentication-man
 import {getMastodonRedirectUri, mastodonScopes} from "../mastodon-oauth-callback/mastodon-oauth-callback.component";
 import {MastodonApiService} from "../../../services/mastodon-api.service";
 import {toPromise} from "../../../types/resolvable";
-import {MastodonBlacklistItem, MastodonBlacklistSeverity} from "../../../response/mastodon-blacklist.response";
+import {MastodonBlocklistItem, MastodonBlocklistSeverity} from "../../../response/mastodon-blocklist.response";
 import {MessageService} from "../../../services/message.service";
 import {
   FilterFormResult,
@@ -16,7 +16,7 @@ import {
 } from "../../components/filter-form/filter-form.component";
 import {InstanceDetailResponse} from "../../../response/instance-detail.response";
 import {SynchronizationMode} from "../../../types/synchronization-mode";
-import {NewToStringCallback, OriginalToStringCallback} from "../../components/blacklist-diff/blacklist-diff.component";
+import {NewToStringCallback, OriginalToStringCallback} from "../../components/blocklist-diff/blocklist-diff.component";
 import {NormalizedInstanceDetailResponse} from "../../../response/normalized-instance-detail.response";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 import {ApiResponseHelperService} from "../../../services/api-response-helper.service";
@@ -29,9 +29,9 @@ import {SuccessResponse} from "../../../response/success.response";
   styleUrls: ['./synchronize-mastodon.component.scss']
 })
 export class SynchronizeMastodonComponent implements OnInit {
-  protected readonly MastodonBlacklistSeverity = MastodonBlacklistSeverity;
+  protected readonly MastodonBlocklistSeverity = MastodonBlocklistSeverity;
   protected readonly currentInstance = this.authManager.currentInstanceSnapshot.name;
-  protected readonly mastodonToFediseerSyncNewListCallback: NewToStringCallback<MastodonBlacklistItem>  = instance => instance.domain;
+  protected readonly mastodonToFediseerSyncNewListCallback: NewToStringCallback<MastodonBlocklistItem>  = instance => instance.domain;
 
   private syncSettings: MastodonSynchronizationSettings = this.database.mastodonSynchronizationSettings;
 
@@ -42,12 +42,12 @@ export class SynchronizeMastodonComponent implements OnInit {
 
   public form = new FormGroup({
     reasonsPublic: new FormControl<boolean>(false),
-    censuresMode: new FormControl<MastodonBlacklistSeverity>(MastodonBlacklistSeverity.Suspend),
-    hesitationsMode: new FormControl<MastodonBlacklistSeverity>(MastodonBlacklistSeverity.Silence),
+    censuresMode: new FormControl<MastodonBlocklistSeverity>(MastodonBlocklistSeverity.Suspend),
+    hesitationsMode: new FormControl<MastodonBlocklistSeverity>(MastodonBlocklistSeverity.Silence),
   });
 
-  public originallyBlockedInstances: MastodonBlacklistItem[] = [];
-  public sourceBlockedInstances: MastodonBlacklistItem[] = [];
+  public originallyBlockedInstances: MastodonBlocklistItem[] = [];
+  public sourceBlockedInstances: MastodonBlocklistItem[] = [];
 
   public loading: boolean = true;
   public oauthSetupFinished: boolean = true;
@@ -64,7 +64,7 @@ export class SynchronizeMastodonComponent implements OnInit {
   public getSettingsCallback: GetSettingsCallback<MastodonSynchronizationSettings> = database => {
     return database.mastodonSynchronizationSettings;
   }
-  public instanceToStringCallback: OriginalToStringCallback<MastodonBlacklistItem> = instance => instance.domain;
+  public instanceToStringCallback: OriginalToStringCallback<MastodonBlocklistItem> = instance => instance.domain;
   public loadingPreviewMastodonToFediseer: boolean = true;
 
   constructor(
@@ -80,7 +80,7 @@ export class SynchronizeMastodonComponent implements OnInit {
   }
 
   public async ngOnInit(): Promise<void> {
-    this.titleService.title = 'Blacklist synchronization - Mastodon';
+    this.titleService.title = 'Blocklist synchronization - Mastodon';
 
     if (!this.syncSettings.oauthToken && (!this.syncSettings.oauthClientId || !this.syncSettings.oauthClientSecret)) {
       this.oauthForm.patchValue({
@@ -120,8 +120,8 @@ export class SynchronizeMastodonComponent implements OnInit {
         oauthToken: this.syncSettings.oauthToken,
         // custom fields
         reasonsPublic: this.form.controls.reasonsPublic.value ?? false,
-        censuresMode: this.form.controls.censuresMode.value ?? MastodonBlacklistSeverity.Suspend,
-        hesitationsMode: this.form.controls.hesitationsMode.value ?? MastodonBlacklistSeverity.Silence,
+        censuresMode: this.form.controls.censuresMode.value ?? MastodonBlocklistSeverity.Suspend,
+        hesitationsMode: this.form.controls.hesitationsMode.value ?? MastodonBlocklistSeverity.Silence,
       }
     });
 
@@ -172,9 +172,9 @@ export class SynchronizeMastodonComponent implements OnInit {
     return getMastodonRedirectUri();
   }
 
-  private async getBlockedInstancesFromSource(instance: string): Promise<MastodonBlacklistItem[] | null> {
+  private async getBlockedInstancesFromSource(instance: string): Promise<MastodonBlocklistItem[] | null> {
     try {
-      return await toPromise(this.mastodonApi.getBlacklist(instance, this.syncSettings.oauthToken!));
+      return await toPromise(this.mastodonApi.getBlocklist(instance, this.syncSettings.oauthToken!));
     } catch (e) {
       return null;
     }
@@ -200,7 +200,7 @@ export class SynchronizeMastodonComponent implements OnInit {
 
     let censuredInstances: NormalizedInstanceDetailResponse[] = [];
     let hesitatedInstances: NormalizedInstanceDetailResponse[] = [];
-    let instancesToRemove: MastodonBlacklistItem[] = [];
+    let instancesToRemove: MastodonBlocklistItem[] = [];
 
     if (filterFormResult.includeHesitationsAsCensures) {
       censuredInstances = filterFormResult.all
@@ -226,33 +226,33 @@ export class SynchronizeMastodonComponent implements OnInit {
     const responses: Promise<any>[] = [];
 
     for (const item of instancesToRemove) {
-      responses.push(toPromise(this.mastodonApi.deleteBlacklist(myInstance, token, item.id)));
+      responses.push(toPromise(this.mastodonApi.deleteFromBlocklist(myInstance, token, item.id)));
     }
     for (const item of censuredInstances) {
-      const severity = this.form.controls.censuresMode.value ?? MastodonBlacklistSeverity.Suspend;
-      if (severity === MastodonBlacklistSeverity.Nothing) {
+      const severity = this.form.controls.censuresMode.value ?? MastodonBlocklistSeverity.Suspend;
+      if (severity === MastodonBlocklistSeverity.Nothing) {
         break;
       }
       const reasons = [
         ...item.censureReasons,
         ...item.hesitationReasons,
       ].join(', ');
-      responses.push(toPromise(this.mastodonApi.blacklistInstance(myInstance, token, item.domain, {
+      responses.push(toPromise(this.mastodonApi.addInstanceToBlocklist(myInstance, token, item.domain, {
         severity: severity,
         private_comment: reasons,
         public_comment: this.form.controls.reasonsPublic.value ? reasons : undefined,
       })));
     }
     for (const item of hesitatedInstances) {
-      const severity = this.form.controls.hesitationsMode.value ?? MastodonBlacklistSeverity.Silence;
-      if (severity === MastodonBlacklistSeverity.Nothing) {
+      const severity = this.form.controls.hesitationsMode.value ?? MastodonBlocklistSeverity.Silence;
+      if (severity === MastodonBlocklistSeverity.Nothing) {
         break;
       }
       const reasons = [
         ...item.censureReasons,
         ...item.hesitationReasons,
       ].join(', ');
-      responses.push(toPromise(this.mastodonApi.blacklistInstance(myInstance, token, item.domain, {
+      responses.push(toPromise(this.mastodonApi.addInstanceToBlocklist(myInstance, token, item.domain, {
         severity: severity,
         private_comment: reasons,
         public_comment: this.form.controls.reasonsPublic.value ? reasons : undefined,
@@ -261,9 +261,9 @@ export class SynchronizeMastodonComponent implements OnInit {
 
     try {
       await Promise.all(responses);
-      this.messageService.createSuccess('The blacklist was successfully updated.');
+      this.messageService.createSuccess('The blocklist was successfully updated.');
     } catch (e) {
-      this.messageService.createError('Failed to update the blacklist.')
+      this.messageService.createError('Failed to update the blocklist.')
     }
 
     const newBlockedInstances = await this.getBlockedInstancesFromSource(this.authManager.currentInstanceSnapshot.name);

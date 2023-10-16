@@ -39,10 +39,10 @@
                     <option *ngFor="let option of safelistedDomains" [value]="option">{{option}}</option>
                   </select>
                 </div>
-                <div class="form-group" *ngIf="safelistedDomains && blacklistedDomains">
+                <div class="form-group" *ngIf="safelistedDomains && blocklistedDomains">
                   <label for="inputTargetDomains">{{"app.target_domains" | transloco}}</label>
                   <select id="inputTargetDomains" formControlName="targetDomains" multiple tom-select [maxItems]="null" [create]="true">
-                    <option *ngFor="let option of blacklistedDomains" [value]="option">{{option}}</option>
+                    <option *ngFor="let option of blocklistedDomains" [value]="option">{{option}}</option>
                     <option *ngFor="let option of safelistedDomains" [value]="option">{{option}}</option>
                   </select>
                 </div>

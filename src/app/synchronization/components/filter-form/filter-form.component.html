@@ -11,7 +11,7 @@
       In addition to instances you have censured, all instances censured by instances you have endorsed will be blocked as well.
     </small>
     <small *ngIf="form.controls.mode.value === SynchronizationMode.CustomInstances">
-      Only blacklist by your instance and the instances you specify manually will be blocked.
+      Only blocklist by your instance and the instances you specify manually will be blocked.
     </small>
   </div>
   <div class="form-group position-relative" *ngIf="form.controls.mode.value === SynchronizationMode.CustomInstances">
@@ -25,10 +25,10 @@
   </div>
   <div class="form-group">
     <div class="custom-control custom-switch custom-switch-on-danger">
-      <input class="custom-control-input" type="checkbox" id="inputPurge" formControlName="purgeBlacklist" aria-describedby="inputPurgeDescription" />
-      <label for="inputPurge" class="custom-control-label">Purge blacklist</label>
+      <input class="custom-control-input" type="checkbox" id="inputPurge" formControlName="purgeBlocklist" aria-describedby="inputPurgeDescription" />
+      <label for="inputPurge" class="custom-control-label">Purge blocklist</label>
     </div>
-    <small id="inputPurgeDescription">If enabled, your blacklist will be purged before synchronizing the new one. Make sure you've backed up the original one.</small>
+    <small id="inputPurgeDescription">If enabled, your blocklist will be purged before synchronizing the new one. Make sure you've backed up the original one.</small>
   </div>
   <div class="form-group">
     <div class="custom-control custom-switch custom-switch-on-danger">
@@ -36,9 +36,9 @@
       <label for="inputFilterReasons" class="custom-control-label">Filter by reasons</label>
     </div>
     <small id="inputFilterReasonsDescription">
-      If enabled, only instances with censure reasons you specify will get blacklisted.
+      If enabled, only instances with censure reasons you specify will get blocklisted.
       <br>
-      <strong>Note that your own blacklist is always synchronized in full and this setting is ignored for instances that <em>{{myInstance}}</em> itself censured.</strong>
+      <strong>Note that your own blocklist is always synchronized in full and this setting is ignored for instances that <em>{{myInstance}}</em> itself censured.</strong>
     </small>
   </div>
   <div class="form-group position-relative" *ngIf="form.controls.filterByReasons.value">
@@ -52,14 +52,14 @@
   <div class="form-group">
     <div class="custom-control custom-switch custom-switch-on-danger">
       <input class="custom-control-input" type="checkbox" id="inputIgnoreInstances" formControlName="ignoreInstances" aria-describedby="inputIgnoreInstancesDescription" />
-      <label for="inputIgnoreInstances" class="custom-control-label">Exclude instances from blacklist</label>
+      <label for="inputIgnoreInstances" class="custom-control-label">Exclude instances from blocklist</label>
     </div>
     <small id="inputIgnoreInstancesDescription">
-      If enabled, you can specify a list of instances that will be excluded from blacklisting even if they match the other rules.
+      If enabled, you can specify a list of instances that will be excluded from blocking even if they match the other rules.
       <br>
-      <strong>Note that instances you endorse are always excluded from blacklisting.</strong>
+      <strong>Note that instances you endorse are always excluded from blocking.</strong>
       <br>
-      <strong>Note that your own blacklist is always synchronized in full and this setting is ignored for instances that <em>{{myInstance}}</em> itself censured.</strong>
+      <strong>Note that your own blocklist is always synchronized in full and this setting is ignored for instances that <em>{{myInstance}}</em> itself censured.</strong>
     </small>
   </div>
   <div class="form-group position-relative" *ngIf="form.controls.ignoreInstances.value">

@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {EMPTY, expand, Observable, reduce} from "rxjs";
 import {HttpClient} from "@angular/common/http";
 import {AccessTokenResponse} from "../response/access-token.response";
-import {MastodonBlacklistItem, MastodonBlacklistResponse} from "../response/mastodon-blacklist.response";
-import {MastodonDomainBlacklistRequest} from "../types/mastodon-domain-blacklist-request";
+import {MastodonBlocklistItem, MastodonBlocklistResponse} from "../response/mastodon-blocklist.response";
+import {MastodonDomainBlocklistRequest} from "../types/mastodon-domain-blocklist-request";
 import {MastodonLinkParserService} from "./mastodon-link-parser.service";
 
 export interface GetTokenOptions {
@@ -37,10 +37,10 @@ export class MastodonApiService {
     return this.httpClient.post<AccessTokenResponse>(url, formData);
   }
 
-  public getBlacklist(instance: string, token: string): Observable<MastodonBlacklistResponse> {
+  public getBlocklist(instance: string, token: string): Observable<MastodonBlocklistResponse> {
     const url = `https://${instance}/api/v1/admin/domain_blocks`;
 
-    return this.httpClient.get<MastodonBlacklistResponse>(url, {
+    return this.httpClient.get<MastodonBlocklistResponse>(url, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -53,7 +53,7 @@ export class MastodonApiService {
             return EMPTY;
           }
 
-          return this.httpClient.get<MastodonBlacklistResponse>(links.next, {
+          return this.httpClient.get<MastodonBlocklistResponse>(links.next, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -63,19 +63,19 @@ export class MastodonApiService {
 
         return EMPTY;
       }),
-      reduce((acc, value) => acc.concat(value.body!), <MastodonBlacklistResponse>[]),
+      reduce((acc, value) => acc.concat(value.body!), <MastodonBlocklistResponse>[]),
     )
   }
 
-  public blacklistInstance(
+  public addInstanceToBlocklist(
     instance: string,
     token: string,
-    instanceToBlacklist: string,
-    options: MastodonDomainBlacklistRequest = {}
-  ): Observable<MastodonBlacklistItem> {
+    instanceToBlocklist: string,
+    options: MastodonDomainBlocklistRequest = {}
+  ): Observable<MastodonBlocklistItem> {
     const url = `https://${instance}/api/v1/admin/domain_blocks`;
 
-    return this.httpClient.post<MastodonBlacklistItem>(url, {...options, domain: instanceToBlacklist}, {
+    return this.httpClient.post<MastodonBlocklistItem>(url, {...options, domain: instanceToBlocklist}, {
       headers: {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ export class MastodonApiService {
     });
   }
 
-  public deleteBlacklist(instance: string, token: string, instanceId: string) {
+  public deleteFromBlocklist(instance: string, token: string, instanceId: string) {
     const url = `https://${instance}/api/v1/admin/domain_blocks/${instanceId}`;
     return this.httpClient.delete<{}>(url, {
       headers: {
