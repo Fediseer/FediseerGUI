@@ -1,9 +1,6 @@
-import {
-  provideTransloco,
-  TranslocoModule
-} from '@ngneat/transloco';
-import { NgModule } from '@angular/core';
-import { TranslocoHttpLoader } from './shared/helper/transloco-loader';
+import {provideTransloco, TranslocoModule} from '@ngneat/transloco';
+import {NgModule} from '@angular/core';
+import {TranslocoHttpLoader} from './shared/helper/transloco-loader';
 import {environment} from "../environments/environment";
 
 
@@ -14,7 +11,7 @@ import {environment} from "../environments/environment";
         config: {
           availableLangs: ['cs', 'de', 'en', 'pt'],
           defaultLang: 'en',
-          reRenderOnLangChange: false,
+          reRenderOnLangChange: true,
           prodMode: environment.production,
           fallbackLang: 'en',
           missingHandler: {

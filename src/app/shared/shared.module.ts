@@ -17,6 +17,7 @@ import {InstanceMoveToListComponent} from './components/instance-move-to-list/in
 import {ReactiveFormsModule} from "@angular/forms";
 import {FlagsComponent} from './components/flags/flags.component';
 import {InstanceLogoComponent} from './components/instance-logo/instance-logo.component';
+import {LanguageNamePipe} from './pipes/language-name.pipe';
 
 
 @NgModule({
@@ -34,6 +35,7 @@ import {InstanceLogoComponent} from './components/instance-logo/instance-logo.co
     InstanceMoveToListComponent,
     FlagsComponent,
     InstanceLogoComponent,
+    LanguageNamePipe,
   ],
     exports: [
         ToObservablePipe,
@@ -52,6 +54,7 @@ import {InstanceLogoComponent} from './components/instance-logo/instance-logo.co
         InstanceMoveToListComponent,
         FlagsComponent,
         InstanceLogoComponent,
+        LanguageNamePipe,
     ],
   imports: [
     CommonModule,

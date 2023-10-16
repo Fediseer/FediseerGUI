@@ -17,6 +17,7 @@ export class DatabaseService {
   private readonly lemmyPasswordKey = 'lemmy_password';
   private readonly censureListFiltersKey = 'censure_list_filters';
   private readonly availableAccountsKey = 'available_accounts';
+  private readonly storedLanguageKey = 'language';
 
   private readonly _availableAccountsObservable = new BehaviorSubject<Instance[]>(this.availableAccounts);
 
@@ -186,5 +187,26 @@ export class DatabaseService {
       return;
     }
     localStorage.setItem(this.censureListFiltersKey, JSON.stringify(filters));
+  }
+
+  public get storedLanguage(): string | null {
+    if (typeof localStorage === 'undefined') {
+      return null;
+    }
+
+    return localStorage.getItem(this.storedLanguageKey);
+  }
+
+  public set storedLanguage(language: string | null) {
+    if (typeof localStorage === 'undefined') {
+      return;
+    }
+
+    if (language === null) {
+      localStorage.removeItem(this.storedLanguageKey);
+      return;
+    }
+
+    localStorage.setItem(this.storedLanguageKey, language);
   }
 }
