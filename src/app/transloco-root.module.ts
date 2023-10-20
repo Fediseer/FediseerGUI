@@ -9,7 +9,7 @@ import {environment} from "../environments/environment";
   providers: [
       provideTransloco({
         config: {
-          availableLangs: ['cs', 'de', 'en', 'pt'],
+          availableLangs: ['cs', 'de', 'en', 'pt', 'ko'],
           defaultLang: 'en',
           reRenderOnLangChange: true,
           prodMode: environment.production,
