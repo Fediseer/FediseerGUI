@@ -5,7 +5,7 @@
     <div class="card">
       <div class="card-body">
         <!-- filters -->
-        <form [formGroup]="form" (submit)="loadInstances()">
+        <form [formGroup]="form" (submit)="submitFilterForm()">
           <div class="row">
             <div class="col-md-4">
               <div class="form-group">
@@ -96,15 +96,18 @@
               <app-instance-status [status]="instance.state" />
             </td>
             <td *ngIf="!currentInstance.anonymous">
-              <a href="javascript:void(0)" (click)="toggleEndorse(instance.domain)">
+              <a href="javascript:void(0)" (click)="toggleEndorse(instance.domain)" *ngIf="instance.domain !== currentInstance.name else notApplicable">
                 <app-yes-no [yes]="endorsedByMe.indexOf(instance.domain) > -1"></app-yes-no>
               </a>
+              <ng-template #notApplicable>
+                <code>N/A</code>
+              </ng-template>
             </td>
           </tr>
           </tbody>
         </table>
       </div>
-      <div class="card-footer" *ngIf="maxPage > 1">
+      <div class="card-footer" *ngIf="maxPage > 0">
         <ul class="pagination text-center">
           <li class="paginate_button page-item previous" [class.disabled]="currentPage <= 1">
             <a href="javascript:void(0)" class="page-link" (click)="goToPage(currentPage - 1)">
