@@ -78,7 +78,22 @@ export class CachedFediseerApiService {
     );
   }
 
-  public getSafelistedInstances(safelistFilter: SafelistFilter = {}, cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+  public getSafelistedInstances(filter: SafelistFilter = {}, page: int = 1, cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 120;
+
+    const cacheKey = `api.safelist${cacheConfig.ttl}.${JSON.stringify(filter)}.${page}`;
+    const item = this.getCacheItem<InstanceListResponse<InstanceDetailResponse>>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return this.getSuccessResponse(item);
+    }
+
+    return this.api.getSafelistedInstances(filter, page).pipe(
+      tap(this.storeResponse(item, cacheConfig)),
+    );
+  }
+
+  public getAllSafelistedInstances(safelistFilter: SafelistFilter = {}, cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     cacheConfig.type ??= CacheType.Permanent;
     cacheConfig.ttl ??= 120;
 
@@ -88,7 +103,7 @@ export class CachedFediseerApiService {
       return this.getSuccessResponse(item);
     }
 
-    return this.api.getSafelistedInstances(safelistFilter).pipe(
+    return this.api.getAllSafelistedInstances(safelistFilter).pipe(
       tap(this.storeResponse(item, cacheConfig)),
     );
   }
@@ -253,7 +268,7 @@ export class CachedFediseerApiService {
       return of(item.value!);
     }
 
-    return this.getSafelistedInstances()
+    return this.getAllSafelistedInstances()
       .pipe(
         map (response => {
           if (!response.success) {

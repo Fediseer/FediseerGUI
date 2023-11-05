@@ -208,7 +208,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
     if (this.safelistedInstancesList === null) {
       this.loadingSafelistedInstances = true;
       const responses = await Promise.all([
-        toPromise(this.cachedApi.getSafelistedInstances()),
+        toPromise(this.cachedApi.getAllSafelistedInstances()),
         toPromise(this.cachedApi.getEndorsementsByInstances([this.authManager.currentInstanceSnapshot.name])),
         toPromise(this.cachedApi.getGuaranteesByInstance(this.authManager.currentInstanceSnapshot.name)),
       ]);

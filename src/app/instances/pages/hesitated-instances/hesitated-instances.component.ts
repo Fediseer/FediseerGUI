@@ -72,7 +72,7 @@ export class HesitatedInstancesComponent {
       this.hesitatedByMe = response.successResponse!.instances.map(instance => instance.domain);
     }
 
-    const allSafelistedInstancesResponse = await toPromise(this.cachedApi.getSafelistedInstances());
+    const allSafelistedInstancesResponse = await toPromise(this.cachedApi.getAllSafelistedInstances());
     if (this.apiResponseHelper.handleErrors([allSafelistedInstancesResponse])) {
       this.loading = false;
       return;

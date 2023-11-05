@@ -58,7 +58,7 @@ export class ActionLogComponent implements OnInit {
     this.titleService.title = this.translator.get('app.action_log');
 
     Promise.all([
-      toPromise(this.cachedApi.getSafelistedInstances().pipe(
+      toPromise(this.cachedApi.getAllSafelistedInstances().pipe(
         map (response => {
           if (this.apiResponseHelper.handleErrors([response])) {
             return [];

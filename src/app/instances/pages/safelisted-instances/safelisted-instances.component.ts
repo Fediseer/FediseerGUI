@@ -22,14 +22,14 @@ import {int} from "../../../types/number";
 export class SafelistedInstancesComponent implements OnInit {
   private readonly perPage = 30;
 
-  private allInstances: InstanceDetailResponse[] = [];
   private initialLoadComplete: boolean = false;
 
   public instances: InstanceDetailResponse[] = [];
   public currentInstance: Instance = this.authManager.currentInstanceSnapshot;
   public endorsedByMe: string[] = [];
   public maxPage = 1;
-  public currentPage = 1;
+  public currentPage: int = 1;
+  public lastPageReached = false;
   public pages: number[] = [];
   public loading: boolean = true;
 
@@ -59,7 +59,6 @@ export class SafelistedInstancesComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe(async queryParams => {
       this.loading = true;
       this.currentPage = queryParams['page'] ? Number(queryParams['page']) : 1;
-      this.pages = [];
 
       const filters: SafelistFilter = {};
       if (queryParams['tags'] !== undefined) {
@@ -87,25 +86,27 @@ export class SafelistedInstancesComponent implements OnInit {
         this.endorsedByMe = response.successResponse!.instances.map(instance => instance.domain);
       }
 
-      const response = await toPromise(this.cachedApi.getSafelistedInstances(filters));
+      const response = await toPromise(this.cachedApi.getSafelistedInstances(filters, this.currentPage));
       if (this.apiResponseHelper.handleErrors([response])) {
         this.loading = false;
         return;
       }
-      this.allInstances = response.successResponse!.instances.sort((a, b) => {
-        if (a.endorsements === b.endorsements) {
-          return 0;
+
+      for (let i = 1; i <= this.currentPage; ++i) {
+        if (!this.pages.includes(i)) {
+          this.pages.push(i);
         }
-
-        return a.endorsements > b.endorsements ? -1 : 1;
-      });
-      this.titleService.title = `Safelisted instances (${this.allInstances.length})`;
-      this.maxPage = Math.ceil(this.allInstances.length / this.perPage);
-      for (let i = 1; i <= this.maxPage; ++i) {
-        this.pages.push(i);
       }
+      this.instances = response.successResponse!.instances;
 
-      this.instances = this.allInstances.slice((this.currentPage - 1) * this.perPage, this.currentPage * this.perPage);
+      if (!this.lastPageReached && this.instances.length === this.api.defaultPerPage && !this.pages.includes(this.currentPage + 1)) {
+        this.pages.push(this.currentPage + 1);
+      }
+      if (this.instances.length !== this.api.defaultPerPage) {
+        this.lastPageReached = true;
+      }
+      this.maxPage = Math.max(...this.pages);
+
       this.loading = false;
 
       this.availableTags = await toPromise(this.cachedApi.getAvailableTags());
@@ -170,5 +171,11 @@ export class SafelistedInstancesComponent implements OnInit {
       relativeTo: this.activatedRoute,
       queryParams: queryParams,
     });
+  }
+
+  public async submitFilterForm(): Promise<void> {
+    this.pages = [];
+    this.lastPageReached = false;
+    await this.loadInstances();
   }
 }

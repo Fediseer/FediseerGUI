@@ -39,6 +39,9 @@ enum HttpMethod {
   providedIn: 'root'
 })
 export class FediseerApiService {
+  public readonly defaultPerPage: int = 30;
+  public readonly maxPerPage: int = 100; // from api
+
   constructor(
     private readonly httpClient: HttpClient,
     private readonly authManager: AuthenticationManagerService,
@@ -178,9 +181,7 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Patch, `hesitations/${instance}`, body);
   }
 
-  public getSafelistedInstances(filter: SafelistFilter = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
-    const maxPerPage = 100; // from api
-
+  public getSafelistedInstances(filter: SafelistFilter = {}, page: int = 1): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     let body: {[key: string]: string} = {};
     if (filter.tags !== undefined) {
       body['tags_csv'] = filter.tags.join(',');
@@ -192,19 +193,34 @@ export class FediseerApiService {
       body['guarantors'] = String(filter.minimumGuarantors);
     }
 
-    const sendRequest = (page: number, limit: number): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> => this.sendRequest(
+    return this.sendRequest(
       HttpMethod.Get,
       `whitelist`,
       {
         page: String(page),
-        limit: String(limit),
+        limit: '30',
         ...body,
       },
     );
+  }
+
+  public getAllSafelistedInstances(filter: SafelistFilter = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    let body: {[key: string]: string} = {};
+    if (filter.tags !== undefined) {
+      body['tags_csv'] = filter.tags.join(',');
+    }
+    if (filter.minimumEndorsements !== undefined) {
+      body['endorsements'] = String(filter.minimumEndorsements);
+    }
+    if (filter.minimumGuarantors !== undefined) {
+      body['guarantors'] = String(filter.minimumGuarantors);
+    }
+
+    const sendRequest = (page: int): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> => this.getSafelistedInstances(filter, page);
 
     let currentPage = 1;
 
-    return sendRequest(currentPage, maxPerPage).pipe(
+    return sendRequest(currentPage).pipe(
       expand (response => {
         if (!response.success) {
           return EMPTY;
@@ -212,11 +228,11 @@ export class FediseerApiService {
         if (!response.successResponse!.instances.length) {
           return EMPTY;
         }
-        if (response.successResponse!.instances.length < maxPerPage) {
+        if (response.successResponse!.instances.length < this.defaultPerPage) {
           return EMPTY;
         }
 
-        return sendRequest(++currentPage, maxPerPage);
+        return sendRequest(++currentPage);
       }),
       reduce((acc, value) => {
         if (!value.success || !acc.success) {
@@ -234,7 +250,7 @@ export class FediseerApiService {
   }
 
   public getCensuredInstances(): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
-    return this.getSafelistedInstances().pipe(
+    return this.getAllSafelistedInstances().pipe(
       switchMap(response => {
         if (!response.success) {
           return of({
