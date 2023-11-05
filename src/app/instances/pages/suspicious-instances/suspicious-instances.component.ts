@@ -45,7 +45,7 @@ export class SuspiciousInstancesComponent implements OnInit {
     this.titleService.title = 'Suspicious instances';
 
     if (!this.currentInstance.anonymous) {
-      const response = await toPromise(this.cachedApi.getCensuresByInstances([this.currentInstance.name]));
+      const response = await toPromise(this.cachedApi.getAllCensuresByInstances([this.currentInstance.name]));
       if (this.apiResponseHelper.handleErrors([response])) {
         this.loading = false;
         return;
@@ -88,7 +88,7 @@ export class SuspiciousInstancesComponent implements OnInit {
     }
 
     if (censured) {
-      this.cachedApi.getCensuresByInstances(
+      this.cachedApi.getAllCensuresByInstances(
         [this.currentInstance.name],
         {clear: true},
       ).subscribe(() => {

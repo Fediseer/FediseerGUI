@@ -63,7 +63,22 @@ export class CachedFediseerApiService {
     );
   }
 
-  public getCensuresByInstances(instances: string[], cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+  public getCensuresByInstances(instances: string[], page: int = 1, cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 60;
+
+    const cacheKey = `api.censures_by_instances${cacheConfig.ttl}.${instances.join('_')}.${page}`;
+    const item = this.getCacheItem<InstanceListResponse<InstanceDetailResponse>>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return this.getSuccessResponse(item);
+    }
+
+    return this.api.getCensuresByInstances(instances, page).pipe(
+      tap(this.storeResponse(item, cacheConfig)),
+    );
+  }
+
+  public getAllCensuresByInstances(instances: string[], cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     cacheConfig.type ??= CacheType.Permanent;
     cacheConfig.ttl ??= 60;
 
@@ -73,7 +88,7 @@ export class CachedFediseerApiService {
       return this.getSuccessResponse(item);
     }
 
-    return this.api.getCensuresByInstances(instances).pipe(
+    return this.api.getAllCensuresByInstances(instances).pipe(
       tap(this.storeResponse(item, cacheConfig)),
     );
   }

@@ -86,7 +86,7 @@ export class SynchronizeLemmyComponent implements OnInit {
     this.originallyBlockedInstances = instances;
     this.sourceBlockedInstances = instances;
 
-    const myCensures = await toPromise(this.cachedFediseerApi.getCensuresByInstances([
+    const myCensures = await toPromise(this.cachedFediseerApi.getAllCensuresByInstances([
       this.authManager.currentInstanceSnapshot.name,
     ], {ttl: 10}));
     if (this.apiResponseHelper.handleErrors([myCensures])) {
@@ -249,7 +249,7 @@ export class SynchronizeLemmyComponent implements OnInit {
       return;
     }
 
-    this.cachedFediseerApi.getCensuresByInstances(
+    this.cachedFediseerApi.getAllCensuresByInstances(
       [this.authManager.currentInstanceSnapshot.name],
       {clear: true, ttl: 10},
     ).subscribe(response => {
