@@ -52,7 +52,7 @@ export class EditCensureReasonsComponent implements OnInit {
       this.availableReasons = availableReasons;
 
       const existing = await toPromise(
-        this.api.getCensuresByInstances([this.authManager.currentInstanceSnapshot.name]).pipe(
+        this.api.getAllCensuresByInstances([this.authManager.currentInstanceSnapshot.name]).pipe(
           map(response => {
             if (this.apiResponseHelper.handleErrors([response])) {
               return null;
@@ -102,7 +102,7 @@ export class EditCensureReasonsComponent implements OnInit {
         return;
       }
 
-      this.cachedApi.getCensuresByInstances([this.authManager.currentInstanceSnapshot.name], {clear: true})
+      this.cachedApi.getAllCensuresByInstances([this.authManager.currentInstanceSnapshot.name], {clear: true})
         .subscribe(() => {
           this.loading = false;
           this.router.navigateByUrl('/censures/my').then(() => {

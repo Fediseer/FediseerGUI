@@ -39,7 +39,7 @@ export class MyCensuresComponent implements OnInit {
     this.titleService.title = this.translator.get('app.censures.my.title');
 
     const responses = await Promise.all([
-      toPromise(this.cachedApi.getCensuresByInstances([this.authManager.currentInstanceSnapshot.name])),
+      toPromise(this.cachedApi.getAllCensuresByInstances([this.authManager.currentInstanceSnapshot.name])),
       toPromise(this.cachedApi.getCurrentInstanceInfo()),
     ])
 

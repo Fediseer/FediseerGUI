@@ -27,9 +27,8 @@ export class CensuredInstancesComponent implements OnInit {
 
   public readonly filterInstanceSpecialValueAll = FilterSpecialValueAllInstances;
 
-  private allInstances: NormalizedInstanceDetailResponse[] = [];
-
   public instances: NormalizedInstanceDetailResponse[] = [];
+  public lastPageReached = false;
   public currentInstance: Instance = this.authManager.currentInstanceSnapshot;
   public censuredByMe: string[] = [];
   public maxPage = 1;
@@ -64,7 +63,9 @@ export class CensuredInstancesComponent implements OnInit {
     this.titleService.title = 'Censured instances';
 
     if (!this.currentInstance.anonymous) {
-      const response = await toPromise(this.cachedApi.getCensuresByInstances([this.currentInstance.name]));
+      const response = await toPromise(this.cachedApi.getAllCensuresByInstances([this.currentInstance.name], {
+        ttl: 600,
+      }));
       if (this.apiResponseHelper.handleErrors([response])) {
         this.loading = false;
         return;
@@ -116,7 +117,7 @@ export class CensuredInstancesComponent implements OnInit {
 
     this.activatedRoute.queryParams.subscribe(query => {
       this.currentPage = query['page'] ? Number(query['page']) : 1;
-      this.loadPage();
+      this.loadInstances(false);
     });
   }
 
@@ -135,7 +136,7 @@ export class CensuredInstancesComponent implements OnInit {
     }
 
     if (censured) {
-      this.cachedApi.getCensuresByInstances(
+      this.cachedApi.getAllCensuresByInstances(
         [this.currentInstance.name],
         {clear: true},
       ).subscribe(() => {
@@ -153,9 +154,7 @@ export class CensuredInstancesComponent implements OnInit {
     });
   }
 
-  public async loadInstances(redirect: boolean = true): Promise<void> {
-    this.loading = true;
-
+  private async getSourceInstances(): Promise<string[]> {
     let sourceInstances = this.filterForm.controls.instances.value ?? environment.defaultCensuresListInstanceFilter;
     if (!sourceInstances.length) {
       sourceInstances = environment.defaultCensuresListInstanceFilter;
@@ -169,7 +168,7 @@ export class CensuredInstancesComponent implements OnInit {
         const endorsedResponse = await toPromise(this.cachedApi.getEndorsementsByInstances(sourceInstances));
         if (this.apiResponseHelper.handleErrors([endorsedResponse])) {
           this.loading = false;
-          return;
+          return [];
         }
         sourceInstances = [...new Set([
           ...sourceInstances,
@@ -196,27 +195,35 @@ export class CensuredInstancesComponent implements OnInit {
       }
     }
 
-    const response = await toPromise(this.cachedApi.getCensuresByInstances(sourceInstances));
+    return sourceInstances;
+  }
+
+  public async loadInstances(redirect: boolean = true): Promise<void> {
+    this.loading = true;
+
+    const response = await toPromise(this.cachedApi.getCensuresByInstances(
+      await this.getSourceInstances(),
+      this.currentPage,
+    ));
     if (this.apiResponseHelper.handleErrors([response])) {
       this.loading = false;
       return;
     }
-    this.allInstances = response.successResponse!.instances.map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance))
-      .sort((a, b) => {
-        const countA = a.unmergedCensureReasons.length;
-        const countB = b.unmergedCensureReasons.length;
 
-        if (countA === countB) {
-          return 0;
-        }
+    for (let i = 1; i <= this.currentPage; ++i) {
+      if (!this.pages.includes(i)) {
+        this.pages.push(i);
+      }
+    }
+    this.instances = response.successResponse!.instances
+      .map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance));
 
-        return countA > countB ? -1 : 1;
-      });
-    this.titleService.title = `Censured instances (${this.allInstances.length})`;
-    this.maxPage = Math.ceil(this.allInstances.length / this.perPage);
-    this.pages = [];
-    for (let i = 1; i <= this.maxPage; ++i) {
-      this.pages.push(i);
+    if (!this.lastPageReached && this.instances.length === this.api.defaultPerPage && !this.pages.includes(this.currentPage + 1)) {
+      this.pages.push(this.currentPage + 1);
+    }
+    this.maxPage = Math.max(...this.pages);
+    if (this.instances.length !== this.api.defaultPerPage) {
+      this.lastPageReached = true;
     }
     if (redirect) {
       await this.router.navigate([], {
@@ -225,11 +232,12 @@ export class CensuredInstancesComponent implements OnInit {
         queryParamsHandling: 'merge',
       });
     }
-    await this.loadPage();
     this.loading = false;
   }
 
-  private async loadPage(): Promise<void> {
-    this.instances = this.allInstances.slice((this.currentPage - 1) * this.perPage, this.currentPage * this.perPage);
+  public async submitFilterForm() {
+    this.lastPageReached = false;
+    this.pages = [];
+    await this.loadInstances(false);
   }
 }

@@ -74,7 +74,7 @@ export class HesitateOnInstanceComponent implements OnInit {
       const currentInstance = this.authManager.currentInstanceSnapshot.name;
       forkJoin([
         this.cachedApi.getGuaranteesByInstance(currentInstance, {clear: true}),
-        this.cachedApi.getCensuresByInstances([currentInstance], {clear: true}),
+        this.cachedApi.getAllCensuresByInstances([currentInstance], {clear: true}),
         this.cachedApi.getHesitationsByInstances([currentInstance], {clear: true}),
       ]).subscribe(() => {
         this.loading = false;

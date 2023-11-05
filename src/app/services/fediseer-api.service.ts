@@ -117,7 +117,19 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Delete, `guarantees/${instance}`);
   }
 
-  public getCensuresByInstances(instances: string[]): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+  public getCensuresByInstances(instances: string[], page: int = 1): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    const body: {[key: string]: string} = {
+      page: String(page),
+      limit: String(this.defaultPerPage),
+    };
+    return this.sendRequest(
+      HttpMethod.Get,
+      `censures_given/${instances.join(',')}`,
+      body,
+    );
+  }
+
+  public getAllCensuresByInstances(instances: string[]): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     return this.sendRequest(HttpMethod.Get, `censures_given/${instances.join(',')}`);
   }
 
@@ -198,7 +210,7 @@ export class FediseerApiService {
       `whitelist`,
       {
         page: String(page),
-        limit: '30',
+        limit: String(this.defaultPerPage),
         ...body,
       },
     );
@@ -262,7 +274,7 @@ export class FediseerApiService {
         }
 
         const instances = response.successResponse!.instances.map(instance => instance.domain);
-        return this.getCensuresByInstances(instances);
+        return this.getAllCensuresByInstances(instances);
       }),
     );
   }
@@ -273,7 +285,7 @@ export class FediseerApiService {
       return of(cacheItem.value!);
     }
 
-    const result = instances.length > 0 ? this.getCensuresByInstances(instances) : this.getCensuredInstances();
+    const result = instances.length > 0 ? this.getAllCensuresByInstances(instances) : this.getCensuredInstances();
 
     return result.pipe(
       map (response => {

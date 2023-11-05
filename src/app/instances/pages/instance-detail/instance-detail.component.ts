@@ -61,7 +61,7 @@ export class InstanceDetailComponent implements OnInit {
 
       const responses = await Promise.all([
         toPromise(this.api.getCensuresForInstance(instanceDomain)),
-        toPromise(this.cachedApi.getCensuresByInstances([instanceDomain])),
+        toPromise(this.cachedApi.getAllCensuresByInstances([instanceDomain])),
         toPromise(this.cachedApi.getEndorsementsForInstance(instanceDomain)),
         toPromise(this.cachedApi.getEndorsementsByInstances([instanceDomain])),
         toPromise(this.cachedApi.getGuaranteesByInstance(instanceDomain)),

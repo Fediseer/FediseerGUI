@@ -339,7 +339,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   }
 
   private async getCensuresByInstances(instances: string[]): Promise<InstanceDetailResponse[] | null> {
-    const instancesResponse = await toPromise(this.cachedApi.getCensuresByInstances(instances, {ttl: 5}));
+    const instancesResponse = await toPromise(this.cachedApi.getAllCensuresByInstances(instances, {ttl: 5}));
     if (this.apiResponseHelper.handleErrors([instancesResponse])) {
       return null;
     }
