@@ -238,7 +238,9 @@
           </li>
           <li><hr></li>
           <li class="nav-item">
-            {{"app.language" | transloco}}
+            <span class="text-light">
+              {{"app.language" | transloco}}
+            </span>
             <select class="form-control" *ngIf="availableLanguages.length && selectedLanguage" (change)="changeLanguage($any($event.target).value)">
               <option *ngFor="let option of availableLanguages" [value]="option" [selected]="option === selectedLanguage">{{option | languageName}}</option>
             </select>
