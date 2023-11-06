@@ -192,7 +192,7 @@ export class AppComponent implements OnInit {
     const username = urlized.username;
     const host = urlized.host;
 
-    this.maintainerLink = `https://${host}/u/${username}`;
+    this.maintainerLink = `https://lemmyverse.link/u/${username}@${host}`;
   }
 
   public async openSwitchAccountModal(modal: TemplateRef<any>) {

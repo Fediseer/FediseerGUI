@@ -300,10 +300,16 @@
     </div>
     <strong>
       <ng-container *ngIf="maintainer === '@rikudou@lemmings.world' else splitMaintainerAuthor">
-        <transloco [key]="'app.footer.created_and_maintained_by'" [params]="{authorUrl: 'https://lemmings.world/u/rikudou', author: '@rikudou@lemmings.world'}" />
+        <transloco [key]="'app.footer.created_and_maintained_by'" [params]="{
+           authorUrl: 'https://lemmyverse.link/u/rikudou@lemmings.world',
+           author: '@rikudou@lemmings.world'
+        }" />
       </ng-container>
       <ng-template #splitMaintainerAuthor>
-        <transloco [key]="'app.footer.created_by'" [params]="{authorUrl: 'https://lemmings.world/u/rikudou', author: '@rikudou@lemmings.world'}" />
+        <transloco [key]="'app.footer.created_by'" [params]="{
+           authorUrl: 'https://lemmyverse.link/u/rikudou@lemmings.world',
+           author: '@rikudou@lemmings.world'
+        }" />
         <transloco [key]="'app.footer.maintained_by'" [params]="{maintainerLink: maintainerLink, maintainer: maintainer}" />
       </ng-template>
       <transloco [key]="'app.footer.source_link'" [params]="{sourceCodeLink: sourceCodeLink}" />
