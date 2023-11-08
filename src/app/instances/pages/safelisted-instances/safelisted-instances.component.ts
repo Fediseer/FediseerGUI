@@ -32,6 +32,7 @@ export class SafelistedInstancesComponent implements OnInit {
   public lastPageReached = false;
   public pages: number[] = [];
   public loading: boolean = true;
+  public loadingFilters: boolean = true;
 
   public availableTags: string[] = [];
 
@@ -110,6 +111,7 @@ export class SafelistedInstancesComponent implements OnInit {
       this.loading = false;
 
       this.availableTags = await toPromise(this.cachedApi.getAvailableTags());
+      this.loadingFilters = false;
 
       if (!this.initialLoadComplete) {
         this.initialLoadComplete = true;
