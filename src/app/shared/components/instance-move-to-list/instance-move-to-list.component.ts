@@ -71,7 +71,7 @@ export class InstanceMoveToListComponent implements OnInit {
     if (this.originalList === null) {
       const lock = await this.lockService.acquire(`instance_move_to_list`);
       const responses = await Promise.all([
-        toPromise(this.cachedApi.getHesitationsByInstances([myInstance])),
+        toPromise(this.cachedApi.getAllHesitationsByInstances([myInstance])),
         toPromise(this.cachedApi.getAllCensuresByInstances([myInstance])),
         toPromise(this.cachedApi.getGuaranteesByInstance(myInstance)),
         toPromise(this.cachedApi.getEndorsementsByInstances([myInstance])),
@@ -176,7 +176,7 @@ export class InstanceMoveToListComponent implements OnInit {
     const currentInstance = this.authManager.currentInstanceSnapshot.name;
     this.cachedApi.getGuaranteesByInstance(currentInstance, {clear: true}).subscribe();
     this.cachedApi.getAllCensuresByInstances([currentInstance], {clear: true}).subscribe();
-    this.cachedApi.getHesitationsByInstances([currentInstance], {clear: true}).subscribe();
+    this.cachedApi.getAllHesitationsByInstances([currentInstance], {clear: true}).subscribe();
 
     this.originalList = targetList;
     this._instanceMoved.next({
@@ -200,7 +200,7 @@ export class InstanceMoveToListComponent implements OnInit {
         break;
       case InstanceList.Hesitations:
         removeResult = await toPromise(this.api.cancelHesitation(this.instance));
-        this.cachedApi.getHesitationsByInstances([currentInstance], {clear: true}).subscribe();
+        this.cachedApi.getAllHesitationsByInstances([currentInstance], {clear: true}).subscribe();
         break;
       case InstanceList.Endorsements:
         removeResult = await toPromise(this.api.cancelEndorsement(this.instance));

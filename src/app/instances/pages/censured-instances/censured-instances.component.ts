@@ -155,7 +155,8 @@ export class CensuredInstancesComponent implements OnInit {
   }
 
   private async getSourceInstances(): Promise<string[]> {
-    let sourceInstances = this.filterForm.controls.instances.value ?? environment.defaultCensuresListInstanceFilter;
+    const originalSourceInstances = this.filterForm.controls.instances.value ?? environment.defaultCensuresListInstanceFilter;
+    let sourceInstances = originalSourceInstances;
     if (!sourceInstances.length) {
       sourceInstances = environment.defaultCensuresListInstanceFilter;
     }
@@ -176,7 +177,7 @@ export class CensuredInstancesComponent implements OnInit {
         ])];
       }
       if (this.filterForm.controls.includeGuaranteed.value) {
-        const guaranteed = await Promise.all(sourceInstances.map(async sourceInstance => {
+        const guaranteed = await Promise.all(originalSourceInstances.map(async sourceInstance => {
           const guaranteedResponse = await toPromise(this.cachedApi.getGuaranteesByInstance(sourceInstance));
           if (this.apiResponseHelper.handleErrors([guaranteedResponse])) {
             this.loading = false;

@@ -130,7 +130,33 @@ export class FediseerApiService {
   }
 
   public getAllCensuresByInstances(instances: string[]): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
-    return this.sendRequest(HttpMethod.Get, `censures_given/${instances.join(',')}`);
+    const sendRequest = (page: int): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> => this.getCensuresByInstances(instances, page);
+
+    let currentPage = 1;
+
+    return sendRequest(currentPage).pipe(
+      expand (response => {
+        if (!response.success) {
+          return EMPTY;
+        }
+        if (!response.successResponse!.instances.length) {
+          return EMPTY;
+        }
+        if (response.successResponse!.instances.length < this.defaultPerPage) {
+          return EMPTY;
+        }
+
+        return sendRequest(++currentPage);
+      }),
+      reduce((acc, value) => {
+        if (!value.success || !acc.success) {
+          return acc;
+        }
+        acc.successResponse!.instances = [...acc.successResponse!.instances, ...value.successResponse!.instances];
+
+        return acc;
+      }),
+    );
   }
 
   public getCensuresForInstance(instance: string): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
@@ -161,8 +187,46 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Patch, `censures/${instance}`, body);
   }
 
-  public getHesitationsByInstances(instances: string[]): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
-    return this.sendRequest(HttpMethod.Get, `hesitations_given/${instances.join(',')}`);
+  public getHesitationsByInstances(instances: string[], page: int = 1): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    const body: {[key: string]: string} = {
+      page: String(page),
+      limit: String(this.defaultPerPage),
+    };
+    return this.sendRequest(
+      HttpMethod.Get,
+      `hesitations_given/${instances.join(',')}`,
+      body,
+    );
+  }
+
+  public getAllHesitationsByInstances(instances: string[]): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    const sendRequest = (page: int): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> => this.getHesitationsByInstances(instances, page);
+
+    let currentPage = 1;
+
+    return sendRequest(currentPage).pipe(
+      expand (response => {
+        if (!response.success) {
+          return EMPTY;
+        }
+        if (!response.successResponse!.instances.length) {
+          return EMPTY;
+        }
+        if (response.successResponse!.instances.length < this.defaultPerPage) {
+          return EMPTY;
+        }
+
+        return sendRequest(++currentPage);
+      }),
+      reduce((acc, value) => {
+        if (!value.success || !acc.success) {
+          return acc;
+        }
+        acc.successResponse!.instances = [...acc.successResponse!.instances, ...value.successResponse!.instances];
+
+        return acc;
+      }),
+    );
   }
 
   public getHesitationsForInstance(instance: string): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {

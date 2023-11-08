@@ -52,7 +52,7 @@ export class GuaranteeInstanceComponent implements OnInit {
       forkJoin([
         this.cachedApi.getGuaranteesByInstance(currentInstance, {clear: true}),
         this.cachedApi.getAllCensuresByInstances([currentInstance], {clear: true}),
-        this.cachedApi.getHesitationsByInstances([currentInstance], {clear: true}),
+        this.cachedApi.getAllHesitationsByInstances([currentInstance], {clear: true}),
       ]).subscribe(() => {
         this.loading = false;
         this.router.navigateByUrl('/guarantees/my').then(() => {

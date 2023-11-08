@@ -37,7 +37,7 @@ export class MyHesitationsComponent implements OnInit {
     this.titleService.title = 'My hesitations';
 
     const responses = await Promise.all([
-      toPromise(this.cachedApi.getHesitationsByInstances([this.authManager.currentInstanceSnapshot.name])),
+      toPromise(this.cachedApi.getAllHesitationsByInstances([this.authManager.currentInstanceSnapshot.name])),
       toPromise(this.cachedApi.getCurrentInstanceInfo()),
     ]);
 
@@ -63,7 +63,7 @@ export class MyHesitationsComponent implements OnInit {
         return;
       }
 
-      this.cachedApi.getHesitationsByInstances([this.authManager.currentInstanceSnapshot.name], {clear: true}).subscribe();
+      this.cachedApi.getAllHesitationsByInstances([this.authManager.currentInstanceSnapshot.name], {clear: true}).subscribe();
       this.instances = this.instances.filter(
         hesitatedInstance => hesitatedInstance.domain !== instance,
       );

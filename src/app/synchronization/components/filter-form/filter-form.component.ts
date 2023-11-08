@@ -348,7 +348,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   }
 
   private async getHesitationsByInstances(instances: string[]): Promise<InstanceDetailResponse[] | null> {
-    const instancesResponse = await toPromise(this.cachedApi.getHesitationsByInstances(instances, {ttl: 5}));
+    const instancesResponse = await toPromise(this.cachedApi.getAllHesitationsByInstances(instances, {ttl: 5}));
     if (this.apiResponseHelper.handleErrors([instancesResponse])) {
       return null;
     }

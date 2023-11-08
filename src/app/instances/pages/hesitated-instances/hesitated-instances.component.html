@@ -6,7 +6,7 @@
       <div class="card-body">
 
         <!-- filters -->
-        <form [formGroup]="filterForm" (submit)="loadInstances()">
+        <form [formGroup]="filterForm" (submit)="submitFilterForm()">
           <div class="row">
             <div class="col-md-6 col-sm-12">
               <div class="form-group">
@@ -91,7 +91,7 @@
           </tbody>
         </table>
       </div>
-      <div class="card-footer" *ngIf="maxPage > 1">
+      <div class="card-footer" *ngIf="maxPage > 0">
         <ul class="pagination text-center">
           <li class="paginate_button page-item previous" [class.disabled]="currentPage <= 1">
             <a href="javascript:void(0)" class="page-link" (click)="goToPage(currentPage - 1)">

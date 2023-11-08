@@ -67,7 +67,7 @@ export class InstanceDetailComponent implements OnInit {
         toPromise(this.cachedApi.getGuaranteesByInstance(instanceDomain)),
         toPromise(this.cachedApi.getInstanceInfo(instanceDomain)),
         toPromise(this.api.getHesitationsForInstance(instanceDomain)),
-        toPromise(this.cachedApi.getHesitationsByInstances([instanceDomain])),
+        toPromise(this.cachedApi.getAllHesitationsByInstances([instanceDomain])),
       ]);
       const manuallyHandleableResponse = [
         responses[1],
