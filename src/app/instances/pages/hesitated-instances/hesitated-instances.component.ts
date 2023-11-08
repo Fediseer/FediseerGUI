@@ -27,9 +27,8 @@ export class HesitatedInstancesComponent {
 
   public readonly filterInstanceSpecialValueAll = FilterSpecialValueAllInstances;
 
-  private allInstances: NormalizedInstanceDetailResponse[] = [];
-
   public instances: NormalizedInstanceDetailResponse[] = [];
+  public lastPageReached = false;
   public currentInstance: Instance = this.authManager.currentInstanceSnapshot;
   public hesitatedByMe: string[] = [];
   public maxPage = 1;
@@ -64,7 +63,7 @@ export class HesitatedInstancesComponent {
     this.titleService.title = 'Hesitated instances';
 
     if (!this.currentInstance.anonymous) {
-      const response = await toPromise(this.cachedApi.getHesitationsByInstances([this.currentInstance.name]));
+      const response = await toPromise(this.cachedApi.getAllHesitationsByInstances([this.currentInstance.name]));
       if (this.apiResponseHelper.handleErrors([response])) {
         this.loading = false;
         return;
@@ -116,7 +115,7 @@ export class HesitatedInstancesComponent {
 
     this.activatedRoute.queryParams.subscribe(query => {
       this.currentPage = query['page'] ? Number(query['page']) : 1;
-      this.loadPage();
+      this.loadInstances(false);
     });
   }
 
@@ -129,7 +128,7 @@ export class HesitatedInstancesComponent {
         this.messageService.createError(`There was an api error: ${response.errorResponse!.message}`);
         return;
       }
-      this.cachedApi.getHesitationsByInstances([this.authManager.currentInstanceSnapshot.name], {clear: true}).subscribe();
+      this.cachedApi.getAllHesitationsByInstances([this.authManager.currentInstanceSnapshot.name], {clear: true}).subscribe();
     } else {
       await this.router.navigateByUrl(`/hesitations/hesitate?instance=${instance}`);
       return;
@@ -152,7 +151,43 @@ export class HesitatedInstancesComponent {
   public async loadInstances(redirect: boolean = true): Promise<void> {
     this.loading = true;
 
-    let sourceInstances = this.filterForm.controls.instances.value ?? environment.defaultCensuresListInstanceFilter;
+    const response = await toPromise(this.cachedApi.getHesitationsByInstances(
+      await this.getSourceInstances(),
+      this.currentPage,
+    ));
+    if (this.apiResponseHelper.handleErrors([response])) {
+      this.loading = false;
+      return;
+    }
+
+    for (let i = 1; i <= this.currentPage; ++i) {
+      if (!this.pages.includes(i)) {
+        this.pages.push(i);
+      }
+    }
+    this.instances = response.successResponse!.instances
+      .map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance));
+
+    if (!this.lastPageReached && this.instances.length === this.api.defaultPerPage && !this.pages.includes(this.currentPage + 1)) {
+      this.pages.push(this.currentPage + 1);
+    }
+    this.maxPage = Math.max(...this.pages);
+    if (this.instances.length !== this.api.defaultPerPage) {
+      this.lastPageReached = true;
+    }
+    if (redirect) {
+      await this.router.navigate([], {
+        relativeTo: this.activatedRoute,
+        queryParams: {page: 1},
+        queryParamsHandling: 'merge',
+      });
+    }
+    this.loading = false;
+  }
+
+  private async getSourceInstances(): Promise<string[]> {
+    const originalSourceInstances = this.filterForm.controls.instances.value ?? environment.defaultCensuresListInstanceFilter;
+    let sourceInstances = originalSourceInstances;
     if (!sourceInstances.length) {
       sourceInstances = environment.defaultCensuresListInstanceFilter;
     }
@@ -165,7 +200,7 @@ export class HesitatedInstancesComponent {
         const endorsedResponse = await toPromise(this.cachedApi.getEndorsementsByInstances(sourceInstances));
         if (this.apiResponseHelper.handleErrors([endorsedResponse])) {
           this.loading = false;
-          return;
+          return [];
         }
         sourceInstances = [...new Set([
           ...sourceInstances,
@@ -173,7 +208,7 @@ export class HesitatedInstancesComponent {
         ])];
       }
       if (this.filterForm.controls.includeGuaranteed.value) {
-        const guaranteed = await Promise.all(sourceInstances.map(async sourceInstance => {
+        const guaranteed = await Promise.all(originalSourceInstances.map(async sourceInstance => {
           const guaranteedResponse = await toPromise(this.cachedApi.getGuaranteesByInstance(sourceInstance));
           if (this.apiResponseHelper.handleErrors([guaranteedResponse])) {
             this.loading = false;
@@ -192,40 +227,12 @@ export class HesitatedInstancesComponent {
       }
     }
 
-    const response = await toPromise(this.cachedApi.getHesitationsByInstances(sourceInstances));
-    if (this.apiResponseHelper.handleErrors([response])) {
-      this.loading = false;
-      return;
-    }
-    this.allInstances = response.successResponse!.instances.map(instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance))
-      .sort((a, b) => {
-        const countA = a.unmergedHesitationReasons.length;
-        const countB = b.unmergedHesitationReasons.length;
-
-        if (countA === countB) {
-          return 0;
-        }
-
-        return countA > countB ? -1 : 1;
-      });
-    this.titleService.title = `Hesitated instances (${this.allInstances.length})`;
-    this.maxPage = Math.ceil(this.allInstances.length / this.perPage);
-    this.pages = [];
-    for (let i = 1; i <= this.maxPage; ++i) {
-      this.pages.push(i);
-    }
-    if (redirect) {
-      await this.router.navigate([], {
-        relativeTo: this.activatedRoute,
-        queryParams: {page: 1},
-        queryParamsHandling: 'merge',
-      });
-    }
-    await this.loadPage();
-    this.loading = false;
+    return sourceInstances;
   }
 
-  private async loadPage(): Promise<void> {
-    this.instances = this.allInstances.slice((this.currentPage - 1) * this.perPage, this.currentPage * this.perPage);
+  public async submitFilterForm() {
+    this.lastPageReached = false;
+    this.pages = [];
+    await this.loadInstances(false);
   }
 }

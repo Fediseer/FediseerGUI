@@ -128,7 +128,22 @@ export class CachedFediseerApiService {
     this.permanentCache.clearByPrefix('api.safelist');
   }
 
-  public getHesitationsByInstances(instances: string[], cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+  public getHesitationsByInstances(instances: string[], page: int = 1, cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 60;
+
+    const cacheKey = `api.hesitations_by_instances${cacheConfig.ttl}.${instances.join('_')}.${page}`;
+    const item = this.getCacheItem<InstanceListResponse<InstanceDetailResponse>>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return this.getSuccessResponse(item);
+    }
+
+    return this.api.getHesitationsByInstances(instances, page).pipe(
+      tap(this.storeResponse(item, cacheConfig)),
+    );
+  }
+
+  public getAllHesitationsByInstances(instances: string[], cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     cacheConfig.type ??= CacheType.Permanent;
     cacheConfig.ttl ??= 60;
 
@@ -139,7 +154,7 @@ export class CachedFediseerApiService {
       return this.getSuccessResponse(item);
     }
 
-    return this.api.getHesitationsByInstances(instances).pipe(
+    return this.api.getAllHesitationsByInstances(instances).pipe(
       tap(this.storeResponse(item, cacheConfig)),
     );
   }

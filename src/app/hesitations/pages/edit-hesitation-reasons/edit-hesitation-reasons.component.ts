@@ -50,7 +50,7 @@ export class EditHesitationReasonsComponent {
       this.availableReasons = availableReasons;
 
       const existing = await toPromise(
-        this.api.getHesitationsByInstances([this.authManager.currentInstanceSnapshot.name]).pipe(
+        this.api.getAllHesitationsByInstances([this.authManager.currentInstanceSnapshot.name]).pipe(
           map(response => {
             if (this.apiResponseHelper.handleErrors([response])) {
               return null;

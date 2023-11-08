@@ -77,7 +77,7 @@ export class CensureInstanceComponent implements OnInit {
       forkJoin([
         this.cachedApi.getGuaranteesByInstance(currentInstance, {clear: true}),
         this.cachedApi.getAllCensuresByInstances([currentInstance], {clear: true}),
-        this.cachedApi.getHesitationsByInstances([currentInstance], {clear: true}),
+        this.cachedApi.getAllHesitationsByInstances([currentInstance], {clear: true}),
       ]).subscribe(() => {
         this.loading = false;
         this.router.navigateByUrl('/censures/my').then(() => {
