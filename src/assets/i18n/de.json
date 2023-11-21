@@ -111,7 +111,7 @@
   "app.endorsements.intro": "Empfehlen bedeutet, dass Sie einer Instanz vertrauen. Weitere Informationen finden Sie im [link:glossaryLink]{{glossary}}[/link].",
   "app.guarantee_restricted.info": "Empfehlungen können nur ausgesprochen werden, wenn eine andere Instanz für sie [link:glossaryLink]Bürgt[/link].",
   "app.endorsements.target_instance": "Domain der Instanz",
-  "app.reasons": "Gründe für die Empfehlung",
+  "app.reasons": "Begründung (Tags)",
   "app.generic_button.update": "Aktualisieren",
   "error.reasons.autocompletion.fetch": "Die Liste der Gründe, die zuvor verwendet wurden, konnte nicht abgerufen werden, die automatische Vervollständigung wird nicht funktionieren.",
   "error.endorsements.instance_not_endorsed": "Ich konnte diesen Fall nicht unter Ihren Vermerken finden. Sind Sie sicher, dass Sie es gebilligt haben?",
