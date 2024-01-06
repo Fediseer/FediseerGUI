@@ -8,6 +8,7 @@ import {PermanentCacheService} from "./cache/permanent-cache.service";
 import {Cache, CacheItem} from "./cache/cache";
 import {InstanceListResponse} from "../response/instance-list.response";
 import {SafelistFilter} from "../types/safelist-filter";
+import {FediseerConfigResponse} from "../response/fediseer-config.response";
 
 export enum CacheType {
   Runtime,
@@ -317,6 +318,22 @@ export class CachedFediseerApiService {
         }),
       )
   }
+
+  public getFediseerConfig(cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<FediseerConfigResponse>> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 60;
+
+    const cacheKey = `api.fediseer_config${cacheConfig.ttl}`;
+    const item = this.getCacheItem<FediseerConfigResponse>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return this.getSuccessResponse(item);
+    }
+
+    return this.api.getFediseerConfig().pipe(
+      tap(this.storeResponse(item, cacheConfig)),
+    );
+  }
+
 
   public clearCache(): void {
     this.runtimeCache.clear();
