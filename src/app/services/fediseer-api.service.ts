@@ -502,6 +502,22 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Get, `config`);
   }
 
+  public createRebuttal(sourceInstance: string, rebuttal: string): Observable<ApiResponse<SuccessResponse>> {
+    return this.sendRequest(HttpMethod.Put, `rebuttals/${sourceInstance}`, {
+      rebuttal: rebuttal,
+    });
+  }
+
+  public updateRebuttal(sourceInstance: string, rebuttal: string): Observable<ApiResponse<SuccessResponse>> {
+    return this.sendRequest(HttpMethod.Patch, `rebuttals/${sourceInstance}`, {
+      rebuttal: rebuttal,
+    });
+  }
+
+  public removeRebuttal(sourceInstance: string): Observable<ApiResponse<SuccessResponse>> {
+    return this.sendRequest(HttpMethod.Delete, `rebuttals/${sourceInstance}`);
+  }
+
   private sendRequest<T>(
     method: HttpMethod,
     endpoint: string,
