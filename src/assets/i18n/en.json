@@ -173,5 +173,7 @@
   "app.censures.unguaranteed": "No one guaranteed for this instance, you cannot censure others.",
   "app.censures.my.title": "My censures",
   "error.censures.moving_failed": "Failed moving the instance {{instance}}. Please reload the page to see whether it was removed from your censures or not.",
-  "app.language": "Language"
+  "app.language": "Language",
+  "app.search": "Search",
+  "app.search.not_found": "Nothing was found"
 }
