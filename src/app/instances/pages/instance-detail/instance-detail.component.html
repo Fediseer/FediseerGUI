@@ -179,6 +179,7 @@
               <th>Instance</th>
               <th>Reasons</th>
               <th>Evidence</th>
+              <th>{{'app.rebuttal' | transloco}}</th>
             </tr>
             </thead>
             <tbody>
@@ -195,6 +196,27 @@
               <td>
                 <code *ngIf="!instance.censuresEvidence">N/A</code>
                 <ng-container *ngIf="instance.censuresEvidence">{{instance.censuresEvidence}}</ng-container>
+              </td>
+              <td>
+                <ng-container *ngIf="!instance.rebuttal">
+                  <ng-container *ngIf="myInstance">
+                    <a class="btn btn-primary" routerLink="/rebuttals/create/{{instance.domain}}">{{'app.rebuttal.create' | transloco}}</a>
+                  </ng-container>
+                  <ng-container *ngIf="!myInstance">
+                    <code>
+                      {{'app.not_applicable' | transloco}}
+                    </code>
+                  </ng-container>
+                </ng-container>
+                <ng-container *ngIf="instance.rebuttal">
+                  {{instance.rebuttal}}
+                  <hr>
+                  <ng-container *ngIf="myInstance">
+                    <br>
+                    <a class="btn btn-primary" routerLink="/rebuttals/edit/{{instance.domain}}">{{'app.rebuttal.edit' | transloco}}</a>&nbsp;
+                    <button class="btn btn-danger" (click)="removeRebuttal(instance.domain)">{{'app.rebuttal.remove' | transloco}}</button>
+                  </ng-container>
+                </ng-container>
               </td>
             </tr>
             </tbody>
@@ -323,6 +345,7 @@
               <th>Instance</th>
               <th>Reasons</th>
               <th>Evidence</th>
+              <th>{{'app.rebuttal' | transloco}}</th>
             </tr>
             </thead>
             <tbody>
@@ -339,6 +362,27 @@
               <td>
                 <code *ngIf="!instance.hesitationsEvidence">N/A</code>
                 <ng-container *ngIf="instance.hesitationsEvidence">{{instance.hesitationsEvidence}}</ng-container>
+              </td>
+              <td>
+                <ng-container *ngIf="!instance.rebuttal">
+                  <ng-container *ngIf="myInstance">
+                    <a class="btn btn-primary" routerLink="/rebuttals/create/{{instance.domain}}">{{'app.rebuttal.create' | transloco}}</a>
+                  </ng-container>
+                  <ng-container *ngIf="!myInstance">
+                    <code>
+                      {{'app.not_applicable' | transloco}}
+                    </code>
+                  </ng-container>
+                </ng-container>
+                <ng-container *ngIf="instance.rebuttal">
+                  {{instance.rebuttal}}
+                  <hr>
+                  <ng-container *ngIf="myInstance">
+                    <br>
+                    <a class="btn btn-primary" routerLink="/rebuttals/edit/{{instance.domain}}">{{'app.rebuttal.edit' | transloco}}</a>&nbsp;
+                    <button class="btn btn-danger" (click)="removeRebuttal(instance.domain)">{{'app.rebuttal.remove' | transloco}}</button>
+                  </ng-container>
+                </ng-container>
               </td>
             </tr>
             </tbody>

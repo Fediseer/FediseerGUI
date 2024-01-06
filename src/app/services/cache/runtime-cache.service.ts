@@ -39,7 +39,11 @@ export class RuntimeCacheService implements Cache {
   }
 
   public remove(item: CacheItem<any>): void {
-    delete this.cache[item.key];
+    this.removeByKey(item.key);
+  }
+
+  public removeByKey(key: string): void {
+    delete this.cache[key];
   }
 
   public clear(): void {
@@ -47,10 +51,12 @@ export class RuntimeCacheService implements Cache {
   }
 
   public clearByPrefix(prefix: string): void {
-    for (const key of Object.keys(this.cache)) {
-      if (key.startsWith(prefix)) {
-        delete this.cache[key];
-      }
+    for (const key of this.getKeysByPrefix(prefix)) {
+      delete this.cache[key];
     }
+  }
+
+  public getKeysByPrefix(prefix: string): string[] {
+    return Object.keys(this.cache).filter(key => key.startsWith(prefix));
   }
 }

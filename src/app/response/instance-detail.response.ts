@@ -16,6 +16,7 @@ export interface InstanceDetailResponse {
   endorsements: int;
   guarantor?: string | null;
   censure_reasons?: string[] | null;
+  rebuttal: string[] | null;
   sysadmins: int | null;
   moderators: int | null;
   censure_evidence?: string[];

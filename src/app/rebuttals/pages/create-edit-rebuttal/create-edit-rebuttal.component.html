@@ -1,0 +1,69 @@
+<app-loader *ngIf="loading else content"></app-loader>
+
+<ng-template #content>
+  <div class="col-md-12">
+    <div class="card" *ngIf="censure">
+      <div class="card-header">
+        <h3 class="card-title">
+          <transloco key="app.rebuttal.censure_by" [params]="{instance: sourceInstance}" />
+        </h3>
+      </div>
+      <div class="card-body">
+        <p *ngIf="censure.reasons.length">
+          <transloco key="app.rebuttal.censures_by.reasons" [params]="{instance: sourceInstance}" />
+        </p>
+        <ul *ngIf="censure.reasons.length">
+          <li *ngFor="let reason of censure.reasons">
+            {{reason}}
+          </li>
+        </ul>
+        <p *ngIf="censure.evidence">
+          <transloco key="app.rebuttal.censures_by.evidence" [params]="{instance: sourceInstance}" />
+        </p>
+        <ul *ngIf="censure.evidence">
+          <li>
+            {{censure.evidence}}
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="card" *ngIf="hesitation">
+      <div class="card-header">
+        <h3 class="card-title">
+          <transloco key="app.rebuttal.hesitation_by" [params]="{instance: sourceInstance}" />
+        </h3>
+      </div>
+      <div class="card-body">
+        <p *ngIf="hesitation.reasons.length">
+          <transloco key="app.rebuttal.hesitations_by.reasons" [params]="{instance: sourceInstance}" />
+        </p>
+        <ul *ngIf="hesitation.reasons.length">
+          <li *ngFor="let reason of hesitation.reasons">
+            {{reason}}
+          </li>
+        </ul>
+        <p *ngIf="hesitation.evidence">
+          <transloco key="app.rebuttal.hesitations_by.evidence" [params]="{instance: sourceInstance}" />
+        </p>
+        <ul *ngIf="hesitation.evidence">
+          <li>
+            {{hesitation.evidence}}
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+          <h3 class="card-title">{{"app.rebuttal.your_rebuttal" | transloco}}</h3>
+      </div>
+      <div class="card-body">
+        <form [formGroup]="form" (submit)="onSubmit()">
+          <div class="form-group">
+            <textarea class="form-control" formControlName="rebuttal" placeholder="{{'app.rebuttal.no_rebuttal_yet' | transloco}}"></textarea>
+          </div>
+          <button class="btn btn-primary" type="submit">{{'app.button.save' | transloco}}</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</ng-template>
