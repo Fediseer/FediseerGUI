@@ -1,7 +1,7 @@
 import {Component, ElementRef, HostListener, Inject, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {TitleService} from "./services/title.service";
 import {AuthenticationManagerService} from "./services/authentication-manager.service";
-import {Observable} from "rxjs";
+import {debounceTime, Observable} from "rxjs";
 import {Instance} from "./user/instance";
 import {Resolvable} from "./types/resolvable";
 import {MessageService, MessageType} from "./services/message.service";
@@ -15,6 +15,7 @@ import {NgbModal, NgbModalRef} from "@ng-bootstrap/ng-bootstrap";
 import {DatabaseService} from "./services/database.service";
 import {TranslocoService} from "@ngneat/transloco";
 import {CachedFediseerApiService} from "./services/cached-fediseer-api.service";
+import {FormControl, FormGroup} from "@angular/forms";
 
 @Component({
   selector: 'app-root',
@@ -30,6 +31,7 @@ export class AppComponent implements OnInit {
 
   @ViewChild('sideMenu') private sideMenu: ElementRef<HTMLElement> | null = null;
   @ViewChild('sideMenuToggle') private sideMenuToggle: ElementRef<HTMLAnchorElement> | null = null;
+  @ViewChild('searchWrapper') private searchWrapper: ElementRef<HTMLDivElement> | null = null;
 
   private switchAccountModal: NgbModalRef | null = null;
 
@@ -51,6 +53,12 @@ export class AppComponent implements OnInit {
 
   public availableLanguages: string[] = [];
   public selectedLanguage: string | null = null;
+
+  public searchFocused: boolean = false;
+  public searchResults: {[instance: string]: {title: string, link: string}} = {};
+  public searchForm = new FormGroup({
+    searchContent: new FormControl(''),
+  });
 
   constructor(
     private readonly titleService: TitleService,
@@ -139,6 +147,48 @@ export class AppComponent implements OnInit {
         this.software = response.successResponse!.software.toLowerCase();
       });
     });
+
+    this.searchForm.controls.searchContent.valueChanges.pipe(
+      debounceTime(300),
+    ).subscribe(async searchText => {
+      this.searchResults = {};
+      if (!searchText) {
+        return;
+      }
+
+      this.cachedApi.getAllSafelistedInstances({}, {ttl: 600}).subscribe(instancesResponse => {
+        if (this.apiResponseHelper.handleErrors([instancesResponse])) {
+          return;
+        }
+
+        const allInstances = instancesResponse.successResponse!.instances.map(instance => instance.domain);
+        this.cachedApi.getAllCensuresByInstances(allInstances, {ttl: 600}).subscribe(instancesResponse => {
+          if (this.apiResponseHelper.handleErrors([instancesResponse])) {
+            return;
+          }
+          const instances = instancesResponse.successResponse!.instances.filter(
+            instance => instance.domain.includes(searchText),
+          );
+          for (const instance of instances) {
+            this.searchResults[instance.domain] = {
+              title: instance.domain,
+              link: `/instances/detail/${instance.domain}`
+            };
+          }
+        });
+
+        const instances = instancesResponse.successResponse!.instances.filter(
+          instance => instance.domain.includes(searchText),
+        );
+
+        for (const instance of instances) {
+          this.searchResults[instance.domain] = {
+            title: instance.domain,
+            link: `/instances/detail/${instance.domain}`
+          };
+        }
+      });
+    });
   }
 
   public async logout(removeFromAccounts: boolean = true): Promise<void> {
@@ -166,15 +216,25 @@ export class AppComponent implements OnInit {
 
   @HostListener('body:click', ['$event'])
   public async onBodyClicked(event: Event): Promise<void> {
-    if (this.sideMenu === null || this.sideMenuToggle === null) {
-      return;
+    if (this.sideMenu !== null && this.sideMenuToggle !== null) {
+      if (this.sideMenu.nativeElement.contains(<HTMLElement>event.target) || this.sideMenuToggle.nativeElement.contains(<HTMLElement>event.target)) {
+        return;
+      }
+      if (window.outerWidth <= this.autoCollapse) {
+        await this.hideMenu();
+      }
     }
-    if (this.sideMenu.nativeElement.contains(<HTMLElement>event.target) || this.sideMenuToggle.nativeElement.contains(<HTMLElement>event.target)) {
-      return;
+    if (this.searchWrapper !== null) {
+      if (this.searchWrapper.nativeElement.contains(<HTMLElement>event.target)) {
+        return;
+      }
+      this.searchFocused = false;
     }
-    if (window.outerWidth <= this.autoCollapse) {
-      await this.hideMenu();
-    }
+  }
+
+  @HostListener('document:keydown.escape')
+  public onEscapePressed() {
+    this.searchFocused = false;
   }
 
   private async hideMenu(): Promise<void> {
@@ -223,5 +283,9 @@ export class AppComponent implements OnInit {
   public changeLanguage(language: string) {
     this.transloco.setActiveLang(language);
     this.database.storedLanguage = language;
+  }
+
+  public async searchAnywhere(searchText: string) {
+
   }
 }
