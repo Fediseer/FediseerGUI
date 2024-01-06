@@ -66,7 +66,7 @@ export class NormalizedInstanceDetailResponse {
       detail.sysadmins,
       detail.moderators,
       detail.state,
-      detail.rebuttal === null || !detail.rebuttal.length ? null : detail.rebuttal.join(', '),
+      detail.rebuttal === undefined || detail.rebuttal === null || !detail.rebuttal.length ? null : detail.rebuttal.join(', '),
       detail.guarantor,
     );
   }
