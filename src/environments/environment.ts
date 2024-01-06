@@ -4,7 +4,7 @@ export const environment = {
   apiUrl: 'https://fediseer.com/api',
   apiVersion: 'v1',
   appName: 'FediseerGUI',
-  appVersion: '0.16.0',
+  appVersion: '0.17.0',
   maintainer: '@rikudou@lemmings.world',
   defaultCensuresListInstanceFilter: [FilterSpecialValueAllInstances],
   sourceCodeLink: 'https://github.com/Fediseer/FediseerGUI',
