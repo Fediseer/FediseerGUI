@@ -19,6 +19,7 @@ import {PrivateMessageProxy} from "../types/private-message-proxy";
 import {SolicitationInstanceDetailResponse} from "../response/solicitation-instance-detail.response";
 import {ActionLogFilter} from "../types/action-log.filter";
 import {SafelistFilter} from "../types/safelist-filter";
+import {FediseerConfigResponse} from "../response/fediseer-config.response";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -495,6 +496,10 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Delete, `tags`, {
       tags_csv: tags.join(','),
     });
+  }
+
+  public getFediseerConfig(): Observable<ApiResponse<FediseerConfigResponse>> {
+    return this.sendRequest(HttpMethod.Get, `config`);
   }
 
   private sendRequest<T>(

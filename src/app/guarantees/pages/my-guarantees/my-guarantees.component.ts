@@ -9,6 +9,7 @@ import {ApiResponseHelperService} from "../../../services/api-response-helper.se
 import {toPromise} from "../../../types/resolvable";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
 import {InstanceMoveEvent} from "../../../shared/components/instance-move-to-list/instance-move-to-list.component";
+import {int} from "../../../types/number";
 
 @Component({
   selector: 'app-my-guarantees',
@@ -20,6 +21,7 @@ export class MyGuaranteesComponent implements OnInit {
   public instancesGuaranteedByMe: InstanceDetailResponse[] = [];
   public instance: Instance = this.authManager.currentInstanceSnapshot;
   public loading: boolean = true;
+  public maxGuarantees: int = 0;
 
   constructor(
     private readonly titleService: TitleService,
@@ -37,6 +39,7 @@ export class MyGuaranteesComponent implements OnInit {
     const responses = await Promise.all([
       toPromise(this.cachedApi.getCurrentInstanceInfo()),
       toPromise(this.cachedApi.getGuaranteesByInstance(this.authManager.currentInstanceSnapshot.name!)),
+      toPromise(this.cachedApi.getFediseerConfig()),
     ]);
 
     if (this.apiResponseHelper.handleErrors(responses)) {
@@ -46,6 +49,7 @@ export class MyGuaranteesComponent implements OnInit {
 
     this.guarantor = responses[0].successResponse!.guarantor ?? '';
     this.instancesGuaranteedByMe = responses[1].successResponse!.instances;
+    this.maxGuarantees = responses[2].successResponse!.max_guarantees;
 
     this.loading = false;
   }
