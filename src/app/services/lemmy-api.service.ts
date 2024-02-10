@@ -49,7 +49,11 @@ export class LemmyApiService {
   public isCurrentUserAdmin(instance: string, jwt: string): Observable<boolean> {
     const url = `https://${instance}/api/v3/site?auth=${jwt}`;
 
-    return this.httpClient.get<GetSiteResponse>(url).pipe(
+    return this.httpClient.get<GetSiteResponse>(url, {
+      headers: {
+        authorization: `Bearer ${jwt}`,
+      },
+    }).pipe(
       map (response => {
         const currentUsername = response.my_user.local_user_view.person.name;
         const admins = response.admins.map(user => user.person.name);
@@ -65,6 +69,10 @@ export class LemmyApiService {
     return this.httpClient.put(url, {
       blocked_instances: newInstancesToBlock,
       auth: jwt,
+    }, {
+      headers: {
+        authorization: `Bearer ${jwt}`,
+      },
     }).pipe(map(() => {return}));
   }
 }
