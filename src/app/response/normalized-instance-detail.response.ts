@@ -23,6 +23,7 @@ export class NormalizedInstanceDetailResponse {
     public sysadmins: int | null,
     public moderators: int | null,
     public state: InstanceStatus,
+    public rebuttal: string | null,
     public guarantor?: string | null,
   ) {
   }
@@ -65,6 +66,7 @@ export class NormalizedInstanceDetailResponse {
       detail.sysadmins,
       detail.moderators,
       detail.state,
+      detail.rebuttal === undefined || detail.rebuttal === null || !detail.rebuttal.length ? null : detail.rebuttal.join(', '),
       detail.guarantor,
     );
   }

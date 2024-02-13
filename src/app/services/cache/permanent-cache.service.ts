@@ -64,7 +64,14 @@ export class PermanentCacheService implements Cache {
     if (typeof localStorage === 'undefined') {
       return;
     }
-    localStorage.removeItem(this.getKey(item.key));
+    this.removeByKey(item.key)
+  }
+
+  public removeByKey(key: string) {
+    if (typeof localStorage === 'undefined') {
+      return;
+    }
+    localStorage.removeItem(this.getKey(key));
   }
 
   public clear(): void {
@@ -77,12 +84,21 @@ export class PermanentCacheService implements Cache {
   }
 
   public clearByPrefix(prefix: string): void {
-    if (typeof localStorage === 'undefined') {
-      return;
-    }
-    for (const key of Object.keys(localStorage).filter(key => key.startsWith(`${this.prefix}.${prefix}`))) {
+    for (const key of this.getKeysByPrefix(prefix)) {
       localStorage.removeItem(key);
     }
+  }
+
+  public getKeysByPrefix(prefix: string): string[] {
+    if (typeof localStorage === 'undefined') {
+      return [];
+    }
+    const result: string[] = [];
+    for (const key of Object.keys(localStorage).filter(key => key.startsWith(`${this.prefix}.${prefix}`))) {
+      result.push(key);
+    }
+
+    return result;
   }
 
   private getKey(key: string): string {

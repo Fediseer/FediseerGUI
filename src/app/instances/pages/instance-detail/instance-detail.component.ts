@@ -123,4 +123,43 @@ export class InstanceDetailComponent implements OnInit {
   public async onInstanceMoved(event: InstanceMoveEvent) {
 
   }
+
+  public async removeRebuttal(sourceInstance: string) {
+    this.loading = true;
+
+    await toPromise(this.api.removeRebuttal(sourceInstance));
+    const responses = await Promise.all([
+      toPromise(this.cachedApi.getHesitationsForInstance(this.authManager.currentInstanceSnapshot.name, {clear: true})),
+      toPromise(this.cachedApi.getCensuresForInstance(this.authManager.currentInstanceSnapshot.name, {clear: true})),
+    ]);
+    this.cachedApi.clearHesitationsByInstanceCache(sourceInstance);
+    this.cachedApi.clearCensuresByInstanceCache(sourceInstance);
+
+    if (this.apiResponseHelper.handleErrors(responses)) {
+      this.loading = false;
+      return;
+    }
+
+    this.censuresReceived = responses[1].successResponse!.instances.map(
+      instance => {
+        const result = NormalizedInstanceDetailResponse.fromInstanceDetail(instance);
+        if (result.domain === sourceInstance) {
+          result.rebuttal = null;
+        }
+
+        return result;
+      },
+    );
+    this.hesitationsReceived = responses[0].successResponse!.instances.map(
+      instance => {
+        const result = NormalizedInstanceDetailResponse.fromInstanceDetail(instance);
+        if (result.domain === sourceInstance) {
+          result.rebuttal = null;
+        }
+
+        return result;
+      },
+    );
+    this.loading = false;
+  }
 }

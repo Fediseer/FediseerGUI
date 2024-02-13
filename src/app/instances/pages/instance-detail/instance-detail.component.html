@@ -166,6 +166,103 @@
       </div>
     </div>
 
+    <!-- endorsements-->
+    <div class="card" *ngIf="endorsementsReceived">
+      <div class="card-header">
+        <h3 class="card-title" id="endorsements-received">Endorsements received ({{endorsementsReceived.length}})</h3>
+      </div>
+      <div class="card-body">
+        <ng-container *ngIf="endorsementsReceived.length">
+          <p>Endorsements were received from the following instances:</p>
+          <table class="table table-bordered">
+            <thead>
+            <tr>
+              <th>Instance</th>
+              <th>Reasons</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let instance of endorsementsReceived">
+              <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
+              <td>
+                <ul *ngIf="instance.endorsementReasons.length">
+                  <li *ngFor="let reason of instance.endorsementReasons">{{reason}}</li>
+                </ul>
+                <code *ngIf="!instance.endorsementReasons.length">N/A</code>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </ng-container>
+        <p *ngIf="!endorsementsReceived.length">
+          This instance hasn't been endorsed by any other instance.
+        </p>
+      </div>
+    </div>
+    <div class="card" *ngIf="endorsementsGiven">
+      <div class="card-header">
+        <h3 class="card-title" id="endorsements-given">Endorsements given ({{endorsementsGiven.length}})</h3>
+      </div>
+      <div class="card-body">
+        <ng-container *ngIf="endorsementsGiven.length">
+          <p>Endorsements were given to the following instances:</p>
+          <table class="table table-bordered">
+            <thead>
+            <tr>
+              <th>Instance</th>
+              <th>Reasons</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let instance of endorsementsGiven">
+              <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
+              <td>
+                <ul *ngIf="instance.endorsementReasons.length">
+                  <li *ngFor="let reason of instance.endorsementReasons">{{reason}}</li>
+                </ul>
+                <code *ngIf="!instance.endorsementReasons.length">N/A</code>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </ng-container>
+        <p *ngIf="!endorsementsGiven.length">
+          This instance hasn't endorsed any other instance.
+        </p>
+      </div>
+    </div>
+
+    <!-- guarantees -->
+    <div class="card" *ngIf="guaranteesGiven">
+      <div class="card-header">
+        <h3 class="card-title" id="guarantees">Guarantees ({{guaranteesGiven.length}})</h3>
+      </div>
+      <div class="card-body">
+        <ng-container *ngIf="guaranteesGiven.length">
+          <p>This instance guarantees for the following instances:</p>
+          <table class="table table-bordered">
+            <thead>
+            <tr>
+              <th>Instance</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let instance of guaranteesGiven">
+              <td>
+                <a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a>
+                <app-flags [instance]="instance" />
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </ng-container>
+        <p *ngIf="!guaranteesGiven.length">
+          This instance doesn't guarantee for any instance.
+        </p>
+      </div>
+    </div>
+
+    <!-- censures -->
     <div class="card" *ngIf="censuresReceived">
       <div class="card-header">
         <h3 class="card-title" id="censures-received">Censures received ({{censuresReceived.length}})</h3>
@@ -179,6 +276,7 @@
               <th>Instance</th>
               <th>Reasons</th>
               <th>Evidence</th>
+              <th>{{'app.rebuttal' | transloco}}</th>
             </tr>
             </thead>
             <tbody>
@@ -196,6 +294,27 @@
                 <code *ngIf="!instance.censuresEvidence">N/A</code>
                 <ng-container *ngIf="instance.censuresEvidence">{{instance.censuresEvidence}}</ng-container>
               </td>
+              <td>
+                <ng-container *ngIf="!instance.rebuttal">
+                  <ng-container *ngIf="myInstance">
+                    <a class="btn btn-primary" routerLink="/rebuttals/create/{{instance.domain}}">{{'app.rebuttal.create' | transloco}}</a>
+                  </ng-container>
+                  <ng-container *ngIf="!myInstance">
+                    <code>
+                      {{'app.not_applicable' | transloco}}
+                    </code>
+                  </ng-container>
+                </ng-container>
+                <ng-container *ngIf="instance.rebuttal">
+                  {{instance.rebuttal}}
+                  <hr>
+                  <ng-container *ngIf="myInstance">
+                    <br>
+                    <a class="btn btn-primary" routerLink="/rebuttals/edit/{{instance.domain}}">{{'app.rebuttal.edit' | transloco}}</a>&nbsp;
+                    <button class="btn btn-danger" (click)="removeRebuttal(instance.domain)">{{'app.rebuttal.remove' | transloco}}</button>
+                  </ng-container>
+                </ng-container>
+              </td>
             </tr>
             </tbody>
           </table>
@@ -205,7 +324,6 @@
         </p>
       </div>
     </div>
-
     <div class="card" *ngIf="censuresGiven">
       <div class="card-header">
         <h3 class="card-title" id="censures-given">Censures given ({{censuresGiven.length}})</h3>
@@ -244,72 +362,7 @@
       </div>
     </div>
 
-    <div class="card" *ngIf="endorsementsReceived">
-      <div class="card-header">
-        <h3 class="card-title" id="endorsements-received">Endorsements received ({{endorsementsReceived.length}})</h3>
-      </div>
-      <div class="card-body">
-        <ng-container *ngIf="endorsementsReceived.length">
-          <p>Endorsements were received from the following instances:</p>
-          <table class="table table-bordered">
-            <thead>
-            <tr>
-              <th>Instance</th>
-              <th>Reasons</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr *ngFor="let instance of endorsementsReceived">
-              <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
-              <td>
-                <ul *ngIf="instance.endorsementReasons.length">
-                  <li *ngFor="let reason of instance.endorsementReasons">{{reason}}</li>
-                </ul>
-                <code *ngIf="!instance.endorsementReasons.length">N/A</code>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </ng-container>
-        <p *ngIf="!endorsementsReceived.length">
-          This instance hasn't been endorsed by any other instance.
-        </p>
-      </div>
-    </div>
-
-    <div class="card" *ngIf="endorsementsGiven">
-      <div class="card-header">
-        <h3 class="card-title" id="endorsements-given">Endorsements given ({{endorsementsGiven.length}})</h3>
-      </div>
-      <div class="card-body">
-        <ng-container *ngIf="endorsementsGiven.length">
-          <p>Endorsements were given to the following instances:</p>
-          <table class="table table-bordered">
-            <thead>
-            <tr>
-              <th>Instance</th>
-              <th>Reasons</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr *ngFor="let instance of endorsementsGiven">
-              <td><a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a></td>
-              <td>
-                <ul *ngIf="instance.endorsementReasons.length">
-                  <li *ngFor="let reason of instance.endorsementReasons">{{reason}}</li>
-                </ul>
-                <code *ngIf="!instance.endorsementReasons.length">N/A</code>
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </ng-container>
-        <p *ngIf="!endorsementsGiven.length">
-          This instance hasn't endorsed any other instance.
-        </p>
-      </div>
-    </div>
-
+    <!-- hesitations -->
     <div class="card" *ngIf="hesitationsReceived">
       <div class="card-header">
         <h3 class="card-title" id="hesitations-received">Hesitations received ({{hesitationsReceived.length}})</h3>
@@ -323,6 +376,7 @@
               <th>Instance</th>
               <th>Reasons</th>
               <th>Evidence</th>
+              <th>{{'app.rebuttal' | transloco}}</th>
             </tr>
             </thead>
             <tbody>
@@ -340,6 +394,27 @@
                 <code *ngIf="!instance.hesitationsEvidence">N/A</code>
                 <ng-container *ngIf="instance.hesitationsEvidence">{{instance.hesitationsEvidence}}</ng-container>
               </td>
+              <td>
+                <ng-container *ngIf="!instance.rebuttal">
+                  <ng-container *ngIf="myInstance">
+                    <a class="btn btn-primary" routerLink="/rebuttals/create/{{instance.domain}}">{{'app.rebuttal.create' | transloco}}</a>
+                  </ng-container>
+                  <ng-container *ngIf="!myInstance">
+                    <code>
+                      {{'app.not_applicable' | transloco}}
+                    </code>
+                  </ng-container>
+                </ng-container>
+                <ng-container *ngIf="instance.rebuttal">
+                  {{instance.rebuttal}}
+                  <hr>
+                  <ng-container *ngIf="myInstance">
+                    <br>
+                    <a class="btn btn-primary" routerLink="/rebuttals/edit/{{instance.domain}}">{{'app.rebuttal.edit' | transloco}}</a>&nbsp;
+                    <button class="btn btn-danger" (click)="removeRebuttal(instance.domain)">{{'app.rebuttal.remove' | transloco}}</button>
+                  </ng-container>
+                </ng-container>
+              </td>
             </tr>
             </tbody>
           </table>
@@ -349,7 +424,6 @@
         </p>
       </div>
     </div>
-
     <div class="card" *ngIf="hesitationsGiven">
       <div class="card-header">
         <h3 class="card-title" id="hesitations-given">Hesitations given ({{hesitationsGiven.length}})</h3>
@@ -384,35 +458,6 @@
         </ng-container>
         <p *ngIf="!hesitationsGiven.length">
           This instance hasn't hesitated on any instance.
-        </p>
-      </div>
-    </div>
-
-    <div class="card" *ngIf="guaranteesGiven">
-      <div class="card-header">
-        <h3 class="card-title" id="guarantees">Guarantees ({{guaranteesGiven.length}})</h3>
-      </div>
-      <div class="card-body">
-        <ng-container *ngIf="guaranteesGiven.length">
-          <p>This instance guarantees for the following instances:</p>
-          <table class="table table-bordered">
-            <thead>
-            <tr>
-              <th>Instance</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr *ngFor="let instance of guaranteesGiven">
-              <td>
-                <a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a>
-                <app-flags [instance]="instance" />
-              </td>
-            </tr>
-            </tbody>
-          </table>
-        </ng-container>
-        <p *ngIf="!guaranteesGiven.length">
-          This instance doesn't guarantee for any instance.
         </p>
       </div>
     </div>

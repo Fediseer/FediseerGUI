@@ -8,6 +8,7 @@ import {PermanentCacheService} from "./cache/permanent-cache.service";
 import {Cache, CacheItem} from "./cache/cache";
 import {InstanceListResponse} from "../response/instance-list.response";
 import {SafelistFilter} from "../types/safelist-filter";
+import {FediseerConfigResponse} from "../response/fediseer-config.response";
 
 export enum CacheType {
   Runtime,
@@ -126,6 +127,30 @@ export class CachedFediseerApiService {
   public clearSafelistCache(): void {
     this.runtimeCache.clearByPrefix('api.safelist');
     this.permanentCache.clearByPrefix('api.safelist');
+  }
+
+  public clearCensuresByInstanceCache(instance: string): void {
+    const caches: Cache[] = [this.runtimeCache, this.permanentCache];
+    for (const cache of caches) {
+      const keys = cache.getKeysByPrefix('app_cache.api.censures_by_instances');
+      for (const key of keys) {
+        if (key.includes(instance)) {
+          cache.removeByKey(key);
+        }
+      }
+    }
+  }
+
+  public clearHesitationsByInstanceCache(instance: string): void {
+    const caches: Cache[] = [this.runtimeCache, this.permanentCache];
+    for (const cache of caches) {
+      const keys = cache.getKeysByPrefix('app_cache.api.hesitations_by_instances');
+      for (const key of keys) {
+        if (key.includes(instance)) {
+          cache.removeByKey(key);
+        }
+      }
+    }
   }
 
   public getHesitationsByInstances(instances: string[], page: int = 1, cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
@@ -316,6 +341,51 @@ export class CachedFediseerApiService {
           this.saveCacheItem(item, cacheConfig);
         }),
       )
+  }
+
+  public getFediseerConfig(cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<FediseerConfigResponse>> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 60;
+
+    const cacheKey = `api.fediseer_config${cacheConfig.ttl}`;
+    const item = this.getCacheItem<FediseerConfigResponse>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return this.getSuccessResponse(item);
+    }
+
+    return this.api.getFediseerConfig().pipe(
+      tap(this.storeResponse(item, cacheConfig)),
+    );
+  }
+
+  public getCensuresForInstance(instance: string, cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 300;
+
+    const cacheKey = `api.censures_for_instance${cacheConfig.ttl}.${instance}`;
+    const item = this.getCacheItem<InstanceListResponse<InstanceDetailResponse>>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return this.getSuccessResponse(item);
+    }
+
+    return this.api.getCensuresForInstance(instance).pipe(
+      tap(this.storeResponse(item, cacheConfig)),
+    );
+  }
+
+  public getHesitationsForInstance(instance: string, cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 300;
+
+    const cacheKey = `api.hesitations_for_instance${cacheConfig.ttl}.${instance}`;
+    const item = this.getCacheItem<InstanceListResponse<InstanceDetailResponse>>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return this.getSuccessResponse(item);
+    }
+
+    return this.api.getHesitationsForInstance(instance).pipe(
+      tap(this.storeResponse(item, cacheConfig)),
+    );
   }
 
   public clearCache(): void {

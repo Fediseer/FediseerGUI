@@ -22,6 +22,7 @@
                     <option [value]="ActionLogReportType.Guarantee">{{"app.guarantee" | transloco}}</option>
                     <option [value]="ActionLogReportType.Claim">{{"app.instance_claim" | transloco}}</option>
                     <option [value]="ActionLogReportType.Solicitation">{{"app.solicitation" | transloco}}</option>
+                    <option [value]="ActionLogReportType.Rebuttal">{{"app.rebuttal" | transloco}}</option>
                   </select>
                 </div>
                 <div class="form-group">
@@ -91,6 +92,7 @@
               <ng-container *ngIf="item.report_type === ActionLogReportType.Guarantee">{{"app.guarantee" | transloco}}</ng-container>
               <ng-container *ngIf="item.report_type === ActionLogReportType.Solicitation">{{"app.solicitation" | transloco}}</ng-container>
               <ng-container *ngIf="item.report_type === ActionLogReportType.Claim">{{"app.instance_claim" | transloco}}</ng-container>
+              <ng-container *ngIf="item.report_type === ActionLogReportType.Rebuttal">{{"app.rebuttal" | transloco}}</ng-container>
             </td>
             <td>
               <ng-container *ngIf="item.report_activity === ActionLogReportActivity.Added">{{"app.action_log.activity.created" | transloco}}</ng-container>

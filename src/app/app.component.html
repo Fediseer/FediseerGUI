@@ -74,6 +74,30 @@
               </a>
             </li>
           </ng-container>
+          <div class="form-inline" *ngIf="!loggedInInstance.anonymous" [class.sidebar-search-open]="searchFocused" (focusin)="searchFocused = true" #searchWrapper>
+            <form [formGroup]="searchForm">
+              <div class="input-group" data-widget="sidebar-search">
+                <input formControlName="searchContent" #searchInput class="form-control form-control-sidebar" type="search" placeholder="{{'app.search' | transloco}}" />
+                <div class="input-group-append">
+                  <button class="btn btn-sidebar" (click)="searchAnywhere(searchInput.value)">
+                    <i class="fas fa-search fa-fw"></i>
+                  </button>
+                </div>
+              </div>
+            </form>
+            <div class="sidebar-search-results">
+              <div class="list-group">
+                <a href="javascript:void(0)" class="list-group-item" *ngIf="!(searchResults|keys).length">
+                  <div class="search-title">{{'app.search.not_found' | transloco}}</div>
+                  <div class="search-path"></div>
+                </a>
+                <a *ngFor="let result of searchResults | keyvalue" [routerLink]="result.value.link" class="list-group-item">
+                  <div class="search-title">{{result.value.title}}</div>
+                  <div class="search-path"></div>
+                </a>
+              </div>
+            </div>
+          </div>
           <li class="nav-item" *ngIf="!loggedInInstance.anonymous">
             <a routerLink="/endorsements/my" class="nav-link">
               <i class="nav-icon fas fa-thumbs-up"></i>

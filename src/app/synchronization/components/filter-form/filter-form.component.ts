@@ -266,7 +266,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
       return [...censures, ...hesitations];
     })();
     this.cache[`endorsed:${myInstance}`] ??= await (async () => {
-      const response = await toPromise(this.cachedApi.getEndorsementsByInstances([myInstance], {ttl: 5}));
+      const response = await toPromise(this.cachedApi.getEndorsementsByInstances([myInstance]));
       if (this.apiResponseHelper.handleErrors([response])) {
         return [];
       }
@@ -339,7 +339,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   }
 
   private async getCensuresByInstances(instances: string[]): Promise<InstanceDetailResponse[] | null> {
-    const instancesResponse = await toPromise(this.cachedApi.getAllCensuresByInstances(instances, {ttl: 5}));
+    const instancesResponse = await toPromise(this.cachedApi.getAllCensuresByInstances(instances));
     if (this.apiResponseHelper.handleErrors([instancesResponse])) {
       return null;
     }
@@ -348,7 +348,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   }
 
   private async getHesitationsByInstances(instances: string[]): Promise<InstanceDetailResponse[] | null> {
-    const instancesResponse = await toPromise(this.cachedApi.getAllHesitationsByInstances(instances, {ttl: 5}));
+    const instancesResponse = await toPromise(this.cachedApi.getAllHesitationsByInstances(instances));
     if (this.apiResponseHelper.handleErrors([instancesResponse])) {
       return null;
     }
@@ -357,7 +357,7 @@ export class FilterFormComponent<TSettings extends SynchronizationSettings> impl
   }
 
   private async getEndorsedCensureChain(instance: string): Promise<string[]> {
-    return await toPromise(this.cachedApi.getEndorsementsByInstances([instance], {ttl: 5}).pipe(
+    return await toPromise(this.cachedApi.getEndorsementsByInstances([instance]).pipe(
       map(response => {
         if (this.apiResponseHelper.handleErrors([response])) {
           return [];

@@ -18,6 +18,7 @@ import {ReactiveFormsModule} from "@angular/forms";
 import {FlagsComponent} from './components/flags/flags.component';
 import {InstanceLogoComponent} from './components/instance-logo/instance-logo.component';
 import {LanguageNamePipe} from './pipes/language-name.pipe';
+import {KeysPipe} from './pipes/keys.pipe';
 
 
 @NgModule({
@@ -36,26 +37,28 @@ import {LanguageNamePipe} from './pipes/language-name.pipe';
     FlagsComponent,
     InstanceLogoComponent,
     LanguageNamePipe,
+    KeysPipe,
   ],
-    exports: [
-        ToObservablePipe,
-        LoaderComponent,
-        YesNoComponent,
-        IterableEnumPipe,
-        TomSelectDirective,
-        TooltipComponent,
-        FormatDatetimePipe,
-        FormatPercentagePipe,
-        FormatNumberPipe,
-        TranslocoModule,
-        NgbModule,
-        TranslocoMarkupComponent,
-        InstanceStatusComponent,
-        InstanceMoveToListComponent,
-        FlagsComponent,
-        InstanceLogoComponent,
-        LanguageNamePipe,
-    ],
+  exports: [
+    ToObservablePipe,
+    LoaderComponent,
+    YesNoComponent,
+    IterableEnumPipe,
+    TomSelectDirective,
+    TooltipComponent,
+    FormatDatetimePipe,
+    FormatPercentagePipe,
+    FormatNumberPipe,
+    TranslocoModule,
+    NgbModule,
+    TranslocoMarkupComponent,
+    InstanceStatusComponent,
+    InstanceMoveToListComponent,
+    FlagsComponent,
+    InstanceLogoComponent,
+    LanguageNamePipe,
+    KeysPipe,
+  ],
   imports: [
     CommonModule,
     NgbTooltip,

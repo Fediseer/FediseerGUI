@@ -19,6 +19,7 @@ import {PrivateMessageProxy} from "../types/private-message-proxy";
 import {SolicitationInstanceDetailResponse} from "../response/solicitation-instance-detail.response";
 import {ActionLogFilter} from "../types/action-log.filter";
 import {SafelistFilter} from "../types/safelist-filter";
+import {FediseerConfigResponse} from "../response/fediseer-config.response";
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -495,6 +496,26 @@ export class FediseerApiService {
     return this.sendRequest(HttpMethod.Delete, `tags`, {
       tags_csv: tags.join(','),
     });
+  }
+
+  public getFediseerConfig(): Observable<ApiResponse<FediseerConfigResponse>> {
+    return this.sendRequest(HttpMethod.Get, `config`);
+  }
+
+  public createRebuttal(sourceInstance: string, rebuttal: string): Observable<ApiResponse<SuccessResponse>> {
+    return this.sendRequest(HttpMethod.Put, `rebuttals/${sourceInstance}`, {
+      rebuttal: rebuttal,
+    });
+  }
+
+  public updateRebuttal(sourceInstance: string, rebuttal: string): Observable<ApiResponse<SuccessResponse>> {
+    return this.sendRequest(HttpMethod.Patch, `rebuttals/${sourceInstance}`, {
+      rebuttal: rebuttal,
+    });
+  }
+
+  public removeRebuttal(sourceInstance: string): Observable<ApiResponse<SuccessResponse>> {
+    return this.sendRequest(HttpMethod.Delete, `rebuttals/${sourceInstance}`);
   }
 
   private sendRequest<T>(
