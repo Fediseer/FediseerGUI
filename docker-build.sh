@@ -22,7 +22,7 @@ if [ -z ${FEDISEER_SOURCE_CODE_LINK+x} ]; then
   FEDISEER_SOURCE_CODE_LINK=https://github.com/Fediseer/FediseerGUI
 fi
 if [ -z ${FEDISEER_APP_VERSION+x} ]; then
-  FEDISEER_APP_VERSION=$(grep appVersion src/environments/environment.ts | cut -c16-50 | rev | cut -c3- | rev)
+  FEDISEER_APP_VERSION=$(grep appVersion src/environments/environment.ts | cut -c63-97 | rev | cut -c4- | rev)
 fi
 if [ -z ${FEDISEER_DONATE_LINK+x} ]; then
   FEDISEER_DONATE_LINK=https://liberapay.com/Fediseer/
