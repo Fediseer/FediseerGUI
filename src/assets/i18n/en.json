@@ -195,5 +195,7 @@
   "app.warning.empty_rebuttal": "Cannot create an empty rebuttal",
   "app.rebuttal.created": "Rebuttal has been successfully created",
   "app.rebuttal.deleted": "Rebuttal has been successfully deleted",
-  "app.rebuttal.updated": "Rebuttal has been successfully updated"
+  "app.rebuttal.updated": "Rebuttal has been successfully updated",
+  "app.censure.edit": "Edit censure",
+  "app.hesitation.edit": "Edit hesitation"
 }

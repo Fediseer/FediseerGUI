@@ -31,6 +31,9 @@ export class InstanceDetailComponent implements OnInit {
 
   public loading: boolean = true;
   public myInstance: boolean = false;
+  public myInstanceName: string | null = null;
+  public myInstanceHasGivenCensure = false;
+  public myInstanceHasGivenHesitation = false;
   public loggedIn = !this.authManager.currentInstanceSnapshot.anonymous;
 
   constructor(
@@ -105,12 +108,20 @@ export class InstanceDetailComponent implements OnInit {
       this.guaranteesGiven = responses[4].successResponse?.instances ?? null;
       this.detail = responses[5].successResponse ?? null;
       this.myInstance = !this.authManager.currentInstanceSnapshot.anonymous && this.detail?.domain === this.authManager.currentInstanceSnapshot.name;
+      this.myInstanceName = this.authManager.currentInstanceSnapshot.anonymous ? null : this.authManager.currentInstanceSnapshot.name;
       this.hesitationsReceived = responses[6].successResponse!.instances.map(
         instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance),
       );
       this.hesitationsGiven = responses[7].successResponse?.instances.map(
         instance => NormalizedInstanceDetailResponse.fromInstanceDetail(instance),
       ) ?? null;
+
+      if (this.myInstanceName) {
+        this.myInstanceHasGivenCensure = this.censuresReceived !== null
+          && this.censuresReceived.filter(detail => detail.domain === this.myInstanceName).length > 0;
+        this.myInstanceHasGivenHesitation = this.hesitationsReceived !== null
+          && this.hesitationsReceived.filter(detail => detail.domain === this.myInstanceName).length > 0;
+      }
 
       this.loading = false;
     });
