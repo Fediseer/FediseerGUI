@@ -277,6 +277,7 @@
               <th>Reasons</th>
               <th>Evidence</th>
               <th>{{'app.rebuttal' | transloco}}</th>
+              <th *ngIf="myInstanceHasGivenCensure">{{'app.actions' | transloco}}</th>
             </tr>
             </thead>
             <tbody>
@@ -313,6 +314,11 @@
                     <a class="btn btn-primary" routerLink="/rebuttals/edit/{{instance.domain}}">{{'app.rebuttal.edit' | transloco}}</a>&nbsp;
                     <button class="btn btn-danger" (click)="removeRebuttal(instance.domain)">{{'app.rebuttal.remove' | transloco}}</button>
                   </ng-container>
+                </ng-container>
+              </td>
+              <td *ngIf="myInstanceHasGivenCensure">
+                <ng-container *ngIf="instance.domain === myInstanceName">
+                  <a routerLink="/censures/my/edit/{{detail!.domain}}">{{'app.censure.edit' | transloco}}</a>
                 </ng-container>
               </td>
             </tr>
@@ -377,6 +383,7 @@
               <th>Reasons</th>
               <th>Evidence</th>
               <th>{{'app.rebuttal' | transloco}}</th>
+              <th *ngIf="myInstanceHasGivenHesitation">{{'app.actions' | transloco}}</th>
             </tr>
             </thead>
             <tbody>
@@ -413,6 +420,11 @@
                     <a class="btn btn-primary" routerLink="/rebuttals/edit/{{instance.domain}}">{{'app.rebuttal.edit' | transloco}}</a>&nbsp;
                     <button class="btn btn-danger" (click)="removeRebuttal(instance.domain)">{{'app.rebuttal.remove' | transloco}}</button>
                   </ng-container>
+                </ng-container>
+              </td>
+              <td *ngIf="myInstanceHasGivenHesitation">
+                <ng-container *ngIf="instance.domain === myInstanceName">
+                  <a routerLink="/hesitations/my/edit/{{detail!.domain}}">{{'app.hesitation.edit' | transloco}}</a>
                 </ng-container>
               </td>
             </tr>
