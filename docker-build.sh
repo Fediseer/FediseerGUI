@@ -1,5 +1,3 @@
-ORIGINAL_DIR=$(pwd)
-
 if [ -z ${FEDISEER_API_URL+x} ]; then
   FEDISEER_API_URL=https://fediseer.com/api
 fi
@@ -39,16 +37,14 @@ done
 FEDISEER_DEFAULT_CENSURE_LIST_FILTER_INSTANCES_RESULT="$FEDISEER_DEFAULT_CENSURE_LIST_FILTER_INSTANCES_RESULT]"
 IFS=$OLD_IFS
 
-JSON="{apiUrl: '$FEDISEER_API_URL', apiVersion: '$FEDISEER_API_VERSION', appName: '$FEDISEER_APP_NAME', appVersion: '$FEDISEER_APP_VERSION', maintainer: '$FEDISEER_APP_MAINTAINER', sourceCodeLink: '$FEDISEER_SOURCE_CODE_LINK', defaultCensuresListInstanceFilter: $FEDISEER_DEFAULT_CENSURE_LIST_FILTER_INSTANCES_RESULT, donateLink: '$FEDISEER_DONATE_LINK', production: true}";
+{
+  echo "window['FEDISEER_API_URL'] = '$FEDISEER_API_URL';";
+  echo "window['FEDISEER_API_VERSION'] = '$FEDISEER_API_VERSION';"
+  echo "window['FEDISEER_APP_NAME'] = '$FEDISEER_APP_NAME';"
+  echo "window['FEDISEER_APP_VERSION'] = '$FEDISEER_APP_VERSION';"
+  echo "window['FEDISEER_APP_MAINTAINER'] = '$FEDISEER_APP_MAINTAINER';"
+  echo "window['FEDISEER_SOURCE_CODE_LINK'] = '$FEDISEER_SOURCE_CODE_LINK';"
+  echo "window['FEDISEER_DEFAULT_CENSURE_LIST_FILTER_INSTANCES_RESULT'] = $FEDISEER_DEFAULT_CENSURE_LIST_FILTER_INSTANCES_RESULT;"
+  echo "window['FEDISEER_DONATE_LINK'] = '$FEDISEER_DONATE_LINK';"
+} >> /usr/share/nginx/html/assets/runtime-environment.js
 
-echo "export const environment = $JSON;" > src/environments/environment.ts
-
-cd /app
-if [ -z ${FEDISEER_ENABLE_SSR+x} ]; then
-  yarn build && mv dist/FediseerGUI/browser/* /usr/share/nginx/html
-else
-  cp nginx-proxy.conf /etc/nginx/conf.d/default.conf
-  yarn build:ssr && node dist/FediseerGUI/server/main.js &
-fi
-
-cd "$ORIGINAL_DIR"
