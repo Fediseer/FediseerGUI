@@ -7,6 +7,7 @@ export interface InstanceDetailResponse {
   id: int;
   domain: string;
   software: string;
+  version: string | null;
   claimed: int;
   open_registrations: boolean;
   email_verify: boolean | null;
