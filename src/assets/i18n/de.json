@@ -26,6 +26,7 @@
   "app.sidebar.logout": "Abmelden",
   "app.sidebar.changelog": "Änderungsprotokoll",
   "app.sidebar.donate": "Spenden",
+  "app.sidebar.rebuttals": "Einsprüche",
   "app.footer.created_and_maintained_by": "Erstellt und gepflegt von [link:authorUrl]{{author}}[/link].",
   "app.footer.created_by": "Erstellt von [link:authorUrl]{{author}}[/link].",
   "app.footer.maintained_by": "Gepflegt von [link:maintainerLink]{{maintainer}}[/link].",
@@ -130,6 +131,7 @@
   "app.endorsements.my.given.unguaranteed": "Niemand bürgt für deine Instanz, Sie können andere nicht unterstützen.",
   "app.generic_buttons.edit": "Bearbeiten",
   "app.generic_buttons.cancel": "Abbrechen",
+  "app.generic_buttons.remove": "Entfernen",
   "app.endorsements.my": "Meine Empfehlungen",
   "app.logo.alt": "{{fediseer}} logo",
   "app.list_visibility.open": "Alle",
@@ -195,5 +197,9 @@
   "app.warning.empty_rebuttal": "Es kann kein leeren Einspruch erstellt werden",
   "app.rebuttal.created": "Einspruch wurde erfolgreich erstellt",
   "app.rebuttal.deleted": "Einspruch wurde erfolgreich gelöscht",
-  "app.rebuttal.updated": "Einspruch wurde erfolgreich aktualisiert"
+  "app.rebuttal.updated": "Einspruch wurde erfolgreich aktualisiert",
+  "app.censure.edit": "Tadel bearbeiten",
+  "app.hesitation.edit": "Zweifel bearbeiten",
+  "app.my_rebuttals.title": "Meine Einsprüche",
+  "app.my_rebuttals.all": "Alle Einsrpüche der Instanz [b]{{instance}}[/b]"
 }
