@@ -1,0 +1,81 @@
+@if (loading()) {
+  <app-loader />
+} @else {
+  <div class="col-md-12">
+    <div class="card">
+      <div class="card-header">
+        <h3 class="card-title">
+          <transloco key="app.my_rebuttals.all" [params]="{instance: currentInstance()}" />
+        </h3>
+      </div>
+      <div class="card-body">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>{{'app.instance' | transloco}}</th>
+              <th>{{'app.reasons' | transloco}}</th>
+              <th>{{'app.evidence' | transloco}}</th>
+              <th>{{'app.rebuttal' | transloco}}</th>
+              <th>{{'app.actions' | transloco}}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (instance of instances(); track instance.domain) {
+              <tr>
+                <td>
+                  <a routerLink="/instances/detail/{{instance.domain}}">{{instance.domain}}</a>
+                </td>
+                <td>
+                  <ul>
+                    @if (instance.censureReasons.length) {
+                      <li>
+                        <strong>{{'app.censure' | transloco}}:</strong> {{instance.censureReasons.join(', ')}}
+                      </li>
+                    }
+                    @if (instance.hesitationReasons.length) {
+                      <li>
+                        <strong>{{'app.hesitation' | transloco}}:</strong> {{instance.hesitationReasons.join(', ')}}
+                      </li>
+                    }
+                  </ul>
+                </td>
+                <td>
+                  @if (instance.censuresEvidence || instance.hesitationsEvidence) {
+                    <ul>
+                      @if (instance.censuresEvidence) {
+                        <li>
+                          <strong>{{'app.censure' | transloco}}:</strong> {{instance.censuresEvidence}}
+                        </li>
+                      }
+                      @if (instance.hesitationsEvidence) {
+                        <li>
+                          <strong>{{'app.hesitation' | transloco}}:</strong> {{instance.hesitationsEvidence}}
+                        </li>
+                      }
+                    </ul>
+                  } @else {
+                    <code>{{'app.not_applicable' | transloco}}</code>
+                  }
+                </td>
+                <td>
+                  {{instance.rebuttal}}
+                </td>
+                <td>
+                  <button class="btn btn-danger" (click)="removeRebuttal(instance)">{{'app.generic_buttons.remove' | transloco}}</button>
+                  &nbsp;
+                  <a class="btn btn-primary" routerLink="/rebuttals/edit/{{instance.domain}}">{{'app.generic_buttons.edit' | transloco}}</a>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5">
+                  {{'app.rebuttal.no_rebuttal_yet' | transloco}}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+}

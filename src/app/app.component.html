@@ -130,6 +130,16 @@
               </p>
             </a>
           </li>
+          @if (!loggedInInstance.anonymous) {
+            <li class="nav-item">
+              <a routerLink="/rebuttals/my" class="nav-link">
+                <i class="nav-icon fas fa-comments"></i>
+                <p>
+                  {{ "app.sidebar.rebuttals" | transloco }}
+                </p>
+              </a>
+            </li>
+          }
           <li class="nav-item" *ngIf="software === 'lemmy'">
             <a routerLink="/synchronize/lemmy" class="nav-link">
               <i class="nav-icon fas fa-sync"></i>
