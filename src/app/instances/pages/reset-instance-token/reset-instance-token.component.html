@@ -5,13 +5,13 @@
         Before resetting your api key, please provide the current one. If you have forgotten the old API key you need to
         ask another admin in your instance, or the Fediseer admin
         <ng-container *ngIf="software === 'lemmy'">
-          (<a target="_blank" href="https://{{instance}}/u/db0@lemmy.dbzer0.com">@db0@lemmy.dbzer0.com</a>)
+          (<a target="_blank" href="https://{{instance}}/u/db0@lemmy.dbzer0.com">&#64;db0&#64;lemmy.dbzer0.com</a>)
         </ng-container>
         <ng-container *ngIf="software === 'mastodon'">
-          (<a target="_blank" href="https://{{instance}}/@db0@lemmy.dbzer0.com">@db0@lemmy.dbzer0.com</a>)
+          (<a target="_blank" href="https://{{instance}}/@db0@lemmy.dbzer0.com">&#64;db0&#64;lemmy.dbzer0.com</a>)
         </ng-container>
         <ng-container *ngIf="software !== 'mastodon' && software !== 'lemmy'">
-          (<a target="_blank" href="https://lemmyverse.link/u/db0@lemmy.dbzer0.com">@db0@lemmy.dbzer0.com</a>)
+          (<a target="_blank" href="https://lemmyverse.link/u/db0@lemmy.dbzer0.com">&#64;db0&#64;lemmy.dbzer0.com</a>)
         </ng-container>
         to reset it for you.
       </p>

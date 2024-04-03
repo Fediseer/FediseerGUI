@@ -82,7 +82,7 @@ export class AppComponent implements OnInit {
     if (this.database.storedLanguage) {
       this.transloco.setActiveLang(this.database.storedLanguage);
       this.selectedLanguage = this.database.storedLanguage;
-    } else {
+    } else if (typeof navigator !== 'undefined') {
       for (const language of navigator.languages.map(language => language.split("-")[0])) {
         if (this.availableLanguages.includes(language)) {
           this.transloco.setActiveLang(language);
@@ -93,7 +93,7 @@ export class AppComponent implements OnInit {
     }
     this.selectedLanguage ??= this.transloco.config.defaultLang;
 
-    const darkModeDetected = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const darkModeDetected = typeof window === 'undefined' ? false : window.matchMedia('(prefers-color-scheme: dark)').matches;
     if (darkModeDetected) {
       this.document.body.classList.add('dark-mode');
     } else {

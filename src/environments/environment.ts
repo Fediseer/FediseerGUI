@@ -1,6 +1,10 @@
 import {FilterSpecialValueAllInstances} from "../app/shared/constants";
 
 function getEnvironmentVariable<T>(variable: string, defaultValue: T): T {
+  if (typeof window === 'undefined') {
+    return defaultValue;
+  }
+
   if (typeof (<any>window)[variable] === 'undefined') {
     return defaultValue;
   }
