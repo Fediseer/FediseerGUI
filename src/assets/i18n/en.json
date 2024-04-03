@@ -26,6 +26,7 @@
   "app.sidebar.logout": "Logout",
   "app.sidebar.changelog": "Changelog",
   "app.sidebar.donate": "Donate",
+  "app.sidebar.rebuttals": "Rebuttals",
   "app.footer.created_and_maintained_by": "Created and maintained by [link:authorUrl]{{author}}[/link].",
   "app.footer.created_by": "Created by [link:authorUrl]{{author}}[/link].",
   "app.footer.maintained_by": "Maintained by [link:maintainerLink]{{maintainer}}[/link].",
@@ -130,6 +131,7 @@
   "app.endorsements.my.given.unguaranteed": "No one guaranteed for this instance, you cannot endorse others.",
   "app.generic_buttons.edit": "Edit",
   "app.generic_buttons.cancel": "Cancel",
+  "app.generic_buttons.remove": "Remove",
   "app.endorsements.my": "My endorsements",
   "app.logo.alt": "{{fediseer}} logo",
   "app.list_visibility.open": "Everyone",
@@ -197,5 +199,7 @@
   "app.rebuttal.deleted": "Rebuttal has been successfully deleted",
   "app.rebuttal.updated": "Rebuttal has been successfully updated",
   "app.censure.edit": "Edit censure",
-  "app.hesitation.edit": "Edit hesitation"
+  "app.hesitation.edit": "Edit hesitation",
+  "app.my_rebuttals.title": "My rebuttals",
+  "app.my_rebuttals.all": "All rebuttals by [b]{{instance}}[/b]"
 }

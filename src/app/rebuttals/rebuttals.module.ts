@@ -16,7 +16,12 @@ const routes: Routes = [
     path: 'edit/:sourceInstance',
     component: CreateEditRebuttalComponent,
     canActivate: [Guards.isLoggedIn()],
-  }
+  },
+  {
+    path: 'my',
+    loadComponent: () => import('./pages/list-rebuttals/list-rebuttals.component').then(m => m.ListRebuttalsComponent),
+    canActivate: [Guards.isLoggedIn()],
+  },
 ];
 
 @NgModule({

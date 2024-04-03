@@ -11,7 +11,15 @@ export class ApiResponseHelperService {
   ) {
   }
 
-  public handleErrors(responses: ApiResponse<any>[], mode: MessageType = MessageType.Error): boolean {
+  public handleErrors(responses: ApiResponse<any>[], mode: MessageType): boolean;
+  public handleErrors(responses: ApiResponse<any>[]): boolean;
+  public handleErrors(responses: ApiResponse<any>, mode: MessageType): boolean;
+  public handleErrors(responses: ApiResponse<any>): boolean;
+
+  public handleErrors(responses: ApiResponse<any>[] | ApiResponse<any>, mode: MessageType = MessageType.Error): boolean {
+    if (!Array.isArray(responses)) {
+      responses = [responses];
+    }
     let hasErrors = false;
     for (const response of responses) {
       if (!response.success) {
