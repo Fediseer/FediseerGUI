@@ -30,7 +30,7 @@ export class SafelistedInstancesComponent implements OnInit {
   public maxPage = 1;
   public currentPage: int = 1;
   public lastPageReached = false;
-  public pages: number[] = [];
+  public pages: number[] | null = null;
   public loading: boolean = true;
   public loadingFilters: boolean = true;
 
@@ -93,16 +93,14 @@ export class SafelistedInstancesComponent implements OnInit {
         return;
       }
 
-      for (let i = 1; i <= this.currentPage; ++i) {
-        if (!this.pages.includes(i)) {
-          this.pages.push(i);
-        }
+      if (this.pages === null) {
+        this.pages = Array.from(
+          Array(Math.ceil(response.successResponse!.total / this.api.defaultPerPage)).keys(),
+        ).map(key => key + 1);
       }
+
       this.instances = response.successResponse!.instances;
 
-      if (!this.lastPageReached && this.instances.length === this.api.defaultPerPage && !this.pages.includes(this.currentPage + 1)) {
-        this.pages.push(this.currentPage + 1);
-      }
       if (this.instances.length !== this.api.defaultPerPage) {
         this.lastPageReached = true;
       }
