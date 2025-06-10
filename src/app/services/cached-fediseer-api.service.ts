@@ -124,6 +124,21 @@ export class CachedFediseerApiService {
     );
   }
 
+  public getAllInstances(cacheConfig: CacheConfiguration = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    cacheConfig.type ??= CacheType.Permanent;
+    cacheConfig.ttl ??= 3600;
+
+    const cacheKey = `api.all_instances${cacheConfig.ttl}`;
+    const item = this.getCacheItem<InstanceListResponse<InstanceDetailResponse>>(cacheKey, cacheConfig)!;
+    if (item.isHit && !cacheConfig.clear) {
+      return this.getSuccessResponse(item);
+    }
+
+    return this.api.allInstances.pipe(
+      tap(this.storeResponse(item, cacheConfig)),
+    );
+  }
+
   public clearSafelistCache(): void {
     this.runtimeCache.clearByPrefix('api.safelist');
     this.permanentCache.clearByPrefix('api.safelist');

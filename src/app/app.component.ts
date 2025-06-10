@@ -156,26 +156,10 @@ export class AppComponent implements OnInit {
         return;
       }
 
-      this.cachedApi.getAllSafelistedInstances({}, {ttl: 600}).subscribe(instancesResponse => {
+      this.cachedApi.getAllInstances({ttl: 3600}).subscribe(instancesResponse => {
         if (this.apiResponseHelper.handleErrors([instancesResponse])) {
           return;
         }
-
-        const allInstances = instancesResponse.successResponse!.instances.map(instance => instance.domain);
-        this.cachedApi.getAllCensuresByInstances(allInstances, {ttl: 600}).subscribe(instancesResponse => {
-          if (this.apiResponseHelper.handleErrors([instancesResponse])) {
-            return;
-          }
-          const instances = instancesResponse.successResponse!.instances.filter(
-            instance => instance.domain.includes(searchText),
-          );
-          for (const instance of instances) {
-            this.searchResults[instance.domain] = {
-              title: instance.domain,
-              link: `/instances/detail/${instance.domain}`
-            };
-          }
-        });
 
         const instances = instancesResponse.successResponse!.instances.filter(
           instance => instance.domain.includes(searchText),
