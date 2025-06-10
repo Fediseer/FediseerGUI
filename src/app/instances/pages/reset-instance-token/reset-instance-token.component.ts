@@ -8,6 +8,7 @@ import {ApiResponseHelperService} from "../../../services/api-response-helper.se
 import {toPromise} from "../../../types/resolvable";
 import {Router} from "@angular/router";
 import {CachedFediseerApiService} from "../../../services/cached-fediseer-api.service";
+import {DatabaseService} from "../../../services/database.service";
 
 @Component({
   selector: 'app-reset-instance-token',
@@ -31,6 +32,7 @@ export class ResetInstanceTokenComponent implements OnInit {
     private readonly cachedApi: CachedFediseerApiService,
     private readonly apiResponseHelper: ApiResponseHelperService,
     private readonly router: Router,
+    private readonly database: DatabaseService,
   ) {
   }
 
@@ -59,8 +61,9 @@ export class ResetInstanceTokenComponent implements OnInit {
       return;
     }
 
+    const instance = this.authManager.currentInstanceSnapshot.name;
     const response = await toPromise(this.api.resetApiKey(
-      this.authManager.currentInstanceSnapshot.name,
+      instance,
       this.form.controls.adminUsername.value!,
     ));
     if (this.apiResponseHelper.handleErrors([response])) {
@@ -72,6 +75,7 @@ export class ResetInstanceTokenComponent implements OnInit {
 
     this.cachedApi.clearCache();
     this.authManager.logout();
+    this.database.removeAvailableAccount(instance);
     this.router.navigateByUrl('/auth/login').then(() => {
       this.messageService.createSuccess(`${newApiKey} is your new api key. Please save it, it won't be shown again.`);
     });
