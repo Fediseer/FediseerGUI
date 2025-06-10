@@ -281,6 +281,10 @@ export class FediseerApiService {
     );
   }
 
+  public get allInstances(): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
+    return this.sendRequest(HttpMethod.Get, `all_instances`);
+  }
+
   public getAllSafelistedInstances(filter: SafelistFilter = {}): Observable<ApiResponse<InstanceListResponse<InstanceDetailResponse>>> {
     let body: {[key: string]: string} = {};
     if (filter.tags !== undefined) {
